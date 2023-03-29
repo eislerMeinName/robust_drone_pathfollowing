@@ -14,8 +14,8 @@ from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType, BaseSingleAgentAviary
 import pybullet_data
 import pkg_resources
-from robust_drone_pathfollowing.HelpClasses.printout import *
-from robust_drone_pathfollowing.HelpClasses.wind import *
+from robust_drone_pathfollowing.helpclasses.printout import *
+from robust_drone_pathfollowing.helpclasses.wind import *
 
 import time
 

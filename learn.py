@@ -2,7 +2,7 @@ import sys
 import os
 import argparse
 
-from HelpClasses.printout import *
+from helpclasses.printout import *
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
 import gym
 import torch
