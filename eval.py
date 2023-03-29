@@ -13,7 +13,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from gym_pybullet_drones.utils.Logger import Logger
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
 from gym_pybullet_drones.utils.utils import sync, str2bool
-from HelpClasses.printout import *
+from helpclasses.printout import *
 
 DEFAULT_ALGO = 'ppo'
 DEFAULT_OBS = ObservationType('kin')

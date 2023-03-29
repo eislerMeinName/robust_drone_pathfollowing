@@ -9,8 +9,8 @@ import numpy as np
 import pybullet as p
 import typing
 import argparse
-from HelpClasses.printout import *
-from HelpClasses.wind import *
+from helpclasses.printout import *
+from helpclasses.wind import *
 
 from gym_pybullet_drones.utils.enums import DroneModel, Physics
 from gym_pybullet_drones.control.DSLPIDControl import DSLPIDControl

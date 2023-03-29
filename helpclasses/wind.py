@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from typing import List
 import sys
 import os
-from robust_drone_pathfollowing.HelpClasses.functions3D import *
+from robust_drone_pathfollowing.helpclasses.functions3D import *
 import math
 from mpl_toolkits.mplot3d import axes3d
 import numpy as np
