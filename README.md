@@ -1,13 +1,16 @@
-# Robust Drone-Pathfollowing 
+# robust-drone-pathfollowing 
+Robust-drone-pathfollowing is a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, which is a [simple](https://en.wikipedia.org/wiki/KISS_principle) OpenAI [Gym environment](https://gym.openai.com/envs/#classic_control) based on [PyBullet](https://github.com/bulletphysics/bullet3) for multi-agent reinforcement learning with quadrocopter. This extension provides a Gym environment that uses a stochastical, random wind field for single-agent reinforcment learning.
 
+> ## Citation
+> will be added later...
 
+## Installation
+This repo was written using Python3.8 with conda on Ubuntu 20.04. However since it is only a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, it should be compatible with macOS 12 and also other future compatibilities.
 
-# Installation
-
-## Conda
+### Conda
 First install Conda. For Ubuntu 20.04 read [here](https://linuxize.com/post/how-to-install-anaconda-on-ubuntu-20-04/) for Information and Installation Instructions.
 
-## Gym-Pybullet-Drones
+### Gym-Pybullet-Drones
 More Information about [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) can be found on the corresponding Github repo.
 ```bash
 $ conda create -n drones python=3.8
@@ -18,7 +21,7 @@ $ cd gym-pybullet-drones/
 $ pip3 install -e .
 ```
 
-## Robust-Drone-Pathfollowing
+### Robust-Drone-Pathfollowing
 Then, do:
 ```bash
 $ git clone https://gitlab2.informatik.uni-wuerzburg.de/s408133/robust-drone-pathfollowing.git
@@ -30,7 +33,7 @@ $ cp robust_drone_pathfollowing/changefiles/__init__.py gym_pybullet_drones/envs
 $ cp robust_drone_pathfollowing/changefiles/other/__init__.py gym_pybullet_drones/__init__.py
 ```
 
-## Test Installation
+### Test Installation
 You can verify that there was no Problem by:
 ```bash
 $ cd robust_drone_pathfollowing
@@ -49,5 +52,9 @@ To further test the installation, use:
 $ python3 learn.py
 ```
 If done correctly, this should result in an short PPO learning process.
+
+## Class `WindSingleAgentAviary`
+
+## References
 
 
