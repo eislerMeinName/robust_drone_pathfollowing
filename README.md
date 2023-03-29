@@ -1,12 +1,17 @@
-# Robust Drone-Pathfollowing (Read me not done yet)
+# Robust Drone-Pathfollowing 
 
 
 
-## Getting started
+# Installation
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Conda
+    First install Conda. For Ubuntu 20.04 read [here](https://linuxize.com/post/how-to-install-anaconda-on-ubuntu-20-04/) for Information and Installation Instructions.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Gym-Pybullet-Drones
+
+## Robust-Drone-Pathfollowing
+
+
 
 ## Add your files
 
