@@ -45,7 +45,7 @@ You can change different parameters, see:
 $ python3 testInstall.py -h
 ```
 By increasing the force vector of the wind you can see that the standard controller is not really robust against wind. 
-It should be noted that in this script now wind environment was used. The wind force is appplied each time the controller is able to send RPMs.
+It should be noted that in this script no generic wind environment was used. The wind force is appplied each time the controller is able to send RPMs in the script.
 To really evaluate this controller the forces should be applied at each environment time step like done in the WindSingleAgentAviary class.
 To further test the installation, use:
 ```bash
