@@ -39,7 +39,7 @@ You can verify that there was no Problem by:
 $ cd robust_drone_pathfollowing
 $ python3 testInstall.py
 ```
-Now you should see a flying drone that mybe gets hit by a flying duck.
+Now you should see a flying drone that maybe is hit by a flying duck.
 You can change different parameters, see:
 ```bash
 $ python3 testInstall.py -h
@@ -54,6 +54,10 @@ $ python3 learn.py
 If done correctly, this should result in an short PPO learning process.
 
 ## Class `WindSingleAgentAviary`
+
+## Script `learn.py`
+
+## Script `eval.py`
 
 ## References
 
