@@ -16,6 +16,7 @@ import pybullet_data
 import pkg_resources
 from robust_drone_pathfollowing.helpclasses.printout import *
 from robust_drone_pathfollowing.helpclasses.wind import *
+from robust_drone_pathfollowing.helpclasses.functions3D import *
 
 import time
 
@@ -43,9 +44,7 @@ class WindSingleAgentAviary(HoverAviary):
                  upper_bound: float = 1.0,
                  debug: bool = False
                  ):
-        """Initialization of a single agent RL environment.
-
-        Using the generic single agent RL superclass.
+        """Initialization of a single agent RL environment with wind field.
 
         Parameters
         ----------
@@ -82,6 +81,7 @@ class WindSingleAgentAviary(HoverAviary):
             Enables and Disables debug messages
 
         """
+
         self.mode = mode
         self.total_force = total_force
         self.upper_bound = upper_bound
@@ -123,6 +123,7 @@ class WindSingleAgentAviary(HoverAviary):
                     to understand its format.
 
         """
+
         return np.hstack([self.pos[nth_drone, :], self.quat[nth_drone, :], self.rpy[nth_drone, :],
                            self.vel[nth_drone, :], self.ang_v[nth_drone, :], self.goal,self.last_clipped_action[nth_drone, :]]).reshape(23, )
 
@@ -168,6 +169,7 @@ class WindSingleAgentAviary(HoverAviary):
              - goal[] the current goal that should be reached
 
         """
+
         obs = self._clipAndNormalizeState(self._getDroneStateVector(0))
         #### OBS SPACE OF SIZE 15
         return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], self.goal]).reshape(15, ).astype('float32')
@@ -181,6 +183,7 @@ class WindSingleAgentAviary(HoverAviary):
             Whether the current episode is done.
 
         """
+
         if self.step_counter/self.SIM_FREQ > self.EPISODE_LEN_SEC:
             return True
         else:
@@ -193,6 +196,7 @@ class WindSingleAgentAviary(HoverAviary):
         in the `reset()` function. Also reinitializes the new wind and goal.
 
         """
+
         ### Initialize/reset the Wind specific parameters
         # mode 0 is a basic mode without wind and with an easy to reach goal along the z axis
         if self.mode == 0:
@@ -230,6 +234,7 @@ class WindSingleAgentAviary(HoverAviary):
             The ordinal number/position of the desired drone in list self.DRONE_IDS.
 
         """
+
         # wind force
         #debug(bcolors.WARNING, 'WIND')
         if self.mode != 0 and self.mode != 1:
@@ -242,6 +247,19 @@ class WindSingleAgentAviary(HoverAviary):
                              physicsClientId=self.CLIENT)
 
         super()._physics(rpm=rpm, nth_drone=nth_drone)
+
+    #def _clipAndNormalizeState(self,
+    #                           state
+    #                           ):
+
+    #def _clipAndNormalizeStateWarning(self,
+    #                                  state,
+    #                                  clipped_pos_xy,
+    #                                  clipped_pos_z,
+    #                                  clipped_rp,
+    #                                  clipped_vel_xy,
+    #                                  clipped_vel_z,
+    #                                  ):
 
     def getState(self, nth_drone) -> np.ndarray:
         """Method that provides the real state to the script.
@@ -258,4 +276,18 @@ class WindSingleAgentAviary(HoverAviary):
             A Box() of shape (23,) with the current state
 
         """
+
         return self._getDroneStateVector(nth_drone)
+
+    def getDist(self) -> float:
+        """Method that provides the current distance to the script.
+           Should be used to log the distances to the goal and also other Data in the evalwriter.
+
+        Returns
+        -------
+        float
+            The current distance to the goal
+
+        """
+
+        return abs(np.linalg.norm(self.goal - self._getDroneStateVector(0)[0:3]))
