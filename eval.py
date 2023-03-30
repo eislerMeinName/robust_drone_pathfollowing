@@ -14,6 +14,7 @@ from gym_pybullet_drones.utils.Logger import Logger
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
 from gym_pybullet_drones.utils.utils import sync, str2bool
 from helpclasses.printout import *
+from helpclasses.evalwriter import EvalWriter
 
 DEFAULT_ALGO = 'ppo'
 DEFAULT_OBS = ObservationType('kin')
@@ -44,7 +45,7 @@ def run(env: str = DEFAULT_ENV,
         gui: bool = True,
         gui_time: int = DEFAULT_GUI_TIME
         ):
-
+    obs_save = obs
     ### Create evaluation environment ##################################################################################
     eval_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,total_force=total_force, upper_bound=upper_bound, debug=debug_env)
 
@@ -66,6 +67,28 @@ def run(env: str = DEFAULT_ENV,
     mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=episodes)
     msg = "\n\n\nMean reward " +str(mean_reward) + " +- " + str(std_reward) + "\n\n"
     debug(bcolors.OKGREEN, msg)
+
+    ### Evaluate and write #############################################################################################
+    eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
+                                  episode_len=gui_time, threshold=0.05)
+    obs = eval_env.reset()
+    start = time.time()
+    for j in range(1, episodes):
+        for i in range(gui_time * int(eval_env.SIM_FREQ / eval_env.AGGR_PHY_STEPS)):
+            action, _states = model.predict(obs, deterministic=True)
+            obs, reward, done, info = eval_env.step(action)
+            # eval_env.render()
+            sync(np.floor(i * eval_env.AGGR_PHY_STEPS), start, eval_env.TIMESTEP)
+            eval.update()
+
+        if j != episodes:
+            obs = eval_env.reset()
+            eval.housekeeping(eval_env)
+        else:
+            eval_env.close()
+
+    eval.write()
+    obs = obs_save
 
     ### Create test environment and logger #############################################################################
     test_env = gym.make(env, gui=True, record=False, aggregate_phy_steps=5, obs=obs, act=act, mode=mode, total_force=total_force, upper_bound=upper_bound, debug=debug_env)
