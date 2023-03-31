@@ -125,7 +125,7 @@ class WindSingleAgentAviary(HoverAviary):
         """
 
         return np.hstack([self.pos[nth_drone, :], self.quat[nth_drone, :], self.rpy[nth_drone, :],
-                           self.vel[nth_drone, :], self.ang_v[nth_drone, :], self.goal,self.last_clipped_action[nth_drone, :]]).reshape(23, )
+                           self.vel[nth_drone, :], self.ang_v[nth_drone, :], self.goal ,self.last_clipped_action[nth_drone, :]]).reshape(23, )
 
     def _computeReward(self) -> float:
         """Computes the current reward value.
@@ -140,11 +140,8 @@ class WindSingleAgentAviary(HoverAviary):
         state = self._getDroneStateVector(0)
         reward = 0
 
-        # Check wether the goal has been reached
-        # TODO: check if this should get a positive reward
-        if abs(np.linalg.norm(self.goal - state[0:3])) < 0.01:
-            if (self.debug):
-                debug(bcolors.OKGREEN, '[INFO] Reached the goal')
+        if abs(np.linalg.norm(self.goal - state[0:3])) < 0.01 and self.debug:
+            debug(bcolors.OKGREEN, '[INFO] Reached the goal')
 
 
         # penalize the agent because he hit the ground
@@ -172,7 +169,7 @@ class WindSingleAgentAviary(HoverAviary):
 
         obs = self._clipAndNormalizeState(self._getDroneStateVector(0))
         #### OBS SPACE OF SIZE 15
-        return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], self.goal]).reshape(15, ).astype('float32')
+        return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], obs[16:19]]).reshape(15, ).astype('float32')
 
     def _computeDone(self) -> bool:
         """Computes the current done value.
@@ -248,27 +245,120 @@ class WindSingleAgentAviary(HoverAviary):
 
         super()._physics(rpm=rpm, nth_drone=nth_drone)
 
-    #def _clipAndNormalizeState(self,
-    #                           state
-    #                           ):
-
-    #def _clipAndNormalizeStateWarning(self,
-    #                                  state,
-    #                                  clipped_pos_xy,
-    #                                  clipped_pos_z,
-    #                                  clipped_rp,
-    #                                  clipped_vel_xy,
-    #                                  clipped_vel_z,
-    #                                  ):
-
-    def getState(self, nth_drone) -> np.ndarray:
-        """Method that provides the real state to the script.
-           Should be used to log the real state information and not the observations.
+    def _clipAndNormalizeState(self, state) -> np.ndarray:
+        """Normalizes a drone's state to the [-1,1] range.
 
         Parameters
         ----------
-        nth_drone : int
-            The ordinal number/position of the desired drone in list self.DRONE_IDS.
+        state : ndarray
+            (23,)-shaped array of floats containing the non-normalized state of a single drone.
+
+        Returns
+        -------
+        ndarray
+            (23,)-shaped array of floats containing the normalized state of a single drone.
+
+        """
+
+        ### estimate the farest reachable positionn ####################################################################
+        max_xy = 3 * self.EPISODE_LEN_SEC  # velocity of 3 m/s in x and y direction
+        max_z = 1 * self.EPISODE_LEN_SEC   # max velocity of 1m/s in z direction
+
+        clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
+        clipped_pos_z = np.clip(state[2], 0, max_z)
+        clipped_goal_xy = np.clip(state[16:18], -max_xy, max_xy)
+        clipped_goal_z = np.clip(state[18], 0, max_z)
+        clipped_rp = np.clip(state[7:9], -np.pi, np.pi)
+        clipped_vel_xy = np.clip(state[10:12], -3, 3)
+        clipped_vel_z = np.clip(state[12], -1, 1)
+
+        if self.GUI:
+            self._clipAndNormalizeStateWarning(state, clipped_pos_xy, clipped_pos_z, clipped_goal_xy, clipped_goal_z,
+                                               clipped_rp, clipped_vel_xy, clipped_vel_z)
+
+        normalized_pos_xy = clipped_pos_xy / max_xy
+        normalized_pos_z = clipped_pos_z / max_z
+        normalized_goal_xy = clipped_goal_xy / max_xy
+        normalized_goal_z = clipped_goal_z / max_z
+        normalized_rp = clipped_rp / np.pi
+        normalized_y = state[9] / np.pi  # No reason to clip
+        normalized_vel_xy = clipped_vel_xy / 3
+        normalized_vel_z = clipped_vel_z / 3
+        normalized_ang_vel = state[13:16] / np.linalg.norm(state[13:16]) if np.linalg.norm(
+            state[13:16]) != 0 else state[13:16]
+
+        norm_and_clipped = np.hstack([normalized_pos_xy,
+                                      normalized_pos_z,
+                                      state[3:7],
+                                      normalized_rp,
+                                      normalized_y,
+                                      normalized_vel_xy,
+                                      normalized_vel_z,
+                                      normalized_ang_vel,
+                                      normalized_goal_xy,
+                                      normalized_goal_z,
+                                      state[19:23]
+                                      ]).reshape(23, )
+
+        return norm_and_clipped
+
+    def _clipAndNormalizeStateWarning(self, state, clipped_pos_xy, clipped_pos_z, clipped_goal_xy, clipped_goal_z,
+                                      clipped_rp, clipped_vel_xy, clipped_vel_z):
+        """Debugging printouts associated to `_clipAndNormalizeState`.
+           Print a warning if values in a state vector is out of the clipping range.
+
+        Paramters
+        ---------
+        state: np.array
+            The drone state.
+        clipped_pos_xy: np.array
+            The clipped position in x and y axis.
+        clipped_pos_z: float
+            The clipped position in z axis
+        clipped_goal_xy: np.array
+            The clipped goal position in x, y axis. Should not be clipped if goal is reachable.
+        clipped_goal_z:
+            The clipped goal positon in z axis. Should not be clipped if goal is reachable.
+        clipped_rp:
+            The clipped roll, pitch.
+        clipped_vel_xy:
+            The clipped velocity in x an y axis.
+        clipped_vel_z:
+            The clipped velocity in z axis.
+
+        """
+        if not (clipped_pos_xy == np.array(state[0:2])).all():
+            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy position [{:.2f} {:.2f}]".format(state[0],state[1])
+            debug(bcolors.WARNING, msg)
+
+        if not (clipped_pos_z == np.array(state[2])).all():
+            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z position [{:.2f}]".format(state[2])
+            debug(bcolors.WARNING, msg)
+
+        if not (clipped_goal_xy == np.array(state[16:18])).all():
+            print(clipped_goal_xy, np.array(state[16:18]))
+            msg: str = "[WARNING] in WindSingleAgentAviary._clipAndNormalizeState(): X or Y position of goal is unreachable. Change upper_bound or episode_len!"
+            debug(bcolors.FAIL, msg)
+
+        if not (clipped_goal_z == np.array(state[18])).all():
+            msg: str = "[WARNING] in WindSingleAgentAviary._clipAndNormalizeState(): Z position of goal is unreachable. Change upper_bound or episode_len!"
+            debug(bcolors.FAIL, msg)
+
+        if not (clipped_rp == np.array(state[7:9])).all():
+            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped roll/pitch [{:.2f} {:.2f}]". format(state[7], state[8])
+            debug(bcolors.WARNING, msg)
+
+        if not (clipped_vel_xy == np.array(state[10:12])).all():
+            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy velocity [{:.2f} {:.2f}]".format(state[10], state[11])
+            debug(bcolors.WARNING, msg)
+
+        if not (clipped_vel_z == np.array(state[12])).all():
+            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
+            debug(bcolors.WARNING, msg)
+
+    def getState(self) -> np.ndarray:
+        """Method that provides the real state to the script.
+           Should be used to log the real state information and not the observations.
 
         Returns
         -------
@@ -277,7 +367,7 @@ class WindSingleAgentAviary(HoverAviary):
 
         """
 
-        return self._getDroneStateVector(nth_drone)
+        return self._getDroneStateVector(0)
 
     def getDist(self) -> float:
         """Method that provides the current distance to the script.
