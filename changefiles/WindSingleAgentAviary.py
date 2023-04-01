@@ -26,7 +26,8 @@ class WindSingleAgentAviary(HoverAviary):
     #############################################################################################
 
     def __init__(self,
-                 drone_model: DroneModel = DroneModel.CF2X,
+                 #drone_model: DroneModel = DroneModel.CF2X,
+                 drone_model: DroneModel = DroneModel("hb"),
                  initial_xyzs=None,
                  initial_rpys=None,
                  physics: Physics = Physics.PYB,
@@ -261,16 +262,16 @@ class WindSingleAgentAviary(HoverAviary):
         """
 
         ### estimate the farest reachable positionn ####################################################################
-        max_xy = 3 * self.EPISODE_LEN_SEC  # velocity of 3 m/s in x and y direction
-        max_z = 1 * self.EPISODE_LEN_SEC   # max velocity of 1m/s in z direction
+        max_xy = 4 * self.EPISODE_LEN_SEC  # velocity of 4m/s in x and y direction
+        max_z = 2 * self.EPISODE_LEN_SEC   # max velocity of 2m/s in z direction
 
         clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
         clipped_pos_z = np.clip(state[2], 0, max_z)
         clipped_goal_xy = np.clip(state[16:18], -max_xy, max_xy)
         clipped_goal_z = np.clip(state[18], 0, max_z)
         clipped_rp = np.clip(state[7:9], -np.pi, np.pi)
-        clipped_vel_xy = np.clip(state[10:12], -3, 3)
-        clipped_vel_z = np.clip(state[12], -1, 1)
+        clipped_vel_xy = np.clip(state[10:12], -4, 4)
+        clipped_vel_z = np.clip(state[12], -2, 2)
 
         if self.GUI:
             self._clipAndNormalizeStateWarning(state, clipped_pos_xy, clipped_pos_z, clipped_goal_xy, clipped_goal_z,
@@ -282,8 +283,8 @@ class WindSingleAgentAviary(HoverAviary):
         normalized_goal_z = clipped_goal_z / max_z
         normalized_rp = clipped_rp / np.pi
         normalized_y = state[9] / np.pi  # No reason to clip
-        normalized_vel_xy = clipped_vel_xy / 3
-        normalized_vel_z = clipped_vel_z / 3
+        normalized_vel_xy = clipped_vel_xy / 4
+        normalized_vel_z = clipped_vel_z / 4
         normalized_ang_vel = state[13:16] / np.linalg.norm(state[13:16]) if np.linalg.norm(
             state[13:16]) != 0 else state[13:16]
 
@@ -345,15 +346,15 @@ class WindSingleAgentAviary(HoverAviary):
             debug(bcolors.FAIL, msg)
 
         if not (clipped_rp == np.array(state[7:9])).all():
-            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped roll/pitch [{:.2f} {:.2f}]". format(state[7], state[8])
+            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped roll/pitch [{:.2f} {:.2f}]". format(state[7], state[8])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_vel_xy == np.array(state[10:12])).all():
-            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy velocity [{:.2f} {:.2f}]".format(state[10], state[11])
+            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy velocity [{:.2f} {:.2f}]".format(state[10], state[11])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_vel_z == np.array(state[12])).all():
-            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
+            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
             debug(bcolors.WARNING, msg)
 
     def getState(self) -> np.ndarray:
@@ -363,7 +364,7 @@ class WindSingleAgentAviary(HoverAviary):
         Returns
         -------
         ndarray
-            A Box() of shape (23,) with the current state
+            A Box() of shape (23,) with the current state.
 
         """
 
@@ -376,8 +377,21 @@ class WindSingleAgentAviary(HoverAviary):
         Returns
         -------
         float
-            The current distance to the goal
+            The current distance to the goal.
 
         """
 
         return abs(np.linalg.norm(self.goal - self._getDroneStateVector(0)[0:3]))
+
+    def getSimTime(self) -> float:
+        """Method that provides the current Simulation Time to the script.
+        Should be used to log Timestamps of Data or Events.
+
+        Returns
+        -------
+        float
+            The current Simulation time [s].
+
+        """
+
+        return self.step_counter * self.TIMESTEP
