@@ -71,24 +71,7 @@ def run(env: str = DEFAULT_ENV,
     ### Evaluate and write #############################################################################################
     eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
                                   episode_len=gui_time, threshold=0.05)
-    obs = eval_env.reset()
-    start = time.time()
-    for j in range(1, episodes):
-        for i in range(gui_time * int(eval_env.SIM_FREQ / eval_env.AGGR_PHY_STEPS)):
-            action, _states = model.predict(obs, deterministic=True)
-            obs, reward, done, info = eval_env.step(action)
-            # eval_env.render()
-            sync(np.floor(i * eval_env.AGGR_PHY_STEPS), start, eval_env.TIMESTEP)
-            eval.update()
-
-        if j != episodes:
-            obs = eval_env.reset()
-            eval.housekeeping(eval_env)
-        else:
-            eval_env.close()
-
-    eval.write()
-    obs = obs_save
+    eval.evaluateModel(model)
 
     ### Create test environment and logger #############################################################################
     test_env = gym.make(env, gui=True, record=False, aggregate_phy_steps=5, obs=obs, act=act, mode=mode, total_force=total_force, upper_bound=upper_bound, debug=debug_env)
