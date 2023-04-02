@@ -68,7 +68,7 @@ The PathPlotter class plots the path of the drone, as well as its goal. This res
 The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate, the average distance half way through the simulation, the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
 
 
-<img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="400"><img src="files/readme_images/sc.png" alt="random wind field with vortexes" width="400">
+<img src="files/readme_images/Figure_5.png" alt="drone path and goal" width="400"><img src="files/readme_images/sc.png" alt="distances to goal" width="400">
 
 ## Class `WindSingleAgentAviary`
 The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https://github.com/utiasDSL/gym-pybullet-drones/blob/master/gym_pybullet_drones/envs/single_agent_rl/BaseSingleAgentAviary.py) class. It models the Single Agent Problem to hover at a position under influence of strong wind.
