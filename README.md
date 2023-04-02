@@ -72,6 +72,14 @@ The EvalWriter class evaluates a model and writes its performance to an xlsx fil
 
 ## Class `WindSingleAgentAviary`
 The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https://github.com/utiasDSL/gym-pybullet-drones/blob/master/gym_pybullet_drones/envs/single_agent_rl/BaseSingleAgentAviary.py) class. It models the Single Agent Problem to hover at a position under influence of strong wind.
+The environment posses some different modes:
+
+| mode | Wind | Goal |
+|---------------------------------: | :-------------------: | :-------------------------------------------: |
+| 0 | no wind | (0,0,z) |
+| 1 | no wind | (x,y,z) |
+| 2 |   yes, constant   | (x,y,z) |
+| 3 |   yes, random     | (x,y,z) |
 
 The environment can be instantiated by using `gym.make()`—see [`learn.py`](https://github.com/eislerMeinName/robust_drone_pathfollowing/blob/main/learn.py) for an example.
 
