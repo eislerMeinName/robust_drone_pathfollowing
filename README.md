@@ -63,7 +63,7 @@ The Wind class implements a random 3D wind field. It provides the necassary forc
 <img src="files/readme_images/Figure_3.png" alt="constant random wind" width="266">
 
 ### Class `PathPlotter`
-The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter(Agent not learned):
+The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter(Agent not learned).
 
 ### Class `EvalWriter`
 The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate, the average distance half way through the simulation, the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
@@ -72,6 +72,23 @@ The EvalWriter class evaluates a model and writes its performance to an xlsx fil
 <img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="400"><img src="files/readme_images/sc.png" alt="random wind field with vortexes" width="400">
 
 ## Class `WindSingleAgentAviary`
+The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https://github.com/utiasDSL/gym-pybullet-drones/blob/master/gym_pybullet_drones/envs/single_agent_rl/BaseSingleAgentAviary.py) class. It models the Single Agent Problem to hover at a position under influence of strong wind.
+
+The environment can be instantiated with `gym.make()`—see [`learn.py`](https://github.com/eislerMeinName/robust_drone_pathfollowing/blob/main/learn.py) for an example.
+
+```python
+>>> env = gym.make('WindSingleAgent-aviary-v0')  # See learn.py
+```
+The environment can be stepped with
+
+```python
+>>> obs = env.reset()
+>>> for _ in range(10*240):
+>>>     obs, reward, done, info = env.step(env.action_space.sample())
+>>>     env.render()
+>>> env.close()
+```
+
 
 ## Script `learn.py`
 
