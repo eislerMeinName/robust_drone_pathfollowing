@@ -57,8 +57,8 @@ If done correctly, this should result in an short PPO learning process.
 There are a couple of extensions that this extension is using. The most important classes will be shortly explained hereafter.
 
 ### Class `Wind`
-<img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="400"> <img src="files/readme_images/Figure_2.png" alt="random wind field" width="400">
-<img src="files/readme_images/Figure_3.png" alt="constant random wind" width="400"> <img src="files/readme_images/Figure_4.png" alt="random wind field" width="400">
+<img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="250"> <img src="files/readme_images/Figure_2.png" alt="random wind field" width="250">
+<img src="files/readme_images/Figure_3.png" alt="constant random wind" width="250"> <img src="files/readme_images/Figure_4.png" alt="random wind field" width="250">
 
 ### Class `PathPlotter`
 
