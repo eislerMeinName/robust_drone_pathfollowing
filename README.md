@@ -58,6 +58,7 @@ There are a couple of extensions that this extension is using. The most importan
 
 ### Class `Wind`
 The Wind class implements a random 3D wind field. It provides the necassary force vector dependent on the current position. In addition it can visualize the wind field like:
+
 <img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="333"> <img src="files/readme_images/Figure_2.png" alt="random wind field" width="333">
 <img src="files/readme_images/Figure_3.png" alt="constant random wind" width="333">
 
