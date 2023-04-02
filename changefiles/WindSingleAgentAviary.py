@@ -66,20 +66,19 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         record : bool, optional
             Whether to save a video of the simulation in folder `files/videos/`.
         obs : ObservationType, optional
-            The type of observation space (kinematic information or vision)
-            #TODO: Seqeunz of kinematic information as observation space
+            The type of observation space (kinematic information or vision).
         act : ActionType, optional
-            The type of action space (1 or 3D; RPMS, thurst and torques, or waypoint with PID control)
+            The type of action space (1 or 3D; RPMS, thurst and torques, or waypoint with PID control).
         total_force: float, optional
-            Approximate total force that will be applied to the UAV
+            Approximate total force that will be applied to the UAV.
         mode: int, optional
-            The mode of the Wind environment that can be used for incremental Learning
+            The mode of the Wind environment that can be used for incremental Learning.
         episode_len: int, optional
-            The number of seconds each episode is simulated
+            The number of seconds each episode is simulated.
         upper_bound: float, optional
-            The upper bound of the random goal
+            The upper bound of the random goal.
         debug: bool, optional
-            Enables and Disables debug messages
+            Enables and disables debug messages.
 
         """
 
