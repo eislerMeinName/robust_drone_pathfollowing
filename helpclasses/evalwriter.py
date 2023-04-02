@@ -132,7 +132,7 @@ class EvalWriter:
 
         """
 
-        self.mean_reward, self.std_reward = evaluate_policy(model, eval_env, n_eval_episodes=self.total_steps)
+        self.mean_reward, self.std_reward = evaluate_policy(model, self.env, n_eval_episodes=self.total_steps)
         obs = self.env.reset()
         start = time.time()
         for j in range(0, self.total_steps):
