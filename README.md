@@ -63,11 +63,13 @@ The Wind class implements a random 3D wind field. It provides the necassary forc
 <img src="files/readme_images/Figure_3.png" alt="constant random wind" width="266">
 
 ### Class `PathPlotter`
-The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like this one (Agent not learned):
-
-<img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="800">
+The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter(Agent not learned):
 
 ### Class `EvalWriter`
+The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate, the average distance half way through the simulation, the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
+
+
+<img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="400"><img src="files/readme_images/sc.png" alt="random wind field with vortexes" width="400">
 
 ## Class `WindSingleAgentAviary`
 
