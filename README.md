@@ -53,6 +53,15 @@ $ python3 learn.py
 ```
 If done correctly, this should result in an short PPO learning process.
 
+## HelpClasses
+There are a couple of extensions that this extension is using. The most important classes will be shortly explained hereafter.
+
+### Class `Wind`
+
+### Class `PathPlotter`
+
+### Class `EvalWriter`
+
 ## Class `WindSingleAgentAviary`
 
 ## Script `learn.py`
