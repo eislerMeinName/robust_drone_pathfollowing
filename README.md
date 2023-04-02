@@ -76,7 +76,7 @@ The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https:
 The environment can be instantiated by using `gym.make()`—see [`learn.py`](https://github.com/eislerMeinName/robust_drone_pathfollowing/blob/main/learn.py) for an example.
 
 ```python
->>> env = gym.make('WindSingleAgent-aviary-v0')  # See learn.py
+>>> env = gym.make('WindSingleAgent-aviary-v0')
 ```
 The environment can be stepped for example with an easy for loop:
 
