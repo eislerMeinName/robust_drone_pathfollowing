@@ -59,12 +59,13 @@ There are a couple of extensions that this extension is using. The most importan
 ### Class `Wind`
 The Wind class implements a random 3D wind field. It provides the necassary force vector dependent on the current position. In addition it can visualize the wind field like:
 
-<img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="300"> <img src="files/readme_images/Figure_2.png" alt="random wind field" width="300">
-<img src="files/readme_images/Figure_3.png" alt="constant random wind" width="300">
+<img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="250"> <img src="files/readme_images/Figure_2.png" alt="random wind field" width="250">
+<img src="files/readme_images/Figure_3.png" alt="constant random wind" width="250">
 
 ### Class `PathPlotter`
 The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like this one (Agent not learned):
-<img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="400">
+
+<img src="files/readme_images/Figure_5.png" alt="random wind field with vortexes" width="800">
 
 ### Class `EvalWriter`
 
