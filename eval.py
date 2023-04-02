@@ -15,6 +15,7 @@ from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import Actio
 from gym_pybullet_drones.utils.utils import sync, str2bool
 from helpclasses.printout import *
 from helpclasses.evalwriter import EvalWriter
+from helpclasses.pathplotter import PathPlotter
 
 DEFAULT_ALGO = 'ppo'
 DEFAULT_OBS = ObservationType('kin')
@@ -63,11 +64,6 @@ def run(env: str = DEFAULT_ENV,
     if algo == 'ddpg':
         model = DDPG.load(path)
 
-    ### Eval the reward ################################################################################################
-    mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=episodes)
-    msg = "\n\n\nMean reward " +str(mean_reward) + " +- " + str(std_reward) + "\n\n"
-    debug(bcolors.OKGREEN, msg)
-
     ### Evaluate and write #############################################################################################
     eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
                                   episode_len=gui_time, threshold=0.05)
@@ -83,11 +79,13 @@ def run(env: str = DEFAULT_ENV,
     ### Start a visual simulation ######################################################################################
     if gui:
         obs = test_env.reset()
+        pathPlotter = PathPlotter(test_env.goal)
         start = time.time()
         for i in range(gui_time * int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS)): # Up to 6''
             action, _states = model.predict(obs, deterministic=True)
             obs, reward, done, info = test_env.step(action)
             test_env.render()
+            pathPlotter.addPose(test_env.getPose())
             logger.log(drone=0,
                 timestamp=i/test_env.SIM_FREQ,
                 state= test_env.getState(),#state= np.hstack([obs[0:3], np.zeros(4), obs[3:15],  np.resize(action, (4))]),
@@ -97,6 +95,7 @@ def run(env: str = DEFAULT_ENV,
             # if done: obs = test_env.reset() # OPTIONAL EPISODE HALT
         test_env.close()
         logger.save_as_csv("sa") # Optional CSV save
+        pathPlotter.show()
         logger.plot()
 
 if __name__ == "__main__":
