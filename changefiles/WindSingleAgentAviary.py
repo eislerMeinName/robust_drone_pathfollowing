@@ -20,7 +20,7 @@ from robust_drone_pathfollowing.helpclasses.functions3D import *
 
 import time
 
-class WindSingleAgentAviary(HoverAviary):
+class WindSingleAgentAviary(BaseSingleAgentAviary):
     """Models the Single Agent Problem to hover at a position under influence of strong wind."""
 
     #############################################################################################
@@ -357,6 +357,19 @@ class WindSingleAgentAviary(HoverAviary):
             msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
             debug(bcolors.WARNING, msg)
 
+    def _computeInfo(self):
+        """Computes the current info dict(s).
+
+        Unused.
+
+        Returns
+        -------
+        dict[str, int]
+            Dummy value.
+
+        """
+        return {"answer": 42}
+
     def getState(self) -> np.ndarray:
         """Method that provides the real state to the script.
            Should be used to log the real state information and not the observations.
@@ -395,3 +408,15 @@ class WindSingleAgentAviary(HoverAviary):
         """
 
         return self.step_counter * self.TIMESTEP
+
+    def getPose(self) -> List[float]:
+        """Method that provides the current Position to the script.
+        Should be used to log / plot the position of the drone.
+
+        Returns
+        -------
+        List[float]
+            The current position.
+
+        """
+        return self._getDroneStateVector(0)[0:3]
