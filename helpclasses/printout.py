@@ -1,5 +1,6 @@
 import torch
 
+
 class bcolors:
     """A class with some basic colors."""
 
@@ -15,38 +16,41 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 def welcome(ARGS):
-    """A welcom method that checks wether cuda is available and prints out the given Arguments
+    """A welcome method that checks whether cuda is available and prints out the given Arguments
 
     Parameters:
     -----------
     ARGS: dict of Arguments
-        arguments that should be printet
+        arguments that should be printed
 
     """
 
     if torch.cuda.is_available():
         print("Your GPU can be used by Torch")
-    print('\n' +  f"{bcolors.WARNING}Torch does not use your GPU. Check if CUDA supports your GPU or update the GPU driver. \nCUDA is not essentially needed but training your models will take more time!{bcolors.ENDC}")
+    print('\n' + f"{bcolors.WARNING}Torch does not use your GPU. Check if CUDA supports your GPU or update the GPU driver. \nCUDA is not essentially needed but training your models will take more time!{bcolors.ENDC}")
     print('The used parameters:')
     for i in ARGS.__dict__:
         print(str(i) + ": " + str(ARGS.__dict__[i]))
 
+
 def hitground(ARGS, pos):
-    """Checks wether the ground was hit and prints out the position.
+    """Checks whether the ground was hit and prints out the position.
 
     Parameters:
     -----------
     ARGS: dict of Arguments
-        arguments that should be printet
+        arguments that should be printed
     pos: List[float]
         the current position
     """
-    if (not(pos[2] >= 0.075 and ARGS.target_z > 0.1)):
-        print('\n' +  f"{bcolors.WARNING}You hit the ground. \nAny Problems with flying Ducks?{bcolors.ENDC}")
+    if not(pos[2] >= 0.075 and ARGS.target_z > 0.1):
+        print('\n' + f"{bcolors.WARNING}You hit the ground. \nAny Problems with flying Ducks?{bcolors.ENDC}")
     else:
-        print("Done! Endposition:")
+        print("Done! position:")
     print('Pos: ' + str(pos))
+
 
 def debug(color: str, message: str):
     """Prints out the message in a color.
@@ -61,6 +65,3 @@ def debug(color: str, message: str):
     string = f"{color}" + message
     print('\n' + string)
     print(f"{bcolors.WARNING}{bcolors.ENDC}")
-
-
-
