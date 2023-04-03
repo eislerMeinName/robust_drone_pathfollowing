@@ -72,6 +72,27 @@ The EvalWriter class evaluates a model and writes its performance to an xlsx fil
 
 ## Class `WindSingleAgentAviary`
 The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https://github.com/utiasDSL/gym-pybullet-drones/blob/master/gym_pybullet_drones/envs/single_agent_rl/BaseSingleAgentAviary.py) class. It models the Single Agent Problem to hover at a position under influence of strong wind.
+
+```python
+>>> env = WindSingleAgentAviary( 
+>>>       drone_model=DroneModel("hb"),     # quadcopter that weighs 500g 
+>>>       initial_xyzs=None,                # Initial XYZ positions of the drones
+>>>       initial_rpys=None,                # Initial roll, pitch, and yaw of the drones in radians 
+>>>       physics: Physics=Physics.PYB,     # Choice of (PyBullet) physics implementation 
+>>>       freq=240,                         # Stepping frequency of the simulation
+>>>       aggregate_phy_steps=1,            # Number of physics updates within each call to BaseAviary.step()
+>>>       gui=False,                        # Whether to display PyBullet's GUI
+>>>       record=False,                     # Whether to save a video
+>>>       obs=ObservationType.KIN,          # The observation type
+>>>       act=ActionType.RPM                # The action type
+>>>       total_force=0.00                  # The total force of the Wind (N)
+>>>       mode=0                            # The mode of the environment
+>>>       episode_len=5                     # The amount of seconds of each episode
+>>>       upper_bound=1.0                   # The upperbound of where the goal can be in each axis
+>>>       debug=False)                      # Whether to use debug lines
+````
+
+
 The environment posses some different modes:
 
 | mode | Wind | Goal |
@@ -97,9 +118,46 @@ The environment can be stepped for example with an easy for loop:
 ```
 
 ## Script `learn.py`
+This Script should be used to learn your single agent based on PPO or DDPG Algorithm. You can either create a new model or load a model that already exists. Then the model is trained with the chosen amount of steps and saved. The script has the following optional arguments and can be executed with `python3 learn.py` inside your conda environment:
+```
+  -h, --help      show this help message and exit
+  --algo          The Algorithm that trains the agent(PPO(default), DDPG)
+  --obs           The chosen ObservationType (default: KIN)
+  --act           The chosen ActionType (default: RPM)
+  --cpu           Amount of parallel training environments (default: 1)
+  --steps         Amount of training time steps(default: 100000)
+  --folder        Output folder (default: results)
+  --mode          The mode of the training environment(default: 0)
+  --env           Name of the environment(default:WindSingleAgent-aviary-v0)
+  --load          Load an existing model(default: False)
+  --load_file     The experiment folder where the loaded model can be found
+  --total_force   The max force in the simulated Wind field(default: 0)
+  --upper_bound   The upper bound of the area where the goal is simulated(default: 1)
+  --debug_env     Parameter to the Environment that enables most of the Debug messages(default: False)
+  --episode_len   The episode length(default: 5)
+```
 
 ## Script `eval.py`
+This Script should be used to evaluate your single agent based on PPO or DDPG Algorithm. It creates an evaluation environment and loads the model. Then it evaluates the model with the EvalWriter class. If choosen it also creates a new test environment, a logger and a pathplotter to test a single performance with visible output in the GUI. The script has the following optional arguments and can be executed with `python3 learn.py` inside your conda environment:
 
-## References
+```
+  -h, --help           show this help message and exit
+  --algo               The Algorithm that trains the agent(PPO(default), DDPG)
+  --obs                The chosen ObservationType (default: KIN)
+  --act                The chosen ActionType (default: RPM)
+  --folder             Output folder (default: results)
+  --mode               The mode of the training environment(default: 0)
+  --episodes           The number of evaluation steps(default: 100)
+  --env                Name of the environment(default:WindSingleAgent-aviary-v0)
+  --load_file          The experiment folder where the loaded model can be found
+  --total_force        The max force in the simulated Wind field(default: 0)
+  --upper_bound        The upper bound of the area where the goal is simulated(default: 1)
+  --debug_env          Parameter to the Environment that enables most of the Debug messages(default: False)
+  --gui                Enables/ Disables the gui replay(default: True)
+  --gui_time GUI_TIME  The simulation length(default: 10)
 
+```
+
+> ## References
+> will be added later...
 
