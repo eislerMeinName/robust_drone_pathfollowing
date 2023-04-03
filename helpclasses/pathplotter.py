@@ -6,7 +6,7 @@ class PathPlotter:
     """Plotter class that plots the path taken in a single evaluation episode"""
 
     def __init__(self, goal: List[float]):
-        """Initializationn of a PathPlotter class.
+        """Initialization of a PathPlotter class.
            Plots path and goal in 3D.
 
         Parameters
