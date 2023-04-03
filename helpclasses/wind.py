@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 from typing import List
-import sys
-import os
 from robust_drone_pathfollowing.helpclasses.functions3D import *
 import math
 from mpl_toolkits.mplot3d import axes3d
@@ -25,10 +23,12 @@ class Wind:
 
         """
 
-        self.rand = [random.gauss(total_force/3,0.03), random.gauss(total_force/3,0.03), random.gauss(total_force/3,0.03)]
+        self.rand = [random.gauss(total_force/3, 0.03),
+                     random.gauss(total_force/3, 0.03),
+                     random.gauss(total_force/3, 0.03)]
         self.force = total_force
         self.args = args
-        self.sign = [random.choice([-1, 1]), random.choice([-1, 1]), random.choice([-1, 1])]
+        self.sign: List[int] = [random.choice([-1, 1]), random.choice([-1, 1]), random.choice([-1, 1])]
         self.functionX = Function3D(False)
         self.functionY = Function3D(False)
         self.functionZ = Function3D(False)
@@ -51,15 +51,15 @@ class Wind:
                    '-cos(pi * x) * sin(pi * y) * cos(pi * z)',
                    'sqrt(2.0 / 3.0) * cos(pi * x) * cos(pi *  y) * sin(pi * z)'])
         if self.args == 2:
-            print(['x * ' + str(self.rand[0]), 'y * ' +str(self.rand[1]), 'z * ' + str(self.rand[2])])
+            print(['x * ' + str(self.rand[0]), 'y * ' + str(self.rand[1]), 'z * ' + str(self.rand[2])])
         if self.args == 3:
-            print([str(self.sign[0]) + ' * y' , str(self.sign[1]) + ' * x' , str(self.sign[2]) + ' * z'])
+            print([str(self.sign[0]) + ' * y', str(self.sign[1]) + ' * x', str(self.sign[2]) + ' * z'])
         if self.args == 4:
             print(['x + ' + str(self.sign[0]) + ' * y', 'z + ' + str(self.sign[1]) + ' * x', 'y + ' + str(self.sign[2]) + ' * z'])
         if self.args >= 5:
             print([self.functionX.getName(), self.functionY.getName(), self.functionZ.getName()])
 
-    def random(self, x, y, z, plot: bool=False) -> List[float]:
+    def random(self, x, y, z, plot: bool = False) -> List[float]:
         """A random constant wind field that applies the same random force vector at each position.
 
         Parameters
@@ -71,7 +71,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
 
         Returns
         -------
@@ -81,7 +81,7 @@ class Wind:
 
         return self.clip(self.rand[0:3])
 
-    def trigo(self, x, y, z, plot: bool=False) -> List:
+    def trigo(self, x, y, z, plot: bool = False) -> List:
         """A trigonometric wind field with a central vortex.
 
         Parameters
@@ -93,7 +93,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
 
         Returns
         -------
@@ -108,11 +108,11 @@ class Wind:
                                   np.pi * y) * np.sin(np.pi * z))])
         else:
             return[np.sin(np.pi * x) * np.cos(np.pi * y) * np.cos(np.pi * z),
-                              - np.cos(np.pi * x) * np.sin(np.pi * y) * np.cos(np.pi * z),
-                               (np.sqrt(2.0 / 3.0) * np.cos(np.pi * x) * np.cos(
-                                  np.pi * y) * np.sin(np.pi * z))]
+                   - np.cos(np.pi * x) * np.sin(np.pi * y) * np.cos(np.pi * z),
+                   (np.sqrt(2.0 / 3.0) * np.cos(np.pi * x) * np.cos(
+                    np.pi * y) * np.sin(np.pi * z))]
 
-    def likelinear(self, x, y, z, plot: bool=False) -> List:
+    def likelinear(self, x, y, z, plot: bool = False) -> List:
         """A wind field that is linear in each axis.
 
         Parameters
@@ -124,7 +124,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
         self.rand: List[float]
             Three random numbers that decides how steep each of the linear functions is.
 
@@ -139,7 +139,7 @@ class Wind:
         else:
             return [x * self.rand[0], y * self.rand[1], z * self.rand[2]]
 
-    def wirbel(self, x, y, z , plot: bool=False) -> List:
+    def vortex(self, x, y, z, plot: bool = False) -> List:
         """A basic - but random wind field with a central vortex.
 
         Parameters
@@ -151,7 +151,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
         self.sign: List[int]
             Three random signs (-1 or 1) that decides the sign of the function in each axis.
 
@@ -164,9 +164,9 @@ class Wind:
         if not plot:
             return self.clip([self.sign[0] * y, self.sign[1] * x, self.sign[2] * z])
         else:
-            return [self.sign[0] * y , self.sign[1] * x , self.sign[2] * z]
+            return [self.sign[0] * y, self.sign[1] * x, self.sign[2] * z]
 
-    def wirbel2(self, x, y, z , plot: bool=False) -> List:
+    def vortex2(self, x, y, z, plot: bool = False) -> List:
         """Another basic - but random wind field with a central vortex.
 
         Parameters
@@ -178,7 +178,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
         self.sign: List[int]
             Three random signs (-1 or 1) that decides the sign of the function in each axis.
 
@@ -193,8 +193,8 @@ class Wind:
         else:
             return [x + self.sign[0] * y, z + self.sign[1] * x, y + self.sign[2] * z]
 
-    def functionwind(self, x, y, z, plot: bool=False):
-        """A completly random wind field based on three random 3D functions.
+    def functionwind(self, x, y, z, plot: bool = False):
+        """A completely random wind field based on three random 3D functions.
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class Wind:
         z : float / ndarray
             The z position or z position array to calculate the wind vector.
         plot: bool, optional
-            Decides wether the function is used to plot a List of force vectors or just to return a single force vector.
+            Decides whether the function is used to plot a List of force vectors or just to return a single force vector.
         self.sign: List[int]
             Three random signs (-1 or 1) that decides the sign of the function in each axis.
 
@@ -217,10 +217,13 @@ class Wind:
 
         if not plot:
             return self.clip(
-                [self.sign[0] * self.functionX.apply(x, y, z), self.sign[1] * self.functionY.apply(x, y, z),
+                [self.sign[0] * self.functionX.apply(x, y, z),
+                 self.sign[1] * self.functionY.apply(x, y, z),
                  self.sign[2] * self.functionZ.apply(x, y, z)])
         else:
-            return [self.sign[0] * self.functionX.apply(x, y, z), self.sign[1] * self.functionY.apply(x, y, z), self.sign[2] * self.functionZ.apply(x, y, z)]
+            return [self.sign[0] * self.functionX.apply(x, y, z),
+                    self.sign[1] * self.functionY.apply(x, y, z),
+                    self.sign[2] * self.functionZ.apply(x, y, z)]
 
     def getfunc(self):
         """Returns the math function of the wind field.
@@ -242,9 +245,9 @@ class Wind:
         elif self.args == 2:
             return self.likelinear
         elif self.args == 3:
-            return self.wirbel
+            return self.vortex
         elif self.args == 4:
-            return self.wirbel2
+            return self.vortex2
         else:
             return self.functionwind
 
@@ -264,7 +267,7 @@ class Wind:
 
         length = math.sqrt(force_vec[0]*force_vec[0] + force_vec[1]*force_vec[1] + force_vec[2]*force_vec[2])
         if length > self.force:
-            for i,coord in enumerate(force_vec):
+            for i, coord in enumerate(force_vec):
                 force_vec[i] = random.gauss((coord / length) * self.force, 0.003)
         return force_vec
 
@@ -294,22 +297,19 @@ class Wind:
         x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.8))
-        force_vec = self.getfunc()(x=x,y=y, z=z, plot= True)
+        force_vec = self.getfunc()(x=x, y=y, z=z, plot=True)
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.8))
-        ax.quiver(x,y,z,force_vec[0], force_vec[1], force_vec[2], length=0.1)
+        ax.quiver(x, y, z, force_vec[0], force_vec[1], force_vec[2], length=0.1)
         plt.show()
 
 
-
-
 if __name__ == "__main__":
-    for i in range(0,20):
-        wind = Wind(0.5,random.randint(0,5))
-        #print(wind.get(0,0,2))
-        #print(wind.get(random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)))
+    for i in range(0, 20):
+        wind = Wind(0.5, random.randint(0, 5))
+        # print(wind.get(0,0,2))
+        # print(wind.get(random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)))
         wind.plot()
-
