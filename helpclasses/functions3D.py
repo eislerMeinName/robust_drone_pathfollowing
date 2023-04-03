@@ -14,21 +14,21 @@ class Function3D :
         Parameters
         ----------
         is_inner: bool
-            to decide wether the 3D function is a top or inner function and is used to clip the recursion.
+            to decide whether the 3D function is a top or inner function and is used to clip the recursion.
 
         """
 
-        #outer function with a max of 2 inner funtion and a random argument that decides which function it is
-        if is_inner == False:
+        # outer function with a max of 2 inner function and a random argument that decides which function it is
+        if not is_inner:
             self.inner = Function3D(True)
             self.inner2 = Function3D(True)
             self.arg = random.randint(0, 15)
-        #inner function with a random argument that decides between choosen inner functions
+        # inner function with a random argument that decides between chosen inner functions
         else:
-            self.arg = random.randint(0,9)
+            self.arg = random.randint(0, 9)
 
-    def zero(self, x , y, z):
-        """A zero function.
+    def zero(self, x, y, z):
+        """Method that implements a zero function.
 
             Parameters
             ----------
@@ -47,7 +47,7 @@ class Function3D :
         return x * 0
 
     def one(self, x , y, z):
-        """A one function.
+        """Method that implements a one function.
 
             Parameters
             ----------
@@ -69,7 +69,7 @@ class Function3D :
         return 1
 
     def sum(self, x, y, z):
-        """A simple sum function that adds all the input parameters.
+        """Method that implements a simple sum function that adds all the input parameters.
 
             Parameters
             ----------
@@ -89,7 +89,7 @@ class Function3D :
         return x+y+z
 
     def sumXY(self, x, y, z):
-        """A simple sum function that adds the input parameters x and y.
+        """Method that implements a simple sum function that adds the input parameters x and y.
 
             Parameters
             ----------
@@ -108,8 +108,8 @@ class Function3D :
 
         return x+y
 
-    def sumXZ(self, x, y , z):
-        """A simple sum function that adds the input parameters x and z.
+    def sumXZ(self, x, y, z):
+        """Method that implements a simple sum function that adds the input parameters x and z.
 
             Parameters
             ----------
@@ -129,7 +129,7 @@ class Function3D :
         return x+z
 
     def sumYZ(self, x, y, z):
-        """A simple sum function that adds the input parameters y and z.
+        """Method that implements a simple sum function that adds the input parameters y and z.
 
             Parameters
             ----------
@@ -149,7 +149,7 @@ class Function3D :
         return y+z
 
     def mult(self, x, y, z):
-        """A simple multiplication function that multiplies all the input parameters.
+        """Method that implements a simple multiplication function that multiplies all the input parameters.
 
             Parameters
             ----------
@@ -169,7 +169,7 @@ class Function3D :
         return x*y*z
 
     def multXY(self, x, y, z):
-        """A simple multiplication function that multiplies the input parameters x and y.
+        """Method that implements a simple multiplication function that multiplies the input parameters x and y.
 
             Parameters
             ----------
@@ -189,7 +189,7 @@ class Function3D :
         return x*y
 
     def multXZ(self, x, y, z):
-        """A simple multiplication function that multiplies the input parameters x and z.
+        """Method that implements a simple multiplication function that multiplies the input parameters x and z.
 
             Parameters
             ----------
@@ -209,7 +209,7 @@ class Function3D :
         return x*z
 
     def multYZ(self, x, y, z):
-        """A simple multiplication function that multiplies the input parameters y and z.
+        """Method that implements a simple multiplication function that multiplies the input parameters y and z.
 
             Parameters
             ----------
@@ -229,7 +229,7 @@ class Function3D :
         return y*z
 
     def sin(self, x, y, z):
-        """A simple sin function.
+        """Method that implements a simple sin function.
 
             Parameters
             ----------
@@ -248,10 +248,10 @@ class Function3D :
 
         """
 
-        return np.sin(self.inner.apply(x,y,z))
+        return np.sin(self.inner.apply(x, y, z))
 
     def cos(self, x, y, z):
-        """A simple cos function.
+        """Method that implements a simple cos function.
 
              Parameters
              ----------
@@ -270,10 +270,10 @@ class Function3D :
 
         """
 
-        return np.cos(self.inner.apply(x,y,z))
+        return np.cos(self.inner.apply(x, y, z))
 
     def specialSin(self, x, y, z):
-        """A special sin function.
+        """Method that implements a special sin function.
 
              Parameters
              ----------
@@ -292,10 +292,10 @@ class Function3D :
 
         """
 
-        return (2*x) * self.sin(x,y,z)
+        return (2*x) * self.sin(x, y, z)
 
     def add2(self, x, y, z):
-        """A simple add function that multiplies the two inner functions.
+        """Method that implements simple add function that multiplies the two inner functions.
 
              Parameters
              ----------
@@ -316,10 +316,10 @@ class Function3D :
 
         """
 
-        return self.inner.apply(x,y,z) + self.inner2.apply(x,y,z)
+        return self.inner.apply(x, y, z) + self.inner2.apply(x, y, z)
 
     def sqrtnum(self, x, y, z):
-        """A simple sqrt function that uses an absolute value.
+        """Method that implements a simple sqrt function that uses an absolute value.
 
             Parameters
             ----------
@@ -338,13 +338,13 @@ class Function3D :
 
         """
 
-        if self.inner.apply(x,y,z) < 0:
+        if self.inner.apply(x, y, z) < 0:
             return np.sqrt(-self.inner.apply(x, y, z))
         else:
             return np.sqrt(self.inner.apply(x, y, z))
 
     def sqrtplot(self, x, y, z):
-        """A simple sqrt function that uses an absolute value for plotting.
+        """Method that implements a simple sqrt function that uses an absolute value for plotting.
 
             Parameters
             ----------
@@ -363,10 +363,10 @@ class Function3D :
 
         """
 
-        return np.sqrt(np.absolute(self.inner.apply(x,y,z)))
+        return np.sqrt(np.absolute(self.inner.apply(x, y, z)))
 
     def exp(self, x, y, z):
-        """A simple exp function that uses an absolute value.
+        """Method that implements a simple exp function that uses an absolute value.
 
             Parameters
             ----------
@@ -385,10 +385,10 @@ class Function3D :
 
         """
 
-        return np.exp(self.inner.apply(x,y,z))
+        return np.exp(self.inner.apply(x, y, z))
 
     def apply(self, x, y, z):
-        """An apply function that applies the function based on the input parameters and the functions argument.
+        """An apply method that applies the function based on the input parameters and the functions argument.
 
             Parameters
             ----------
@@ -407,7 +407,7 @@ class Function3D :
 
             Returns
             -------
-                float: ther value / ndarray: array of values
+                float: the value / ndarray: array of values
 
         """
 
@@ -416,39 +416,39 @@ class Function3D :
         if self.arg == 1:
             return self.one(x, y, z)
         if self.arg == 2:
-            return self.sum(x,y,z)
+            return self.sum(x, y, z)
         if self.arg == 3:
-            return self.sumXY(x=x,y=y, z=z)
+            return self.sumXY(x=x, y=y, z=z)
         if self.arg == 4:
             return self.sumXZ(x=x, z=z, y=y)
         if self.arg == 5:
             return self.sumYZ(y=y, z=z, x=x)
         if self.arg == 6:
-            return self.mult(x,y,z)
+            return self.mult(x, y, z)
         if self.arg == 7:
-            return self.multXY(x=x,y=y, z=z)
+            return self.multXY(x=x, y=y, z=z)
         if self.arg == 8:
             return self.multXZ(x=x, z=z, y=y)
         if self.arg == 9:
-            return self.multYZ(y=y, z=z , x=x)
+            return self.multYZ(y=y, z=z, x=x)
         if self.arg == 10:
-            return self.sin(x,y,z)
+            return self.sin(x, y, z)
         if self.arg == 11:
-            return self.cos(x,y,z)
+            return self.cos(x, y, z)
         if self.arg == 12:
-            return self.specialSin(x,y,z)
+            return self.specialSin(x, y, z)
         if self.arg == 13:
             return self.add2(x, y, z)
         if self.arg == 14:
             if type(x) == numpy.ndarray:
-                return self.sqrtplot(x,y,z)
+                return self.sqrtplot(x, y, z)
             else:
-                return self.sqrtnum(x,y,z)
+                return self.sqrtnum(x, y, z)
         if self.arg == 15:
-            return self.exp(x,y,z)
+            return self.exp(x, y, z)
 
     def getName(self) -> str:
-        """A simple exp function that uses an absolute value.
+        """A method that provides the name of the 3Dfunction.
 
             Parameters
             ----------
@@ -461,7 +461,7 @@ class Function3D :
 
             Returns
             -------
-                str: A string that shows the current functions name
+                str: A string that shows the current 3Dfunctions name.
 
         """
 
@@ -497,4 +497,3 @@ class Function3D :
             return "sqrt(" + self.inner.getName() + ")"
         if self.arg == 15:
             return "exp(" + self.inner.getName() + ")"
-
