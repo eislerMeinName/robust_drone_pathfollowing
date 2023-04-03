@@ -1,7 +1,5 @@
-import sys
 import os
 import argparse
-
 from helpclasses.printout import *
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
 import gym
@@ -44,8 +42,9 @@ def run(env: str = DEFAULT_ENV,
         episode_len: int = DEFAULT_EPISODE_LEN
         ):
 
-    ### Create training environment ####################################################################################
-    train_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,total_force=total_force, upper_bound=upper_bound, debug=debug_env, episode_len=episode_len)
+    # Create training environment ######################################################################################
+    train_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,
+                         total_force=total_force, upper_bound=upper_bound, debug=debug_env, episode_len=episode_len)
 
     onpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
                            net_arch=[512, 512, dict(vf=[256, 128], pi=[256, 128])]
@@ -57,7 +56,7 @@ def run(env: str = DEFAULT_ENV,
 
     filename = folder
 
-    ### Decide path ####################################################################################################
+    # Decide path ######################################################################################################
     if os.path.isfile(load_file+'/success_model.zip'):
         path = load_file+'/success_model.zip'
     elif os.path.isfile(load_file+'/best_model.zip'):
@@ -65,7 +64,7 @@ def run(env: str = DEFAULT_ENV,
     else:
         print("[ERROR]: no model under the specified path", load_file)
 
-    ### Create Model because load is false #############################################################################
+    # Create Model because load is false ###############################################################################
     if not load:
         if algo == 'ppo':
             model = PPO(a2cppoMlpPolicy,
@@ -81,18 +80,18 @@ def run(env: str = DEFAULT_ENV,
                          tensorboard_log=filename + '/tb/',
                          verbose=1
                          )
-    ### Load Model because load is true ################################################################################
+    # Load Model because load is true ##################################################################################
     else:
         if algo == 'ppo':
             model = PPO.load(path, train_env)
         if algo == 'ddpg':
             model = DDPG.load(path, train_env)
 
+    # Create eval Environment ##########################################################################################
+    eval_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,
+                        total_force=total_force, upper_bound=upper_bound, debug=debug_env, episode_len=episode_len)
 
-    ### Create eval Environment ########################################################################################
-    eval_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,total_force=total_force, upper_bound=upper_bound, debug=debug_env, episode_len=episode_len)
-
-    ### Train the model ################################################################################################
+    # Train the model ##################################################################################################
     callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=EPISODE_REWARD_THRESHOLD,
                                                      verbose=1
                                                      )
@@ -106,36 +105,49 @@ def run(env: str = DEFAULT_ENV,
                                  render=False
                                  )
 
-    model.learn(total_timesteps=steps, #int(1e12),
-                callback=eval_callback,
-                log_interval=100,
-                )
+    model.learn(total_timesteps=steps, callback=eval_callback, log_interval=100)
 
-    #### Save the model ################################################################################################
-    model.save(folder +'/success_model.zip')
+    # Save the model ###################################################################################################
+    model.save(folder + '/success_model.zip')
     print(filename)
 
-    #### Print training progression ####################################################################################
+    # Print training progression #######################################################################################
     with np.load(filename+'/evaluations.npz') as data:
         for j in range(data['timesteps'].shape[0]):
             print(str(data['timesteps'][j])+","+str(data['results'][j][0]))
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script that allows to train your RL Model")
-    parser.add_argument('--algo', default=DEFAULT_ALGO, type=str, help='The Algorithm that trains the agent(PPO(default), DDPG)', metavar='')
-    parser.add_argument('--obs', default=DEFAULT_OBS, type=ObservationType, help='The choosen ObservationType (default: KIN)', metavar='')
-    parser.add_argument('--act', default=DEFAULT_ACT, type=ActionType, help='The choosen ActionType (default: RPM)', metavar='')
-    parser.add_argument('--cpu', default=DEFAULT_CPU, type=int, help='Amount of parrallel training environments (default: 1)', metavar='')
-    parser.add_argument('--steps', default=DEFAULT_STEPS, type=int, help='Amount of training time steps(default: 100000)', metavar='')
-    parser.add_argument('--folder', default=DEFAULT_OUTPUT_FOLDER, type=str, help='Output folder (default: results)', metavar='')
-    parser.add_argument('--mode', default=DEFAULT_MODE, type=int, help='The mode of the training environment(default: 0)', metavar='')
-    parser.add_argument('--env', default=DEFAULT_ENV, type=str, help='Name of the environment(default:WindSingleAgent-aviary-v0)', metavar='')
-    parser.add_argument('--load', default=DEFAULT_LOAD, type=bool, help='Load an existing model(default: False)', metavar='')
-    parser.add_argument('--load_file', default=DEFAULT_LOADFILE, type=str, help='The experiment folder where the loaded model can be found', metavar='')
-    parser.add_argument('--total_force', default=DEFAULT_FORCE, type=float, help='The max force in the simulated Wind field(default: 0)', metavar='')
-    parser.add_argument('--upper_bound', default=DEFAULT_BOUND, type=float, help='The upper bound of the area where the goal is simulated(default: 1)', metavar='')
-    parser.add_argument('--debug_env', default=False, type=bool, help='Parameter to the Environment that enables most of the Debug messages(default: False)', metavar='')
-    parser.add_argument('--episode_len', default=DEFAULT_EPISODE_LEN, type=int, help='The episode length(default: 5)', metavar='')
+    parser.add_argument('--algo', default=DEFAULT_ALGO, type=str,
+                        help='The Algorithm that trains the agent(PPO(default), DDPG)', metavar='')
+    parser.add_argument('--obs', default=DEFAULT_OBS, type=ObservationType,
+                        help='The chosen ObservationType (default: KIN)', metavar='')
+    parser.add_argument('--act', default=DEFAULT_ACT, type=ActionType,
+                        help='The chosen ActionType (default: RPM)', metavar='')
+    parser.add_argument('--cpu', default=DEFAULT_CPU, type=int,
+                        help='Amount of parallel training environments (default: 1)', metavar='')
+    parser.add_argument('--steps', default=DEFAULT_STEPS, type=int,
+                        help='Amount of training time steps(default: 100000)', metavar='')
+    parser.add_argument('--folder', default=DEFAULT_OUTPUT_FOLDER, type=str,
+                        help='Output folder (default: results)', metavar='')
+    parser.add_argument('--mode', default=DEFAULT_MODE, type=int,
+                        help='The mode of the training environment(default: 0)', metavar='')
+    parser.add_argument('--env', default=DEFAULT_ENV, type=str,
+                        help='Name of the environment(default:WindSingleAgent-aviary-v0)', metavar='')
+    parser.add_argument('--load', default=DEFAULT_LOAD, type=bool,
+                        help='Load an existing model(default: False)', metavar='')
+    parser.add_argument('--load_file', default=DEFAULT_LOADFILE, type=str,
+                        help='The experiment folder where the loaded model can be found', metavar='')
+    parser.add_argument('--total_force', default=DEFAULT_FORCE, type=float,
+                        help='The max force in the simulated Wind field(default: 0)', metavar='')
+    parser.add_argument('--upper_bound', default=DEFAULT_BOUND, type=float,
+                        help='The upper bound of the area where the goal is simulated(default: 1)', metavar='')
+    parser.add_argument('--debug_env', default=False, type=bool,
+                        help='Parameter to the Environment that enables most of the Debug messages(default: False)',
+                        metavar='')
+    parser.add_argument('--episode_len', default=DEFAULT_EPISODE_LEN, type=int,
+                        help='The episode length(default: 5)', metavar='')
 
     ARGS = parser.parse_args()
 
