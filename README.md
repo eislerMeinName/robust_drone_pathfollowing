@@ -5,10 +5,10 @@ Robust-drone-pathfollowing is a [Gym-Pybullet-Drones](https://github.com/utiasDS
 > will be added later...
 
 ## Installation
-This repo was written using Python3.8 with conda on Ubuntu 20.04. However since it is only a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, it should be compatible with macOS 12 and also other future compatibilities.
+This repo was written using Python3.8 with conda on Ubuntu 20.04 and Arch Linux. However since it is only a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, it should be compatible with macOS 12 and also other future compatibilities.
 
 ### Conda
-First install Conda. For Ubuntu 20.04 read [here](https://linuxize.com/post/how-to-install-anaconda-on-ubuntu-20-04/) for Information and Installation Instructions.
+First install Conda. For Ubuntu 20.04 read [here](https://linuxize.com/post/how-to-install-anaconda-on-ubuntu-20-04/) for Information and Installation Instructions. For Arch Linux read [here](https://docs.anaconda.com/anaconda/install/linux/).
 
 ### Gym-Pybullet-Drones
 More Information about [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) can be found on the corresponding Github repo.
@@ -52,6 +52,12 @@ To further test the installation, use:
 $ python3 learn.py
 ```
 If done correctly, this should result in an short PPO learning process.
+
+### Known Problems during Installation
+It may be that some used libraries have to be used inside the environment in a different version. In addition, there is a known problem that may occure because GLIBCCXX is not found in the conda environment. This can be fixed by:
+```bash
+$ ln -sf /usr/lib/libstdc++.so.6 /home/Username/anaconda3/envs/drones/bin/../lib/libstdc++.so.6
+```
 
 ## HelpClasses
 There are a couple of extensions that this extension is using. The most important classes will be shortly explained hereafter.
