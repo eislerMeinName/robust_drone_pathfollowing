@@ -65,7 +65,7 @@ $ ln -sf /usr/lib/libstdc++.so.6 /home/Username/anaconda3/envs/drones/bin/../lib
 ```
 
 ## HelpClasses
-There are a couple of esmall classes that this extension uses. The most important classes will be shortly explained hereafter.
+There are a couple of small classes that this extension uses. The most important classes will be shortly explained hereafter.
 
 ### Class `Wind`
 The Wind class implements a random 3D wind field. It provides the necassary force vector dependent on the current position. In addition it can visualize the wind field like:
@@ -76,7 +76,7 @@ The Wind class implements a random 3D wind field. It provides the necassary forc
 The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter(Agent not learned).
 
 ### Class `EvalWriter`
-The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate, the average distance half way through the simulation, the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
+The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate and settle rate. Also it caluclates the average distance half way through the simulation, at its end and the average overshoot. In Addition it evaluates the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
 
 
 <img src="files/readme_images/Figure_5.png" alt="drone path and goal" width="400"><img src="files/readme_images/Figure_7.png" alt="distances to goal" width="400">
