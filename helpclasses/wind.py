@@ -11,7 +11,7 @@ class Wind:
 
     ##################################
 
-    def __init__(self, total_force: float, args: int):
+    def __init__(self, total_force: float, args: int, debug: bool = False):
         """Initialization of a single 3D wind field.
 
         Parameters
@@ -20,6 +20,8 @@ class Wind:
             The maximum amount of force in Newtons that the wind field should have.
         args: int
             The argument that shows which kind of wind the wind field has.
+        debug: bool
+            Whether the debug messages should be printet.
 
         """
 
@@ -32,7 +34,8 @@ class Wind:
         self.functionX = Function3D(False)
         self.functionY = Function3D(False)
         self.functionZ = Function3D(False)
-        self.initPrint()
+        if debug:
+            self.initPrint()
 
     def initPrint(self):
         """Prints out the Functions that were used to create the wind field.
@@ -51,13 +54,21 @@ class Wind:
                    '-cos(pi * x) * sin(pi * y) * cos(pi * z)',
                    'sqrt(2.0 / 3.0) * cos(pi * x) * cos(pi *  y) * sin(pi * z)'])
         if self.args == 2:
-            print(['x * ' + str(self.rand[0]), 'y * ' + str(self.rand[1]), 'z * ' + str(self.rand[2])])
+            print(['x * ' + str(self.rand[0]),
+                   'y * ' + str(self.rand[1]),
+                   'z * ' + str(self.rand[2])])
         if self.args == 3:
-            print([str(self.sign[0]) + ' * y', str(self.sign[1]) + ' * x', str(self.sign[2]) + ' * z'])
+            print([str(self.sign[0]) + ' * y',
+                   str(self.sign[1]) + ' * x',
+                   str(self.sign[2]) + ' * z'])
         if self.args == 4:
-            print(['x + ' + str(self.sign[0]) + ' * y', 'z + ' + str(self.sign[1]) + ' * x', 'y + ' + str(self.sign[2]) + ' * z'])
+            print(['x + ' + str(self.sign[0]) + ' * y',
+                   'z + ' + str(self.sign[1]) + ' * x',
+                   'y + ' + str(self.sign[2]) + ' * z'])
         if self.args >= 5:
-            print([self.functionX.getName(), self.functionY.getName(), self.functionZ.getName()])
+            print([self.functionX.getName(),
+                   self.functionY.getName(),
+                   self.functionZ.getName()])
 
     def random(self, x, y, z, plot: bool = False) -> List[float]:
         """A random constant wind field that applies the same random force vector at each position.
@@ -299,7 +310,8 @@ class Wind:
                               np.arange(-0.8, 1, 0.8))
         force_vec = self.getfunc()(x=x, y=y, z=z, plot=True)
         fig = plt.figure()
-        ax = fig.gca(projection='3d')
+        #ax = fig.gca(projection='3d')
+        ax = fig.add_subplot(projection='3d')
         x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.2),
                               np.arange(-0.8, 1, 0.8))
@@ -309,7 +321,7 @@ class Wind:
 
 if __name__ == "__main__":
     for i in range(0, 20):
-        wind = Wind(0.5, random.randint(0, 5))
+        wind = Wind(0.5, random.randint(0, 5), True)
         # print(wind.get(0,0,2))
         # print(wind.get(random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)))
         wind.plot()
