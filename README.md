@@ -65,7 +65,7 @@ $ ln -sf /usr/lib/libstdc++.so.6 /home/Username/anaconda3/envs/drones/bin/../lib
 ```
 
 ## HelpClasses
-There are a couple of extensions that this extension is using. The most important classes will be shortly explained hereafter.
+There are a couple of esmall classes that this extension uses. The most important classes will be shortly explained hereafter.
 
 ### Class `Wind`
 The Wind class implements a random 3D wind field. It provides the necassary force vector dependent on the current position. In addition it can visualize the wind field like:
