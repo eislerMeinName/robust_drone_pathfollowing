@@ -33,6 +33,11 @@ $ cp robust_drone_pathfollowing/changefiles/__init__.py gym_pybullet_drones/envs
 $ cp robust_drone_pathfollowing/changefiles/other/__init__.py gym_pybullet_drones/__init__.py
 ```
 
+Also openpyxl has to be installed:
+```bash
+$ pip3 install openpyxl
+```
+
 ### Test Installation
 You can verify that there was no Problem by:
 ```bash
