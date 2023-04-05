@@ -24,6 +24,7 @@ class EvalWriter:
                  episode_len: int, threshold: float):
         """Initialization of a EvalWriter class.
             Evaluates success rate, the success time rate, the average distance half way through the simulation,
+            the average distance at the end of the simulation, the average overshoot, the succes rate,
             the average reward and plots path / goal if it is a single evaluation.
 
         Parameters
@@ -62,6 +63,9 @@ class EvalWriter:
         self.times: List[float] = []
         self.STEP: int = -1
         self.halfdist: List[float] = []
+        self.overshoot: List[float] = []
+        self.enddist: List[float] = []
+        self.settled: int = 0
 
         self.housekeeping(env)
 
@@ -76,7 +80,7 @@ class EvalWriter:
             The new environment that has been reset.
 
         """
-
+        self.overshoot.append(0)
         self.env = env
         if self.succeeded:
             self.succeeded_steps += 1
@@ -105,6 +109,17 @@ class EvalWriter:
         if (simtime - (self.STEP * self.episode_len)) >= self.episode_len / 2:
             if self.times[len(self.times) - 2] - (self.STEP * self.episode_len) < self.episode_len / 2:
                 self.halfdist.append(dist)
+
+        # Check if last dist
+        if (simtime - (self.STEP * self.episode_len)) == self.episode_len:
+            self.enddist.append(dist)
+            if dist <= self.threshold:
+                self.settled += 1
+
+        # update overshoot
+        if self.succeeded:
+            if dist > self.threshold and dist > self.overshoot[self.STEP]:
+                self.overshoot[self.STEP] = dist
 
         # Check if success
         if not self.succeeded and dist < self.threshold:
@@ -160,22 +175,38 @@ class EvalWriter:
         time_rate: str = str(self.total_time / (self.total_steps * self.episode_len) * 100) + '%'
         time: str = str(self.total_steps * self.episode_len) + "s"
         tot_time: str = str(self.total_time) + "s"
+        settled_rate: str = str((self.settled / self.total_steps) * 100) + '%'
         if self.total_steps > 1:
             dist_avg: str = "(" + str(mean(self.halfdist)) + " +- " + str(sem(self.halfdist)) + ")m"
+            enddist_avg: str = "(" + str(mean(self.enddist)) + " +- " + str(sem(self.enddist)) + ")m"
+            if self.succeeded_steps >= 1:
+                overshoot: str = "(" + str(mean(self.overshoot) * self.total_steps / self.succeeded) + " +- " \
+                             + str(sem(self.enddist)) + ")m"
+            else:
+                overshoot: str = str("No overshoot because no step succeeded.")
         else:
             dist_avg: str = str(mean(self.halfdist))
-        msg: str = "Total steps: {0}\nSucceeded steps: {1}\n----------------\nTime: {2}\nTime in goal: {3}\n----------------\nRate: {4}\nTime Rate: {5}\nDistance(T/2): {6}\nMean reward: {7} +- {8}".format(
-            str(self.total_steps), str(
-                self.succeeded_steps), str(time), str(
-                tot_time), rate, time_rate, dist_avg, str(self.mean_reward), str(self.std_reward))
+            enddist_avg: str = str(mean(self.enddist))
+            if self.succeeded_steps == 1:
+                overshoot: str = str(mean(self.overshoot) * self.total_steps / self.succeeded)
+            else:
+                overshoot: str = str("No overshoot because no step succeeded.")
+
+        msg: str = "Total steps: {0}\nSucceeded steps: {1}\n----------------\nTime: {2}\nTime in goal: {3}\n" \
+                   "----------------\nRate: {4}\nTime Rate: {5}\nDistance(T/2): {6}\n" \
+                   "Distance(T): {7}\nSettled Rate: {8}\nOvershoot: {9}\nMean reward: {10} +- {11}".\
+            format(str(self.total_steps), str(self.succeeded_steps), str(time), str(tot_time), rate, time_rate,
+                   dist_avg, enddist_avg, settled_rate, overshoot, str(self.mean_reward), str(self.std_reward))
         debug(bcolors.OKBLUE, msg)
 
         # Write to File
-        df = pd.DataFrame([str(self.total_steps), str(self.succeeded_steps), rate, "--------", time, tot_time, time_rate,
-                           dist_avg, self.mean_reward + self.std_reward],
-                        index=['Total steps', 'Succeeded steps', 'Success rate', '--------', 'Time', 'Time in goal',
-                               'Success time rate', 'Distance(T/2)', 'Mean reward'],
-                        columns=['Eval Data'])
+        df = pd.DataFrame([str(self.total_steps), str(self.succeeded_steps), rate, "--------", time, tot_time,
+                           time_rate, dist_avg, enddist_avg, settled_rate, overshoot,
+                           self.mean_reward + self.std_reward],
+                          index=['Total steps', 'Succeeded steps', 'Success rate', '--------', 'Time', 'Time in goal',
+                                 'Success time rate', 'Distance(T/2)', 'Distance(T)', 'Settled Rate',
+                                 'Overshoot', 'Mean reward'],
+                          columns=['Eval Data'])
         df2 = pd.DataFrame(self.distances, self.times)
         with pd.ExcelWriter(self.path) as writer:
             df.to_excel(writer, sheet_name='Data(' + str(self.name) + ')')
