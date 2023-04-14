@@ -132,7 +132,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             debug(bcolors.OKGREEN, '[INFO] Reached the goal')
 
         # penalize the agent because he hit the ground
-        if state[2] < 0.02:
+        if state[2] <= 0.18:
             reward += -100
             if self.debug:
                 debug(bcolors.FAIL, '[INFO] Hit the ground')
@@ -321,11 +321,11 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         """
         if not (clipped_pos_xy == np.array(state[0:2])).all():
-            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy position [{:.2f} {:.2f}]".format(state[0], state[1])
+            msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy position [{:.2f} {:.2f}]".format(state[0], state[1])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_pos_z == np.array(state[2])).all():
-            msg: str = "[WARNING] it" + self.step_counter + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z position [{:.2f}]".format(state[2])
+            msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped z position [{:.2f}]".format(state[2])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_goal_xy == np.array(state[16:18])).all():
@@ -338,15 +338,15 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             debug(bcolors.FAIL, msg)
 
         if not (clipped_rp == np.array(state[7:9])).all():
-            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped roll/pitch [{:.2f} {:.2f}]". format(state[7], state[8])
+            msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped roll/pitch [{:.2f} {:.2f}]". format(state[7], state[8])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_vel_xy == np.array(state[10:12])).all():
-            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy velocity [{:.2f} {:.2f}]".format(state[10], state[11])
+            msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped xy velocity [{:.2f} {:.2f}]".format(state[10], state[11])
             debug(bcolors.WARNING, msg)
 
         if not (clipped_vel_z == np.array(state[12])).all():
-            msg: str = "[WARNING] it" + str(self.step_counter) + "in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
+            msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
             debug(bcolors.WARNING, msg)
 
     def _computeInfo(self):
