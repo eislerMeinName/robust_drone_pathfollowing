@@ -4,6 +4,7 @@ from helpclasses.printout import *
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
 import gym
 import torch
+import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3 import DDPG
 from stable_baselines3.common.policies import ActorCriticPolicy as a2cppoMlpPolicy
