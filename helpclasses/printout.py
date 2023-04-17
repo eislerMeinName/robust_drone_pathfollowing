@@ -29,7 +29,8 @@ def welcome(ARGS):
 
     if torch.cuda.is_available():
         print("Your GPU can be used by Torch")
-    print('\n' + f"{bcolors.WARNING}Torch does not use your GPU. Check if CUDA supports your GPU or update the GPU driver. \nCUDA is not essentially needed but training your models will take more time!{bcolors.ENDC}")
+    else:
+        print('\n' + f"{bcolors.WARNING}Torch does not use your GPU. Check if CUDA supports your GPU or update the GPU driver. \nCUDA is not essentially needed but training your models will take more time!{bcolors.ENDC}")
     print('The used parameters:')
     for i in ARGS.__dict__:
         print(str(i) + ": " + str(ARGS.__dict__[i]))
