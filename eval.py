@@ -84,7 +84,7 @@ def run(env: str = DEFAULT_ENV,
             pathplotter.addPose(test_env.getPose())
             logger.log(drone=0,
                 timestamp=i/test_env.SIM_FREQ,
-                state=test_env.getState(),
+                state=test_env.getKinState(),
                 control=np.zeros(12)
                 )
             sync(np.floor(i*test_env.AGGR_PHY_STEPS), start, test_env.TIMESTEP)
