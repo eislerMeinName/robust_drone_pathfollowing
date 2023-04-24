@@ -254,8 +254,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         """
 
         # estimate the farest reachable position
-        max_xy = 4 * self.EPISODE_LEN_SEC  # velocity of 4m/s in x and y direction
-        max_z = 2 * self.EPISODE_LEN_SEC   # max velocity of 2m/s in z direction
+        max_xy = 15 * self.EPISODE_LEN_SEC  # velocity of 15m/s in x and y direction
+        max_z = 14 * self.EPISODE_LEN_SEC   # max velocity of 14m/s in z direction
 
         clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
         clipped_pos_z = np.clip(state[2], 0, max_z)
@@ -362,7 +362,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         """
         return {"answer": 42}
 
-    def getState(self) -> np.ndarray:
+    def getState(self) -> np.array:
         """Method that provides the real state to the script.
            Should be used to log the real state information and not the observations.
 
@@ -401,14 +401,28 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         return self.step_counter * self.TIMESTEP
 
-    def getPose(self) -> List[float]:
+    def getPose(self) -> np.array:
         """Method that provides the current Position to the script.
         Should be used to log / plot the position of the drone.
 
         Returns
         -------
-        List[float]
+        np.array
             The current position.
 
         """
         return self._getDroneStateVector(0)[0:3]
+
+    def getKinState(self) -> np.array:
+        """Method that returns the kinematic state of the drone.
+
+        Returns:
+        --------
+        np.array
+            The current kinematic state.
+
+        """
+        return np.hstack([self.pos[0, :], self.quat[0, :], self.rpy[0, :],
+                          self.vel[0, :], self.ang_v[0, :],
+                          self.last_clipped_action[0, :]]).reshape(20, )
+
