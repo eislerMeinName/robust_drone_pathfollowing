@@ -180,15 +180,15 @@ class EvalWriter:
             dist_avg: str = "(" + str(mean(self.halfdist)) + " +- " + str(sem(self.halfdist)) + ")m"
             enddist_avg: str = "(" + str(mean(self.enddist)) + " +- " + str(sem(self.enddist)) + ")m"
             if self.succeeded_steps >= 1:
-                overshoot: str = "(" + str(mean(self.overshoot) * self.total_steps / self.succeeded) + " +- " \
-                             + str(sem(self.enddist)) + ")m"
+                overshoot: str = "(" + str(mean(self.overshoot) * self.total_steps / self.succeeded_steps) + " +- " \
+                             + str(sem(self.overshoot)) + ")m"
             else:
                 overshoot: str = str("No overshoot because no step succeeded.")
         else:
             dist_avg: str = str(mean(self.halfdist))
             enddist_avg: str = str(mean(self.enddist))
             if self.succeeded_steps == 1:
-                overshoot: str = str(mean(self.overshoot) * self.total_steps / self.succeeded)
+                overshoot: str = str(mean(self.overshoot) * self.total_steps / self.succeeded_steps)
             else:
                 overshoot: str = str("No overshoot because no step succeeded.")
 
