@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pybullet as p
 from gym import spaces
@@ -130,6 +132,11 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         if abs(np.linalg.norm(self.goal - state[0:3])) < 0.01 and self.debug:
             debug(bcolors.OKGREEN, '[INFO] Reached the goal')
+
+        if state[9] >= 3 or state[9] <= -3:
+            if self.debug:
+                debug(bcolors.FAIL, '[INFO] Turnned')
+            reward += -50
 
         # penalize the agent because he hit the ground
         if state[2] <= 0.18:
