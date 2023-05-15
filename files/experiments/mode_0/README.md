@@ -13,6 +13,5 @@ $ tensorboard --logdir results/tb/PPO_1
 $ python3 eval.py --mode 0 --upper_bound 1
 ```
 ## Figures:
-<img src="figures/eval_rew.png" alt="reward plot" width="500"><img src="figures/mean_reward.png" alt="reward plot" width="500">
-
-<img src="figures/train.png" alt="training plots" width="1000">
+<img src="figures/rew2.png" alt="training plots" width="1000">
+<img src="figures/learn2.png" alt="learn plot" width="1000">
