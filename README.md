@@ -24,7 +24,7 @@ $ pip3 install -e .
 ### Robust-Drone-Pathfollowing
 Then, do:
 ```bash
-$ git clone https://gitlab2.informatik.uni-wuerzburg.de/s408133/robust-drone-pathfollowing.git
+$ git clone https://github.com/eislerMeinName/robust_drone_pathfollowing.git
 ```
 Now, some files inside the changefiles directory have to be copied inside Gym-Pybullet-Drones:
 ```bash
