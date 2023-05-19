@@ -75,10 +75,12 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         self.total_force = total_force
         self.upper_bound = upper_bound
         self.debug = debug
+        self.startXYZ = initial_xyzs
+        self.startRPY = initial_rpys
 
         super().__init__(drone_model=drone_model,
-                         initial_xyzs=initial_xyzs,
-                         initial_rpys=initial_rpys,
+                         initial_xyzs=self.randomXYZs(initial_xyzs),
+                         initial_rpys=self.randomRPYs(initial_rpys),
                          physics=physics,
                          freq=freq,
                          aggregate_phy_steps=aggregate_phy_steps,
@@ -89,6 +91,27 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
                          )
 
         self.EPISODE_LEN_SEC = episode_len
+
+    def randomXYZs(self, init_xyzs) -> np.array:
+        if init_xyzs != None:
+            return init_xyzs
+
+        if self.mode == 0:
+            return np.array([0, 0, random.uniform(0.2, self.upper_bound)]).reshape(1, 3)
+
+        else:
+            return np.array([random.uniform(-self.upper_bound, self.upper_bound),
+                             random.uniform(-self.upper_bound, self.upper_bound),
+                             random.uniform(0.2, self.upper_bound)]).reshape(1, 3)
+
+    def randomRPYs(self, init_rpys) -> np.array:
+        if init_rpys != None:
+            return init_rpys
+
+        return np.array([random.uniform(-np.pi / 16, np.pi / 16),
+                         random.uniform(-np.pi / 16, np.pi / 16),
+                         random.uniform(-np.pi, np.pi)]).reshape(1, 3)
+
 
     def _observationSpace(self) -> spaces.box:
         return spaces.Box(low=np.array([-1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0]),
@@ -135,8 +158,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         if state[9] >= 3 or state[9] <= -3:
             if self.debug:
-                debug(bcolors.FAIL, '[INFO] Turnned')
-            reward += -50
+                debug(bcolors.FAIL, '[INFO] Turned')
+            # reward += -50
 
         # penalize the agent because he hit the ground
         if state[2] <= 0.18:
@@ -219,6 +242,30 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             debug_message = '[INFO] using mode: ' + str(self.mode) + '\n[INFO] using a total wind force of: ' + str(
                 self.total_force) + ' Newton' + '\n[INFO] the goal is:' + str(self.goal)
             debug(bcolors.WARNING, debug_message)
+
+    def reset(self):
+        """Resets the environment.
+
+        Returns
+        -------
+        ndarray | dict[..]
+            The initial observation, check the specific implementation of `_computeObs()`
+            in each subclass for its format.
+
+        """
+        p.resetSimulation(physicsClientId=self.CLIENT)
+        #### Housekeeping ##########################################
+        self._housekeeping()
+        #### Update and store the drones kinematic information #####
+        self._updateAndStoreKinematicInformation()
+        ### Update pose
+        self.pos = self.randomXYZs(self.startXYZ)
+        self.rpy = self.randomRPYs(self.startRPY)
+        self.quat[0] = p.getQuaternionFromEuler(self.rpy[0])
+        #### Start video recording #################################
+        self._startVideoRecording()
+        #### Return the initial observation ########################
+        return self._computeObs()
 
     def _physics(self, rpm, nth_drone):
         """Base PyBullet physics implementation with a static wind field.
