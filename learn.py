@@ -16,6 +16,7 @@ from gym_pybullet_drones.envs.WindSingleAgentAviary import WindSingleAgentAviary
 DEFAULT_ALGO = 'ppo'
 DEFAULT_OBS = ObservationType('kin')
 DEFAULT_ACT = ActionType('rpm')
+#DEFAULT_ACT = ActionType('one_d_rpm')
 DEFAULT_CPU = 1
 DEFAULT_STEPS = 100000
 DEFAULT_OUTPUT_FOLDER = 'results'
@@ -52,13 +53,13 @@ def run(algo: str = DEFAULT_ALGO,
     elif algo == 'ddpg':
         train_env = gym.make(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, seed=0)
 
-    onpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
-                           net_arch=[512, 512, dict(vf=[256, 128], pi=[256, 128])]
-                           )
+    #onpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
+     #                      net_arch=[512, 512, dict(vf=[256, 128], pi=[256, 128])]
+      #                     )
 
-    offpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
-                            net_arch=[512, 512, 256, 128]
-                            )
+    #offpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
+       #                     net_arch=[512, 512, 256, 128]
+        #                    )
 
     filename = folder
 
@@ -67,14 +68,14 @@ def run(algo: str = DEFAULT_ALGO,
         if algo == 'ppo':
             model = PPO(a2cppoMlpPolicy,
                         train_env,
-                        policy_kwargs=onpolicy_kwargs,
+                        #policy_kwargs=onpolicy_kwargs,
                         tensorboard_log=filename + '/tb/',
                         verbose=1
                         )
         if algo == 'ddpg':
             model = DDPG(td3ddpgMlpPolicy,
                          train_env,
-                         policy_kwargs=offpolicy_kwargs,
+                         #policy_kwargs=offpolicy_kwargs,
                          tensorboard_log=filename + '/tb/',
                          verbose=1
                          )
@@ -117,7 +118,6 @@ def run(algo: str = DEFAULT_ALGO,
 
     # Save the model ###################################################################################################
     model.save(folder + '/success_model.zip')
-    print(filename)
 
 
 if __name__ == "__main__":

@@ -43,7 +43,8 @@ def run(env: str = DEFAULT_ENV,
         ):
     # Create evaluation environment ####################################################################################
     eval_env = gym.make(env, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,
-                        total_force=total_force, upper_bound=upper_bound, debug=debug_env)
+                        total_force=total_force, upper_bound=upper_bound, debug=debug_env) #,
+                        #initial_xyzs=np.array([0, 0, 1]).reshape(1, 3))
 
     # Decide path ######################################################################################################
     if os.path.isfile(load_file+'/success_model.zip'):
@@ -66,7 +67,8 @@ def run(env: str = DEFAULT_ENV,
 
     # Create test environment and logger ###############################################################################
     test_env = gym.make(env, gui=True, record=False, aggregate_phy_steps=5, obs=obs, act=act, mode=mode,
-                        total_force=total_force, upper_bound=upper_bound, debug=debug_env)
+                        total_force=total_force, upper_bound=upper_bound, debug=debug_env) #,
+                        #initial_xyzs=np.array([0, 0, 1]).reshape(1, 3))
     logger = Logger(logging_freq_hz=int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS),
                     num_drones=1,
                     output_folder=folder
