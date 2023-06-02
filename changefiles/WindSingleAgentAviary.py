@@ -17,8 +17,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
     #############################################################################################
 
     def __init__(self,
-                 # drone_model: DroneModel = DroneModel.CF2X,
-                 drone_model: DroneModel = DroneModel("hb"),
+                 drone_model: DroneModel = DroneModel.CF2X,
+                 # drone_model: DroneModel = DroneModel("hb"),
                  initial_xyzs=None,
                  initial_rpys=None,
                  physics: Physics = Physics.PYB,
@@ -93,24 +93,26 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         self.EPISODE_LEN_SEC = episode_len
 
     def randomXYZs(self, init_xyzs) -> np.array:
-        if init_xyzs != None:
+        if not (init_xyzs is None):
             return init_xyzs
 
+        return np.array([0, 0, 0]).reshape(1, 3)
+
         if self.mode == 0:
-            return np.array([0, 0, random.uniform(0.2, self.upper_bound)]).reshape(1, 3)
+            return np.array([0, 0, random.uniform(0.0, self.upper_bound)]).reshape(1, 3)
 
         else:
             return np.array([random.uniform(-self.upper_bound, self.upper_bound),
                              random.uniform(-self.upper_bound, self.upper_bound),
-                             random.uniform(0.2, self.upper_bound)]).reshape(1, 3)
+                             random.uniform(0.0, self.upper_bound)]).reshape(1, 3)
 
     def randomRPYs(self, init_rpys) -> np.array:
         if init_rpys != None:
             return init_rpys
-
-        return np.array([random.uniform(-np.pi / 16, np.pi / 16),
-                         random.uniform(-np.pi / 16, np.pi / 16),
-                         random.uniform(-np.pi, np.pi)]).reshape(1, 3)
+        return np.array([0, 0, 0]).reshape(1, 3)
+        #return np.array([random.uniform(-np.pi / 128, np.pi / 64),
+                         #random.uniform(-np.pi / 128, np.pi / 64),
+                         #random.uniform(-np.pi, np.pi)]).reshape(1, 3)
 
 
     def _observationSpace(self) -> spaces.box:
@@ -150,24 +152,19 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         """
 
-        state = self._getDroneStateVector(0)
-        reward = 0
-
-        if abs(np.linalg.norm(self.goal - state[0:3])) < 0.01 and self.debug:
-            debug(bcolors.OKGREEN, '[INFO] Reached the goal')
-
-        if state[9] >= 3 or state[9] <= -3:
-            if self.debug:
-                debug(bcolors.FAIL, '[INFO] Turned')
-            # reward += -50
-
-        # penalize the agent because he hit the ground
-        if state[2] <= 0.18:
-            reward += -100
-            if self.debug:
-                debug(bcolors.FAIL, '[INFO] Hit the ground')
-
-        return reward + -1 * np.linalg.norm(self.goal - state[0:3]) ** 2
+        #reward: float = 1
+        state = self._computeObs()
+        goal = self._clipAndNormalizeState(self._getDroneStateVector(0))[16:19]
+        reward: float = 1 - np.exp2(np.linalg.norm(self.goal - state[0:3]) / np.sqrt(3))
+        #if self._getDroneStateVector(0)[2] < 0.02:
+            #reward -= 0.5
+        if reward < -1:
+            print(goal)
+            print(state[0:3])
+            print()
+            print(np.linalg.norm(goal - state[0:3]))
+            print()
+        return reward
 
     def _computeObs(self) -> np.ndarray:
         """Returns the current observation of the environment.
@@ -187,6 +184,41 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         obs = self._clipAndNormalizeState(self._getDroneStateVector(0))
         # OBS SPACE OF SIZE 15
         return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], obs[16:19]]).reshape(15, ).astype('float32')
+
+    def _preprocessAction(self,
+                          action
+                          ):
+        """Pre-processes the action passed to `.step()` into motors' RPMs.
+
+        Parameter `action` is processed differenly for each of the different
+        action types: `action` can be of length 1, 3, 4, or 6 and represent
+        RPMs, desired thrust and torques, the next target position to reach
+        using PID control, a desired velocity vector, new PID coefficients, etc.
+
+        Parameters
+        ----------
+        action : ndarray
+            The input action for each drone, to be translated into RPMs.
+
+        Returns
+        -------
+        ndarray
+            (4,)-shaped array of ints containing to clipped RPMs
+            commanded to the 4 motors of each drone.
+
+        """
+
+        if self.ACT_TYPE == ActionType.RPM:
+            #print(action)
+            return np.array(self.HOVER_RPM * (1 + 0.05 * action))
+            #return np.array(self.MAX_RPM * action / 2 + self.MAX_RPM/2)
+
+        elif self.ACT_TYPE == ActionType.ONE_D_RPM:
+            return np.repeat(self.HOVER_RPM * (1 + 0.05 * action), 4)
+
+        else:
+            print("[ERROR] in BaseSingleAgentAviary._preprocessAction()")
+
 
     def _computeDone(self) -> bool:
         """Computes the current done value.
@@ -214,58 +246,39 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         # Initialize/reset the Wind specific parameters
         # mode 0 is a basic mode without wind and with an easy to reach goal along the z axis
         if self.mode == 0:
-            self.goal = np.array([0, 0, random.uniform(0.2, self.upper_bound)])
+            #self.goal = np.array([0, 0, random.uniform(0, self.upper_bound)])
+            self.goal = np.array([0, 0, 0.5])
 
         # mode 1 is a basic mode without wind and a near goal along all axis
         elif self.mode == 1:
-            self.goal = np.array([random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(0.2, self.upper_bound)])
+            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(0, self.upper_bound)])
 
         # mode 2 is a basic mode with random goals and a random constant wind field
         elif self.mode == 2:
-            self.goal = np.array([random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(0.2, self.upper_bound)])
+            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(0, self.upper_bound)])
             self.wind = Wind(total_force=self.total_force, args=0)
 
         # mode with random goal and random generated wind field
         elif self.mode > 2:
-            self.goal = np.array([random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(-self.upper_bound, self.upper_bound),
-                                  random.uniform(0.2, self.upper_bound)])
+            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
+                                  random.uniform(0, self.upper_bound)])
             self.wind = Wind(total_force=self.total_force, args=random.randint(0, 10))
-
+        self.INIT_RPYS = self.randomRPYs(self.startRPY)
+        self.INIT_XYZS = self.randomXYZs(self.startXYZ)
         super()._housekeeping()
+        #if p.getNumBodies() > 1:
+         #   p.removeBody(self.PLANE_ID)
 
         if self.debug:
             debug_message = '[INFO] using mode: ' + str(self.mode) + '\n[INFO] using a total wind force of: ' + str(
                 self.total_force) + ' Newton' + '\n[INFO] the goal is:' + str(self.goal)
             debug(bcolors.WARNING, debug_message)
 
-    def reset(self):
-        """Resets the environment.
-
-        Returns
-        -------
-        ndarray | dict[..]
-            The initial observation, check the specific implementation of `_computeObs()`
-            in each subclass for its format.
-
-        """
-        p.resetSimulation(physicsClientId=self.CLIENT)
-        #### Housekeeping ##########################################
-        self._housekeeping()
-        #### Update and store the drones kinematic information #####
-        self._updateAndStoreKinematicInformation()
-        ### Update pose
-        self.pos = self.randomXYZs(self.startXYZ)
-        self.rpy = self.randomRPYs(self.startRPY)
-        self.quat[0] = p.getQuaternionFromEuler(self.rpy[0])
-        #### Start video recording #################################
-        self._startVideoRecording()
-        #### Return the initial observation ########################
-        return self._computeObs()
 
     def _physics(self, rpm, nth_drone):
         """Base PyBullet physics implementation with a static wind field.
@@ -308,16 +321,19 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         """
 
         # estimate the farest reachable position
-        max_xy = 15 * self.EPISODE_LEN_SEC  # velocity of 15m/s in x and y direction
-        max_z = 14 * self.EPISODE_LEN_SEC   # max velocity of 14m/s in z direction
+        #max_xy = 15 * self.EPISODE_LEN_SEC  # velocity of 15m/s in x and y direction
+        #max_z = 14 * self.EPISODE_LEN_SEC   # max velocity of 14m/s in z direction
+
+        max_xy = self.upper_bound / 2
+        max_z = self.upper_bound
 
         clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
         clipped_pos_z = np.clip(state[2], 0, max_z)
         clipped_goal_xy = np.clip(state[16:18], -max_xy, max_xy)
         clipped_goal_z = np.clip(state[18], 0, max_z)
         clipped_rp = np.clip(state[7:9], -np.pi, np.pi)
-        clipped_vel_xy = np.clip(state[10:12], -4, 4)
-        clipped_vel_z = np.clip(state[12], -2, 2)
+        clipped_vel_xy = np.clip(state[10:12], -3, 3)
+        clipped_vel_z = np.clip(state[12], -1, 1)
 
         if self.GUI:
             self._clipAndNormalizeStateWarning(state, clipped_pos_xy, clipped_pos_z, clipped_goal_xy, clipped_goal_z,
@@ -329,8 +345,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         normalized_goal_z = clipped_goal_z / max_z
         normalized_rp = clipped_rp / np.pi
         normalized_y = state[9] / np.pi  # No reason to clip
-        normalized_vel_xy = clipped_vel_xy / 4
-        normalized_vel_z = clipped_vel_z / 4
+        normalized_vel_xy = clipped_vel_xy / 3
+        normalized_vel_z = clipped_vel_z / 3
         normalized_ang_vel = state[13:16] / np.linalg.norm(state[13:16]) if np.linalg.norm(
             state[13:16]) != 0 else state[13:16]
 
