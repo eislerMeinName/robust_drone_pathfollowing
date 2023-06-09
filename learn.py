@@ -1,4 +1,3 @@
-import os
 import argparse
 from helpclasses.printout import *
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
@@ -6,99 +5,73 @@ import gym
 import torch
 import numpy as np
 from stable_baselines3 import PPO
-from stable_baselines3 import DDPG
 from stable_baselines3.common.policies import ActorCriticPolicy as a2cppoMlpPolicy
-from stable_baselines3.td3 import MlpPolicy as td3ddpgMlpPolicy
-from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, StopTrainingOnRewardThreshold
+from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 from stable_baselines3.common.cmd_util import make_vec_env
 from gym_pybullet_drones.envs.WindSingleAgentAviary import WindSingleAgentAviary
+from stable_baselines3.common.env_checker import check_env
+from gym_pybullet_drones.utils.enums import DroneModel
+from errors.ParsingError import ParsingError
 
-DEFAULT_ALGO = 'ppo'
-DEFAULT_OBS = ObservationType('kin')
+DEFAULT_DRONE = DroneModel.CF2X
 DEFAULT_ACT = ActionType('rpm')
-#DEFAULT_ACT = ActionType('one_d_rpm')
 DEFAULT_CPU = 1
-DEFAULT_STEPS = 100000
+DEFAULT_STEPS = 1000000
 DEFAULT_OUTPUT_FOLDER = 'results'
+DEFAULT_NAME = 'results/success_model.zip'
 DEFAULT_MODE = 0
-DEFAULT_LOAD = False
-DEFAULT_LOADFILE = 'results'
+DEFAULT_LOAD = ''
 EPISODE_REWARD_THRESHOLD = 0
-DEFAULT_ENV = 'WindSingleAgent-aviary-v0'
 DEFAULT_FORCE = 0
 DEFAULT_BOUND = 1
 DEFAULT_EPISODE_LEN = 5
+DEFAULT_INIT = None
 
 
-def run(algo: str = DEFAULT_ALGO,
-        cpu: int = DEFAULT_CPU,
+def run(cpu: int = DEFAULT_CPU,
         steps: int = DEFAULT_STEPS,
-        folder: str = DEFAULT_OUTPUT_FOLDER,
         mode: int = DEFAULT_MODE,
         total_force: float = DEFAULT_FORCE,
         upper_bound: float = DEFAULT_BOUND,
         load: bool = DEFAULT_LOAD,
-        load_file: str = DEFAULT_LOADFILE,
         debug_env: bool = False,
-        episode_len: int = DEFAULT_EPISODE_LEN
+        episode_len: int = DEFAULT_EPISODE_LEN,
+        drone: DroneModel = DEFAULT_DRONE,
+        init: np.array = DEFAULT_INIT,
+        gui: bool = False,
+        act: ActionType = DEFAULT_ACT,
+        name: str = DEFAULT_NAME
         ):
 
     # Create training environment ######################################################################################
-
-    sa_env_kwargs: dict = dict(aggregate_phy_steps=5, obs=DEFAULT_OBS, act=DEFAULT_ACT, mode=mode,
-                               total_force=total_force, upper_bound=upper_bound,
+    sa_env_kwargs: dict = dict(aggregate_phy_steps=5, obs=ObservationType('kin'), act=act, mode=mode,
+                               total_force=total_force, upper_bound=upper_bound, drone_model=drone, gui=gui,
                                debug=debug_env, episode_len=episode_len)
-    if algo == 'ppo':
-        train_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
-    elif algo == 'ddpg':
-        train_env = gym.make(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, seed=0)
+    if not (init is None):
+        sa_env_kwargs['initial_xyzs'] = np.array(init[0:3]).reshape(1, 3)
+        sa_env_kwargs['initial_rpys'] = np.array(init[3:6]).reshape(1, 3)
 
-    #onpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
-     #                      net_arch=[512, 512, dict(vf=[256, 128], pi=[256, 128])]
-      #                     )
+    train_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
 
-    #offpolicy_kwargs = dict(activation_fn=torch.nn.ReLU,
-       #                     net_arch=[512, 512, 256, 128]
-        #                    )
+    #check_env(train_env,
+    #          warn=True,
+    #          skip_render_check=True
+    #          )
 
-    filename = folder
+    onpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 256])
 
-    # Create Model because load is false ###############################################################################
-    if not load:
-        if algo == 'ppo':
-            model = PPO(a2cppoMlpPolicy,
-                        train_env,
-                        #policy_kwargs=onpolicy_kwargs,
-                        tensorboard_log=filename + '/tb/',
-                        verbose=1
-                        )
-        if algo == 'ddpg':
-            model = DDPG(td3ddpgMlpPolicy,
-                         train_env,
-                         #policy_kwargs=offpolicy_kwargs,
-                         tensorboard_log=filename + '/tb/',
-                         verbose=1
-                         )
-    # Load Model because load is true ##################################################################################
+    if load == DEFAULT_LOAD:
+        model = PPO(a2cppoMlpPolicy,
+                    train_env,
+                    policy_kwargs=onpolicy_kwargs,
+                    tensorboard_log='results/tb/',
+                    verbose=1
+                    )
     else:
-        # Decide path ######################################################################################################
-        if os.path.isfile(load_file + '/success_model.zip'):
-            path = load_file + '/success_model.zip'
-        elif os.path.isfile(load_file + '/best_model.zip'):
-            path = load_file + '/best_model.zip'
-        else:
-            print("[ERROR]: no model under the specified path", load_file)
-        print("Loading model.")
-        if algo == 'ppo':
-            model = PPO.load(path, train_env, tensorboard_log=filename+'/tb/')
-        if algo == 'ddpg':
-            model = DDPG.load(path, train_env, tensorboard_log=filename+'/tb/')
+        model = PPO.load(load, train_env, tensorboard_log='results/tb/')
 
     # Create eval Environment ##########################################################################################
-    if algo == 'ppo':
-        eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
-    elif algo == 'ddpg':
-        eval_env = gym.make(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, seed=0)
+    eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
 
     # Train the model ##################################################################################################
     callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=EPISODE_REWARD_THRESHOLD,
@@ -107,8 +80,8 @@ def run(algo: str = DEFAULT_ALGO,
     eval_callback = EvalCallback(eval_env,
                                  callback_on_new_best=callback_on_best,
                                  verbose=1,
-                                 best_model_save_path=filename+'/',
-                                 log_path=filename+'/',
+                                 best_model_save_path='results/',
+                                 log_path='results/',
                                  eval_freq=int(2000/cpu),
                                  deterministic=True,
                                  render=False
@@ -117,36 +90,60 @@ def run(algo: str = DEFAULT_ALGO,
     model.learn(total_timesteps=steps, callback=eval_callback, log_interval=100)
 
     # Save the model ###################################################################################################
-    model.save(folder + '/success_model.zip')
+    model.save(name)
+
+def check(cpu: int = DEFAULT_CPU,
+        steps: int = DEFAULT_STEPS,
+        mode: int = DEFAULT_MODE,
+        total_force: float = DEFAULT_FORCE,
+        upper_bound: float = DEFAULT_BOUND,
+        load: bool = DEFAULT_LOAD,
+        debug_env: bool = False,
+        episode_len: int = DEFAULT_EPISODE_LEN,
+        drone: DroneModel = DEFAULT_DRONE,
+        init: np.array = DEFAULT_INIT,
+        gui: bool = False,
+        act: ActionType = DEFAULT_ACT,
+        name: str = DEFAULT_NAME):
+    if mode > 3:
+        raise ParsingError(['Mode'], [mode], 'The specified mode is not defined in the environment.')
+
+    if not (init is None) and not (len(init)) == 6:
+        raise ParsingError(['Init'], [mode], 'The specified length is not 6.')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script that allows to train your RL Model")
-    parser.add_argument('--algo', default=DEFAULT_ALGO, type=str,
-                        help='The Algorithm that trains the agent(PPO(default), DDPG)', metavar='')
     parser.add_argument('--cpu', default=DEFAULT_CPU, type=int,
                         help='Amount of parallel training environments (default: 1)', metavar='')
-    parser.add_argument('--steps', default=DEFAULT_STEPS, type=float,
+    parser.add_argument('--drone', default=DEFAULT_DRONE, type=DroneModel)
+    parser.add_argument('--steps', default=DEFAULT_STEPS, type=int,
                         help='Amount of training time steps(default: 100000)', metavar='')
-    parser.add_argument('--folder', default=DEFAULT_OUTPUT_FOLDER, type=str,
-                        help='Output folder (default: results)', metavar='')
     parser.add_argument('--mode', default=DEFAULT_MODE, type=int,
                         help='The mode of the training environment(default: 0)', metavar='')
-    parser.add_argument('--load', default=DEFAULT_LOAD, type=bool,
-                        help='Load an existing model(default: False)', metavar='')
-    parser.add_argument('--load_file', default=DEFAULT_LOADFILE, type=str,
-                        help='The experiment folder where the loaded model can be found', metavar='')
+    parser.add_argument('--load', default=DEFAULT_LOAD, type=str,
+                        help='Load an existing model with the specified name',
+                        metavar='')
     parser.add_argument('--total_force', default=DEFAULT_FORCE, type=float,
                         help='The max force in the simulated Wind field(default: 0)', metavar='')
     parser.add_argument('--upper_bound', default=DEFAULT_BOUND, type=float,
                         help='The upper bound of the area where the goal is simulated(default: 1)', metavar='')
-    parser.add_argument('--debug_env', default=False, type=bool,
+    parser.add_argument('--debug_env', action='store_const',
                         help='Parameter to the Environment that enables most of the Debug messages(default: False)',
-                        metavar='')
+                        const=True, default=False)
     parser.add_argument('--episode_len', default=DEFAULT_EPISODE_LEN, type=int,
                         help='The episode length(default: 5)', metavar='')
+    parser.add_argument('--init', default=DEFAULT_INIT, nargs='+', type=float,
+                        help='The init values in form [x,y,z,r,p,y](default: None)', metavar='')
+    parser.add_argument('--gui', action='store_const', help='Enable GUI during training process(default: False)',
+                        const=True, default=False)
+    parser.add_argument('--act', default=DEFAULT_ACT, type=ActionType,
+                        help='The action type of the environment (default: rpm)', metavar='')
+    parser.add_argument('--name', default=DEFAULT_NAME, type=str,
+                        help='The name of the model after training (default: results/succcess_model.zip', metavar='')
 
     ARGS = parser.parse_args()
 
     welcome(ARGS)
+    check(**vars(ARGS))
     run(**vars(ARGS))
