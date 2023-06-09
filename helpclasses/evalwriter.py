@@ -150,8 +150,10 @@ class EvalWriter:
             for i in range(self.episode_len * int(self.env.SIM_FREQ / self.env.AGGR_PHY_STEPS)):
                 action, _states = model.predict(obs, deterministic=True)
                 obs, reward, done, info = self.env.step(action)
-                sync(np.floor(i * self.env.AGGR_PHY_STEPS), start, self.env.TIMESTEP)
                 self.update()
+                if done:
+                    obs = self.env.reset()
+                    break
 
             if j != self.total_steps:
                 obs = self.env.reset()
