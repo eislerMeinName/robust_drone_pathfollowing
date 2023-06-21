@@ -1,0 +1,38 @@
+\begin{figure}[htp]
+\begin{python}
+	#imports
+	...
+	
+	if __name__ == "__main__":
+		parser = argparse.ArgumentParser(description="Script that allows to train your RL Model")
+		parseparameters(parser)
+		ARGS = parser.parse_args()
+		check(**vars(ARGS))
+		...
+		
+		# Create training environment 
+		sa_env_kwargs: dict = dict(aggregate_phy_steps=5, obs=ObservationType('kin'), act=act, mode=mode,
+		total_force=total_force, upper_bound=upper_bound, drone_model=drone, gui=gui,
+		debug=debug_env, episode_len=episode_len)
+		train_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
+	
+		onpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 256])
+		if load == DEFAULT_LOAD:
+			model = PPO(a2cppoMlpPolicy,
+				train_env,
+				policy_kwargs=onpolicy_kwargs,
+				tensorboard_log='results/tb/',
+				verbose=1)
+		else:
+			model = PPO.load(load, train_env, tensorboard_log='results/tb/')
+		# Create evaluation Environment 
+		eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
+		# Train the model 
+		... # Callbacks...
+		model.learn(total_timesteps=steps, callback=eval_callback, 
+		log_interval=100)
+		# Save the model 
+		model.save(name)
+\end{python}
+\caption{shortened excerpt of the python implementation of the learning script}
+\end{figure}
