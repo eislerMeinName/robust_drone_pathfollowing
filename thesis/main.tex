@@ -1,0 +1,115 @@
+\documentclass[bachelor,english]{infothesis}
+% possible types: bachelor, master, zula (seminar, practical)
+% Für Seminararbeiten und Praktikumsberichte die Vorlage my-seminar-praktikum.tex verwenden!
+% possible languages: english, german
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{svg}
+\usepackage{pythonhighlight}
+
+\graphicspath{{figures/}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% Bitte nur ab hier Änderungen vornehmen %%%%%%%%%%%%%%%%%%%%%
+
+\title{Reinforcment Learning for Control of Flying Drones} 
+
+\author{Johannes M. Tölle} 
+
+\submissiondate{23. 08. 2023} 
+
+\supervisors{% Geben Sie die Namen aller Betreuer ab, getrennt durch das Makro '\and'
+%Prof.\ Dr.\ Günther Waxenegger-Wilfing \and
+%Prof.\ Dr-Ing.\ Sergio Montenegro \and
+Prof.\ Dr.\ Carlo D'Eramo
+} 
+
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\listtablename}{List of Tables}
+%\renewcommand{\listalgorithmname}{List of Algorithms}
+
+\newenvironment{declaration}
+{\chapter*{Declaration}}
+{\clearpage}
+
+
+\begin{document}
+\pagenumbering{roman}
+	
+\begin{declaration}
+	I certify that I have authored this thesis, including all attached materials,
+	constantly and without the use of any other aids than those specified.\\
+	All passages taken literally or analogously from published or unpublished works
+	are clearly identified as such in each individual case, stating the source.\\
+	The work has not yet been submitted in the same or a similar form as a thesis.\\
+	I am aware that violations of this declaration and deliberate deception may lead to
+	a grade of 5.0.\\
+	\vspace*{12cm}\\
+	Würzurburg, \today 
+	\hspace*{\fill}\begin{tabular}{@{}l@{}}\hline
+	\makebox[4cm]{Johannes M. Tölle}
+	\end{tabular}
+\end{declaration}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+
+\newpage
+
+\begin{abstract}
+	content...
+\end{abstract}
+
+
+
+
+%\thesistableofcontents
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\chapter{Introduction}
+	\input{content/intro.tex}
+
+\chapter{Basics}
+	\input{content/basics.tex}
+
+%\chapter{State of the Art Algorithms}
+%	\input{content/sota.tex}
+	
+\chapter{Flight-Control Concept}
+	\input{content/concept.tex}
+
+\chapter{Implementation}
+	\input{content/scripts.tex}
+
+%\chapter{Evaluation Tools}
+%	\input{content/evalsetup.tex}
+
+\chapter{Evaluation}
+	\input{content/evaluation.tex}
+
+\chapter{Conclusion \& Future Work}
+
+\chapter{Appendix}
+	\input{content/appendix.tex}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\bibliographystyle{mybabalpha-fl}
+\bibliography{mybib}
+
+
+\end{document}

@@ -1,0 +1,71 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Basics}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Quadrocopter Basics}{4}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Quadrocopter Flight Dynamics}{5}{subsection.2.1.1}%
+\contentsline {subsubsection}{\nonumberline Hover, Rise \& Fall}{5}{subsubsection*.9}%
+\contentsline {subsubsection}{\nonumberline Roll}{6}{subsubsection*.11}%
+\contentsline {subsubsection}{\nonumberline Pitch}{7}{subsubsection*.14}%
+\contentsline {subsubsection}{\nonumberline Yaw}{7}{subsubsection*.16}%
+\contentsline {subsection}{\numberline {2.1.2}Autonomous Quadrocopter}{8}{subsection.2.1.2}%
+\contentsline {subsubsection}{\nonumberline Attitude Controller \& Mixing}{9}{subsubsection*.19}%
+\contentsline {subsubsection}{\nonumberline Position Estimation}{10}{subsubsection*.21}%
+\contentsline {subsubsection}{\nonumberline Pathfollowing Controller}{10}{subsubsection*.23}%
+\contentsline {section}{\numberline {2.2}Reinforcement Learning Basics}{11}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Classification of Machine Learning Areas}{12}{subsection.2.2.1}%
+\contentsline {subsubsection}{\nonumberline Supervised Learning}{12}{subsubsection*.27}%
+\contentsline {subsubsection}{\nonumberline Unsupervised Learning}{13}{subsubsection*.29}%
+\contentsline {subsubsection}{\nonumberline Reinforcement Learning}{13}{subsubsection*.31}%
+\contentsline {subsection}{\numberline {2.2.2}Markov Decision Process}{14}{subsection.2.2.2}%
+\contentsline {subsubsection}{\nonumberline Visualization}{15}{subsubsection*.34}%
+\contentsline {subsection}{\numberline {2.2.3}V,Q Function \& The Bellman Equations}{16}{subsection.2.2.3}%
+\contentsline {subsubsection}{\nonumberline Policy}{16}{subsubsection*.37}%
+\contentsline {subsubsection}{\nonumberline Trajectory}{16}{subsubsection*.39}%
+\contentsline {subsubsection}{\nonumberline Discounted \& Undiscounted Reward}{17}{subsubsection*.41}%
+\contentsline {subsubsection}{\nonumberline V-Function}{18}{subsubsection*.44}%
+\contentsline {subsubsection}{\nonumberline Q-Function}{18}{subsubsection*.46}%
+\contentsline {subsubsection}{\nonumberline The Bellman Equations}{19}{subsubsection*.48}%
+\contentsline {subsubsection}{\nonumberline The Bellman Equations of Optimality}{19}{subsubsection*.50}%
+\contentsline {subsubsection}{\nonumberline Monte-Carlo \& TD-Sampling}{19}{subsubsection*.52}%
+\contentsline {subsection}{\numberline {2.2.4}Neural Networks}{20}{subsection.2.2.4}%
+\contentsline {subsubsection}{\nonumberline Neuron}{20}{subsubsection*.54}%
+\contentsline {subsubsection}{\nonumberline Activation Function}{21}{subsubsection*.57}%
+\contentsline {subsubsection}{\nonumberline Simple Feed-Forward Network}{22}{subsubsection*.60}%
+\contentsline {subsubsection}{\nonumberline Deep Neural Network}{22}{subsubsection*.63}%
+\contentsline {subsection}{\numberline {2.2.5}State of the Art Algorithms}{23}{subsection.2.2.5}%
+\contentsline {subsubsection}{\nonumberline PPO - Basics}{24}{subsubsection*.66}%
+\contentsline {subsubsection}{\nonumberline PPO - Algorithm}{25}{subsubsection*.68}%
+\contentsline {section}{\numberline {2.3}Pybullet Physics Simulator \& Gym Pybullet Drones}{26}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}BaseAviary Class}{26}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}BaseSingleAgentAviary Class}{26}{subsection.2.3.2}%
+\contentsline {chapter}{\numberline {3}Flight-Control Concept}{27}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Implementation}{28}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Environment Classes}{29}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}WindSingleAgentAviary Environment Class}{29}{subsection.4.1.1}%
+\contentsline {subsubsection}{\nonumberline Wind Class}{30}{subsubsection*.73}%
+\contentsline {subsubsection}{\nonumberline Modes}{31}{subsubsection*.75}%
+\contentsline {subsubsection}{\nonumberline State Space}{32}{subsubsection*.77}%
+\contentsline {subsubsection}{\nonumberline Observation Space}{32}{subsubsection*.79}%
+\contentsline {subsubsection}{\nonumberline Action Space}{33}{subsubsection*.81}%
+\contentsline {subsubsection}{\nonumberline Reward}{34}{subsubsection*.84}%
+\contentsline {subsubsection}{\nonumberline Constraints}{35}{subsubsection*.87}%
+\contentsline {subsection}{\numberline {4.1.2}WindSingleAgentPathfollowingAviary Environment Class}{36}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}Scripts \& Evaluation Tools}{37}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Learning Script}{37}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Evaluation Script}{38}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Evaluation Tools}{39}{subsection.4.2.3}%
+\contentsline {subsubsection}{\nonumberline EvalWriter Class}{39}{subsubsection*.91}%
+\contentsline {subsubsection}{\nonumberline PathPlotter Class}{40}{subsubsection*.93}%
+\contentsline {chapter}{\numberline {5}Evaluation}{41}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Drone Model}{41}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Setup}{42}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Metric}{43}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Results}{44}{section.5.4}%
+\contentsline {chapter}{\numberline {6}Conclusion \& Future Work}{45}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{46}{chapter.7}%
+\contentsline {chapter}{\nonumberline Bibliography}{47}{chapter*.95}%
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

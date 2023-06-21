@@ -1,0 +1,162 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{KMWB19}
+  \providebibliographyfont{name}{}%
+  \providebibliographyfont{lastname}{}%
+  \providebibliographyfont{title}{\emph}%
+  \providebibliographyfont{jtitle}{\btxjtitlefont}%
+  \providebibliographyfont{btitle}{\btxbtitlefont}%
+  \providebibliographyfont{stitle}{\btxstitlefont}%
+  \providebibliographyfont{etal}{\emph}%
+  \providebibliographyfont{journal}{}%
+  \providebibliographyfont{volume}{}%
+  \providebibliographyfont{ISBN}{\MakeUppercase}%
+  \providebibliographyfont{ISSN}{\MakeUppercase}%
+  \providebibliographyfont{url}{\url}%
+  \providebibliographyfont{numeral}{}%
+  \expandafter\btxselectlanguage\expandafter {\btxfallbacklanguage}
+
+\expandafter\btxselectlanguage\expandafter {\btxfallbacklanguage}
+\bibitem [{Bis94}]{10.1063/1.1144830}
+\btxnamefont {Chris\btxfnamespacelong M. \btxlastnamefont
+  {Bishop}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {{Neural networks
+  and their applications}}{{Neural networks and their applications}}}.
+\newblock \btxjournalfont {Review of Scientific Instruments}, 65(6):1803--1832,
+  \btxprintmonthyear{.}{06}{1994}{long},
+  \href{http://dx.doi.org/10.1063/1.1144830}{10.1063/1.1144830}\ifbtxprintISSN
+  {, \mbox{\btxISSN~\btxISSNfont {0034-6748}}}.
+\newblock {\latintext \btxurlfont{https://doi.org/10.1063/1.1144830}}.
+
+\bibitem [{CB21}]{coumans2021}
+\btxnamefont {Erwin \btxlastnamefont {Coumans}} \btxandlong {}\ \btxnamefont
+  {Yunfei \btxlastnamefont {Bai}}\btxauthorcolon\ \btxtitlefont
+  {\btxifchangecase {Pybullet, a python module for physics simulation for
+  games, robotics and machine learning}{PyBullet, a Python module for physics
+  simulation for games, robotics and machine learning}}.
+\newblock \url{http://pybullet.org}, 2016--2021.
+
+\bibitem [{DJS20}]{NN}
+\btxnamefont {Dr.\btxfnamespacelong Roland\btxfnamespacelong Schwaiger
+  \btxlastnamefont {Dr. Joachim~Steinwendler}}\btxauthorcolon\ \btxbtitlefont
+  {Neuronale Netze programmieren in Python}.
+\newblock \btxpublisherfont {Rheinwerk Verlag}, 2020.
+
+\bibitem [{FWXY20}]{pmlr-v120-yang20a}
+\btxnamefont {Jianqing \btxlastnamefont {Fan}}, \btxnamefont {Zhaoran
+  \btxlastnamefont {Wang}}, \btxnamefont {Yuchen \btxlastnamefont
+  {Xie}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Zhuoran \btxlastnamefont
+  {Yang}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {A theoretical
+  analysis of deep q-learning}{A Theoretical Analysis of Deep Q-Learning}}.
+\newblock \Btxinlong {}\ \btxnamefont {Alexandre\btxfnamespacelong M.
+  \btxlastnamefont {Bayen}}, \btxnamefont {Ali \btxlastnamefont {Jadbabaie}},
+  \btxnamefont {George \btxlastnamefont {Pappas}}, \btxnamefont
+  {Pablo\btxfnamespacelong A. \btxlastnamefont {Parrilo}}, \btxnamefont
+  {Benjamin \btxlastnamefont {Recht}}, \btxnamefont {Claire \btxlastnamefont
+  {Tomlin}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Melanie
+  \btxlastnamefont {Zeilinger}}\ (\btxeditorslong {}): \btxbtitlefont
+  {Proceedings of the 2nd Conference on Learning for Dynamics and Control},
+  \btxvolumelong {}\ \btxvolumefont {120} \btxofserieslong {}\ \btxstitlefont
+  {Proceedings of Machine Learning Research}, \btxpageslong {}\ 486--489.
+  \btxpublisherfont {PMLR}, \btxprintmonthyear{.}{10--11 Jun}{2020}{long}.
+\newblock {\latintext
+  \btxurlfont{https://proceedings.mlr.press/v120/yang20a.html}}.
+
+\bibitem [{KMWB19}]{koch2019reinforcement}
+\btxnamefont {William \btxlastnamefont {Koch}}, \btxnamefont {Renato
+  \btxlastnamefont {Mancuso}}, \btxnamefont {Richard \btxlastnamefont
+  {West}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Azer \btxlastnamefont
+  {Bestavros}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Reinforcement
+  learning for uav attitude control}{Reinforcement learning for UAV attitude
+  control}}.
+\newblock \btxjournalfont {ACM Transactions on Cyber-Physical Systems},
+  3(2):22, 2019.
+
+\bibitem [{MP43}]{mcculloch1943logical}
+\btxnamefont {Warren\btxfnamespacelong S \btxlastnamefont {McCulloch}}
+  \btxandlong {}\ \btxnamefont {Walter \btxlastnamefont
+  {Pitts}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {A logical calculus
+  of the ideas immanent in nervous activity}{A logical calculus of the ideas
+  immanent in nervous activity}}.
+\newblock \btxjournalfont {The bulletin of mathematical biophysics},
+  5:115--133, 1943.
+
+\bibitem [{NBMB07}]{nelson2007vector}
+\btxnamefont {Derek\btxfnamespacelong R \btxlastnamefont {Nelson}},
+  \btxnamefont {D\btxfnamespacelong Blake \btxlastnamefont {Barber}},
+  \btxnamefont {Timothy\btxfnamespacelong W \btxlastnamefont
+  {McLain}}\btxandcomma {} \btxandlong {}\ \btxnamefont
+  {Randal\btxfnamespacelong W \btxlastnamefont {Beard}}\btxauthorcolon\
+  \btxjtitlefont {\btxifchangecase {Vector field path following for miniature
+  air vehicles}{Vector field path following for miniature air vehicles}}.
+\newblock \btxjournalfont {IEEE Transactions on Robotics}, 23(3):519--529,
+  2007.
+
+\bibitem [{PZZ{\etalchar{+}}21}]{panerati2021learning}
+\btxnamefont {Jacopo \btxlastnamefont {Panerati}}, \btxnamefont {Hehui
+  \btxlastnamefont {Zheng}}, \btxnamefont {SiQi \btxlastnamefont {Zhou}},
+  \btxnamefont {James \btxlastnamefont {Xu}}, \btxnamefont {Amanda
+  \btxlastnamefont {Prorok}}\btxandcomma {} \btxandlong {}\ \btxnamefont
+  {Angela\btxfnamespacelong P. \btxlastnamefont {Schoellig}}\btxauthorcolon\
+  \btxtitlefont {\btxifchangecase {Learning to fly---a gym environment with
+  pybullet physics for reinforcement learning of multi-agent quadcopter
+  control}{Learning to Fly---a Gym Environment with PyBullet Physics for
+  Reinforcement Learning of Multi-agent Quadcopter Control}}.
+\newblock \Btxinlong {}\ \btxbtitlefont {2021 IEEE/RSJ International Conference
+  on Intelligent Robots and Systems (IROS)}, 2021.
+
+\bibitem [{RHG{\etalchar{+}}21}]{stable-baselines3}
+\btxnamefont {Antonin \btxlastnamefont {Raffin}}, \btxnamefont {Ashley
+  \btxlastnamefont {Hill}}, \btxnamefont {Adam \btxlastnamefont {Gleave}},
+  \btxnamefont {Anssi \btxlastnamefont {Kanervisto}}, \btxnamefont {Maximilian
+  \btxlastnamefont {Ernestus}}\btxandcomma {} \btxandlong {}\ \btxnamefont
+  {Noah \btxlastnamefont {Dormann}}\btxauthorcolon\ \btxjtitlefont
+  {\btxifchangecase {Stable-baselines3: Reliable reinforcement learning
+  implementations}{Stable-Baselines3: Reliable Reinforcement Learning
+  Implementations}}.
+\newblock \btxjournalfont {Journal of Machine Learning Research}, 22(268):1--8,
+  2021.
+\newblock {\latintext \btxurlfont{http://jmlr.org/papers/v22/20-1364.html}}.
+
+\bibitem [{SSA17}]{sharma2017activation}
+\btxnamefont {Sagar \btxlastnamefont {Sharma}}, \btxnamefont {Simone
+  \btxlastnamefont {Sharma}}\btxandcomma {} \btxandlong {}\ \btxnamefont
+  {Anidhya \btxlastnamefont {Athaiya}}\btxauthorcolon\ \btxjtitlefont
+  {\btxifchangecase {Activation functions in neural networks}{Activation
+  functions in neural networks}}.
+\newblock \btxjournalfont {Towards Data Sci}, 6(12):310--316, 2017.
+
+\bibitem [{SSS13}]{6669680}
+\btxnamefont {P.B. \btxlastnamefont {Sujit}}, \btxnamefont {Srikanth
+  \btxlastnamefont {Saripalli}}\btxandcomma {} \btxandlong {}\ \btxnamefont
+  {J.B. \btxlastnamefont {Sousa}}\btxauthorcolon\ \btxtitlefont
+  {\btxifchangecase {An evaluation of uav path following algorithms}{An
+  evaluation of UAV path following algorithms}}.
+\newblock \Btxinlong {}\ \btxbtitlefont {2013 European Control Conference
+  (ECC)}, \btxpageslong {}\ 3332--3337, 2013,
+  \href{http://dx.doi.org/10.23919/ECC.2013.6669680}{10.23919/ECC.2013.6669680}.
+
+\bibitem [{SWD{\etalchar{+}}17}]{schulman2017proximal}
+\btxnamefont {John \btxlastnamefont {Schulman}}, \btxnamefont {Filip
+  \btxlastnamefont {Wolski}}, \btxnamefont {Prafulla \btxlastnamefont
+  {Dhariwal}}, \btxnamefont {Alec \btxlastnamefont {Radford}}\btxandcomma {}
+  \btxandlong {}\ \btxnamefont {Oleg \btxlastnamefont {Klimov}}\btxauthorcolon\
+  \btxjtitlefont {\btxifchangecase {Proximal policy optimization
+  algorithms}{Proximal policy optimization algorithms}}.
+\newblock \btxjournalfont {arXiv preprint arXiv:1707.06347}, 2017.
+
+\bibitem [{SZWJ22}]{shi2022deep}
+\btxnamefont {Zhong \btxlastnamefont {Shi}}, \btxnamefont {Fanyu
+  \btxlastnamefont {Zhao}}, \btxnamefont {Xin \btxlastnamefont
+  {Wang}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Zhonghe \btxlastnamefont
+  {Jin}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Deep kalman-based
+  trajectory estimation of moving target from satellite images}{Deep
+  Kalman-based Trajectory Estimation of Moving Target from Satellite Images}}.
+\newblock \Btxinlong {}\ \btxbtitlefont {2022 IEEE 10th Joint International
+  Information Technology and Artificial Intelligence Conference (ITAIC)},
+  \btxvolumelong {}~\btxvolumefont {10}, \btxpageslong {}\ 71--75. IEEE, 2022.
+
+\bibitem [{Tur50}]{TT}
+\btxnamefont {A.M. \btxlastnamefont {Turing}}\btxauthorcolon\ \btxpublisherfont
+  {\btxbtitlefont {The Imitation Game}}.
+\newblock 1950.
+
+\end{thebibliography}
