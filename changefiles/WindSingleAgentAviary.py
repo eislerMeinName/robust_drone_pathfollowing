@@ -82,7 +82,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             self.maxVelZ: float = 3  #m/s
         if drone_model == DroneModel.CF2X and initial_xyzs is None:
             initial_xyzs: np.array = np.array([0, 0, 0.02]).reshape(1, 3)
-            self.minZ: float = 0.02
+            self.minZ: float = 0.03
             self.maxVelXY: float = 3  # m/s
             self.maxVelZ: float = 1  # m/s
 
@@ -150,16 +150,18 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         state: np.array = np.hstack([self.pos[0, :], self.rpy[0, :]]).reshape(6, )
         #state: np.array = self._getDroneStateVector(0)
-        dist: float = np.sqrt(3 * self.upper_bound * self.upper_bound)
         dist: float = 20
-        reward: float = 1 - np.exp2(np.linalg.norm(self.goal - state[0:3]) / dist)
+        #reward: float = 1 - np.exp2(np.linalg.norm(self.goal - state[0:3]) / dist)
+        reward: float = np.exp(-0.6 * np.linalg.norm(self.goal - state[0:3])) - 1
 
         if state[2] <= self.minZ and self.step_counter/self.SIM_FREQ >= 0.1:
-            reward += -30
-        if abs(state[3]) > np.pi / 2:
-            reward += -30
-        if abs(state[4]) > np.pi / 2:
-            reward += -30
+            reward += -200
+        #if np.linalg.norm(self.goal - state[0:3]) >= self.maxDist:
+         #   reward += -50
+        #if abs(state[3]) > np.pi / 2:
+        #    reward += -30
+        #if abs(state[4]) > np.pi / 2:
+        #    reward += -30
 
         return reward
 
@@ -242,12 +244,15 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         """
 
         state: np.array = np.hstack([self.pos[0, :], self.rpy[0, :]]).reshape(6, )
+        dist: float = np.linalg.norm(self.goal - state[0:3])
         if state[2] <= self.minZ and self.step_counter / self.SIM_FREQ >= 0.1:
             return True
-        if abs(state[3]) > np.pi / 2:
-            return True
-        if abs(state[4]) > np.pi / 2:
-            return True
+        #if abs(state[3]) > np.pi / 2:
+         #   return True
+        #if abs(state[4]) > np.pi / 2:
+         #   return True
+        #if dist >= self.maxDist:
+         #   return True
         if self.step_counter/self.SIM_FREQ > self.EPISODE_LEN_SEC:
             return True
         else:
@@ -264,7 +269,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         # Initialize/reset the Wind specific parameters
         # mode 0 is a basic mode without wind and with an easy to reach goal along the z axis
         if self.mode == 0:
-            self.goal = np.array([0, 0, random.uniform(self.minZ, self.upper_bound)])
+            #self.goal = np.array([0, 0, random.uniform(self.minZ, self.upper_bound)])
+            self.goal = np.array([0, 0, 0.5])
 
         # mode 1 is a basic mode without wind and a near goal along all axis
         elif self.mode == 1:
@@ -349,7 +355,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         #max_z = 14 * self.EPISODE_LEN_SEC   # max velocity of 14m/s in z direction
 
         max_xy = 20
-        max_z = 15
+        max_z = 10
 
         clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
         clipped_pos_z = np.clip(state[2], 0, max_z)
