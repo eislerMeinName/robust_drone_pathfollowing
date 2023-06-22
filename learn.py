@@ -9,7 +9,6 @@ from stable_baselines3.common.policies import ActorCriticPolicy as a2cppoMlpPoli
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 from stable_baselines3.common.cmd_util import make_vec_env
 from gym_pybullet_drones.envs.WindSingleAgentAviary import WindSingleAgentAviary
-from stable_baselines3.common.env_checker import check_env
 from gym_pybullet_drones.utils.enums import DroneModel
 from errors.ParsingError import ParsingError
 
@@ -51,14 +50,10 @@ def run(cpu: int = DEFAULT_CPU,
         sa_env_kwargs['initial_xyzs'] = np.array(init[0:3]).reshape(1, 3)
         sa_env_kwargs['initial_rpys'] = np.array(init[3:6]).reshape(1, 3)
 
-    train_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
+    train_env = make_vec_env('WindSingleAgent-aviary-v0', env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
 
-    #check_env(train_env,
-    #          warn=True,
-    #          skip_render_check=True
-    #          )
-
-    onpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU, net_arch=[256, 256])
+    onpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU,
+                                 net_arch=[dict(vf=[256, 256, 128], pi=[256, 256, 64])])
 
     if load == DEFAULT_LOAD:
         model = PPO(a2cppoMlpPolicy,
@@ -105,7 +100,7 @@ def check(cpu: int = DEFAULT_CPU,
         gui: bool = False,
         act: ActionType = DEFAULT_ACT,
         name: str = DEFAULT_NAME):
-    if mode > 3:
+    if mode > 4:
         raise ParsingError(['Mode'], [mode], 'The specified mode is not defined in the environment.')
 
     if not (init is None) and not (len(init)) == 6:
@@ -117,8 +112,8 @@ if __name__ == "__main__":
     parser.add_argument('--cpu', default=DEFAULT_CPU, type=int,
                         help='Amount of parallel training environments (default: 1)', metavar='')
     parser.add_argument('--drone', default=DEFAULT_DRONE, type=DroneModel)
-    parser.add_argument('--steps', default=DEFAULT_STEPS, type=int,
-                        help='Amount of training time steps(default: 100000)', metavar='')
+    parser.add_argument('--steps', default=DEFAULT_STEPS, type=float,
+                        help='Amount of training time steps(default: 1000000)', metavar='')
     parser.add_argument('--mode', default=DEFAULT_MODE, type=int,
                         help='The mode of the training environment(default: 0)', metavar='')
     parser.add_argument('--load', default=DEFAULT_LOAD, type=str,

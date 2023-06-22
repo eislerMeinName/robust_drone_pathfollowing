@@ -13,6 +13,7 @@ from helpclasses.evalwriter import EvalWriter
 from helpclasses.pathplotter import PathPlotter
 from gym_pybullet_drones.utils.enums import DroneModel
 from stable_baselines3.common.vec_env import VecNormalize, DummyVecEnv
+from stable_baselines3.common.vec_env import VecVideoRecorder
 
 
 DEFAULT_DRONE = DroneModel.CF2X
@@ -70,7 +71,7 @@ def run(drone: DroneModel = DEFAULT_DRONE,
     if gui:
         test_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
                             act=act, mode=mode, total_force=total_force, upper_bound=upper_bound,
-                            drone_model=drone, debug=debug_env, gui=gui, record=record)
+                            drone_model=drone, debug=debug_env, gui=gui, record=record, episode_len=episode_len)
         logger = Logger(logging_freq_hz=int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS),
                         num_drones=1,
                         output_folder=folder)
@@ -83,7 +84,7 @@ def run(drone: DroneModel = DEFAULT_DRONE,
         for i in range(episode_len * int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS)):
             action, _states = model.predict(obs, deterministic=True)
             obs, reward, done, info = test_env.step(action)
-            test_env.render()
+            # test_env.render()
             pathplotter.addPose(test_env.getPose())
             logger.log(drone=0,
                        timestamp=i/test_env.SIM_FREQ,
