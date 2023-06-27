@@ -274,8 +274,8 @@
             \vskip \z@ \@plus2fill
             {
                 Julius-Maximilians-Universit\"at W\"urzburg\\
-                Lehrstuhl f\"ur Informatik VII\\
-                Robotik und Telematik
+                %Lehrstuhl f\"ur Informatik VII\\
+                Reinforcement Learning and Computational Decision-Making
             }%
         \end{center}
     \end{titlepage}%
