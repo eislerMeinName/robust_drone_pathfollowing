@@ -1,3 +1,4 @@
+% !TeX spellcheck = <none>
 The concept of implementation can be divided into the used packages (\emph{Stable Baselines3, Gym Pybullet Drones, ...}), the scripts, the environment classes and different support classes (\cref{fig:concept}).\\
 Stable Baselines3 is used as implementation of the PPO algorithm (\cref{alg:ppo}) in order to achieve the tasks. Gym Pybullet Drones has already some environments and is the foundation of the simulation. It already provides a suitable step function and a well designed physics engine.\\
 The scripts (\cref{sec:scripts} , lila) are used to either learn the agent on a given environment or evaluate it.\\
@@ -23,10 +24,158 @@ The whole concept is implemented in Python3.x with the use of a \emph{conda envi
 \newpage
 
 \subsubsection{Wind Class}
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.32\linewidth}
+		\includegraphics[width=\linewidth]{figures/wind4.png}
+		\caption{}
+		\label{eq:wind5}
+	\end{subfigure}
+	\begin{subfigure}{0.32\linewidth}
+		\includegraphics[width=\linewidth]{figures/wind2.png}
+		\caption{}
+		\label{fig:wind1}
+	\end{subfigure}
+	\begin{subfigure}{0.32\linewidth}
+		\includegraphics[width=\linewidth]{figures/wind3.png}
+		\caption{}
+		\label{fig:wind0}
+	\end{subfigure}
+	\caption{Visualization of three different wind fields. Vecotors represent a force vector that impacts the drone in the matching position. (a)  is a random vector field made with a 3D function, (b) a predefined trignometric vortex vecotr field and (c) with a random linear vector field.}
+\end{figure}
+The \emph{Wind Class} is an essentiell class in order to simulate a turbulent condition. Basically the class returns a 3 dimensional force vector $W$ based on the $x,y,z$ position of the drone. This force vector is then applied in the environment and pushes the drone in the matching direction. On initialization the wind is given a force bound $w [N]$ and a type. All vectors are being clipped to this amount of force in order to simulate wind fields of different strengths. In addition, the clipping method adds some guassian distributed randomness to each coordinate with the clipped vlaue as mean and a standard deviation of $0.003$. \\
+\newline
+\emph{Type 0} simulates a random, constant wind field that applies the same random force vector at each position (\cref{eq:wind0}). The random coordinates $r_i$ are choosen with respect to a gaussian distribution with the mean of $\frac{w}{2}$ and a standard deviation of $0.03$. As a consequence, the length of the force vector $|\overrightarrow{W}|$ is distibuted with a mean of $0.866w$. A visualization of type 0 wind field can be seen in \cref{fig:wind0}.
+\begin{align} \label{eq:wind0}
+	\overrightarrow{W} &= clip(\left(
+	\begin{array}{c}
+		r_0\\
+		r_1\\
+		r_2\\
+	\end{array}
+	\right))\\
+	r_i &\sim \mathbb{N}(\frac{w}{2}, 0.03)\\
+	\mathbb{E}|\overrightarrow{W}| &= \sqrt{3 \cdot \frac{w^2}{4}} \approx 0.866 w
+\end{align}
 
 \newpage
 
+\emph{Type 1} is a trigonometric wind field with central vortex. A visualization can be seen in \cref{fig:wind1}.
+\begin{align} \label{eq:wind1}
+	\overrightarrow{W} = clip(\left(
+	\begin{array}{c}
+		\sin(\pi \cdot x) \cdot \cos(\pi \cdot y) \cdot \cos(\pi \cdot z)\\
+		- \cos(\pi \cdot x) \cdot \sin(\pi \cdot y) \cdot \cos(\pi \cdot z)\\
+		\sqrt{\frac{2}{3}} \cdot \cos(\pi \cdot x) \cdot \cos(
+		\pi \cdot y) \cdot \sin(\pi \cdot z)\\
+	\end{array}
+	\right))
+\end{align}
+\newline
+
+\emph{Type 2} is a wind field that is linear in each axis. Like seen in type 0 wind fields a random gaussion distributed factor $r_i$ is used that indicate how steep each of the linear functions is.
+\begin{align}
+	\overrightarrow{W} &= clip(\left(
+	\begin{array}{c}
+		r_0 \cdot x\\
+		r_1 \cdot y\\
+		r_2 \cdot z\\
+	\end{array}
+	\right))\\
+	r_i &\sim \mathbb{N}(\frac{w}{2}, 0.03)
+\end{align}
+\newline
+
+\emph{Type 3} simulates a basic, random wind field with a central vortex. Therefore, it uses random signs.
+\begin{align}
+	\overrightarrow{W} &= clip(\left(
+	\begin{array}{c}
+		\pm y\\
+		\pm x\\
+		\pm z\\
+	\end{array}
+	\right))
+\end{align}
+\newline
+
+\emph{Type 4} is a random wind field with a central vortex, that shows a little bit more complexity.
+\begin{align}
+	\overrightarrow{W} &= clip(\left(
+	\begin{array}{c}
+		x \pm y\\
+		z \pm x\\
+		y \pm z\\
+	\end{array}
+	\right))
+\end{align}
+\newline
+
+\emph{Type 5} is a completly random wind field based on three random 3D functions $f, f', f'': \mathbb{R}^3 \to \mathbb{R}$. As a conseqeunce, a lot of different, complex wind field can be created like seen in \cref{eq:wind5} that posesses different functions in each coordinate.\\
+
+A \emph{3D function} can have a lot of different forms and should be described inductive. There are a base set of functions mapping from $\mathbb{R}^3 \to \mathbb{R}$ (\cref{eq:base}). In addition there are two rules that inductively form the whole set of functions. If $g$ already is a 3DFunction then also $\sin(g), \cos(g), 2 \cdot x \cdot \sin(g), \sqrt{g}, e^g$ are 3DFunctions (\cref{eq:rule0}). If $g$ and $h$ are 3DFunctions then $g+h$ is also a 3Dfunction (\cref{eq:rule1}). Since there could be an endless regression, the induction is closed after only one step in order to avoid a stack overflow in implementation. 
+
+\newpage
+\begin{align}
+	&\textbf{Base set:} \notag \\
+	&F^0 = \{0, 1, x + y + z, x + y, x + z, y + z, 
+	x \cdot y \cdot z, x \cdot y, x \cdot z, y \cdot z\} \label{eq:base}\\
+	&\textbf{Rules:} \notag \\
+	&\forall n < 2 \quad g \in F^n \land h \in F^n \rightarrow F^{n+1} = F^n \cup \{ 
+	 g + h\} \label{eq:rule0}\\
+	&\forall n < 2 \quad g \in F^n \rightarrow F^{n+1} = F^n \cup \{ \sin(g), \cos(g), 2 \cdot x \cdot \sin(g), \sqrt{g}, e^g\} \label{eq:rule1}
+\end{align}
+\newline
+If no type is specified, then the wind field is of a choosen random type.
+Since type 5 is the most complex type of wind field, the others might not be really needed, because simalar wind fields like a vortex can still be approximated with the use of the 3D functions. However, it is still preferable to be able to choose a simple wind field at first before increasing complexity. In addition, there is the possibilty to evaluate agents in different wind fields.
+
 \subsubsection{Modes}\label{sec:modes}
+Since the WindSingleAgentAviary class is meant as flexible class that more complex classes can inherit from, it has different modes that influences the position of the goal and the type of the wind (\cref{tab:mode}).
+The use of modes is helpful in order to debug the environment end slowly increment the complexity of the RL problem.
+
+\begin{table}[htp]
+	\centering
+	\caption{The different Modes of a WindSingleAgentAviary environment.}\label{tab:mode}
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Mode & Goal & Wind\\
+		\hline
+		0 & $\left(\begin{array}{c}
+			0\\
+			0\\
+			0.5\\
+		\end{array}
+		\right)$ & no wind\\
+		\hline
+		1 & $\left(\begin{array}{c}
+			0\\
+			0\\
+			g_z\\
+		\end{array}
+		\right) \qquad g_z \in [0.3, 0.8]$& no wind\\
+		\hline
+		2 & $\left(\begin{array}{c}
+			g_x\\
+			g_y\\
+			g_z\\
+		\end{array}
+		\right) \qquad g_x \in [-0.5, 0.5],\quad g_y \in [-0.5, 0.5],\quad g_z \in [0.3, 0.8]$& no wind\\
+		\hline
+		3 & $\left(\begin{array}{c}
+			g_x\\
+			g_y\\
+			g_z\\
+		\end{array}
+		\right) \qquad g_x \in [-0.5, 0.5],\quad g_y \in [-0.5, 0.5],\quad g_z \in [0.3, 0.8]$& type 0\\
+		\hline
+		4 & $\left(\begin{array}{c}
+			g_x\\
+			g_y\\
+			g_z\\
+		\end{array}
+		\right) \qquad g_x \in [-0.5, 0.5],\quad g_y \in [-0.5, 0.5],\quad g_z \in [0.3, 0.8]$& type 5\\
+		\hline
+	\end{tabular}
+\end{table}
 
 \newpage
 
@@ -93,7 +242,9 @@ The drone is not limited in any dimensionality and the task is less complex then
 \end{figure}
 
 \begin{align}
-	r_t &= e^{-0.6 \cdot |goal - pos|} - 1 \label{eq:rew}
+	r_t = e^{-0.6 \cdot |dist_t|} - 1 &= e^{-0.6 \cdot |goal - pos_t|} - 1 \label{eq:rew}\\
+	\lim_{dist_t \to \infty} r_t &= -1\\
+	\lim_{dist_t \to 0+} r_t &= 0
 \end{align}
 
 \newpage
@@ -112,14 +263,14 @@ The drone is not limited in any dimensionality and the task is less complex then
 \newpage
 
 \subsubsection{Optimal Rewards}
-Based on the modes (\cref{sec:modes}) different optimal rewards can be defined, that are helpful in order to determine how good the learned desicion making is.\\
+Based on the modes (\cref{sec:modes}) different optimal rewards (\cref{eq:rew}) can be defined, that are helpful in order to determine how good the learned desicion making is.\\
 \newline
 \emph{Mode 0} is due to its fixed goal position $g$ rather easy to define:
 \begin{align}
 R_{opt} &= \sum_{t=0}^{f \cdot episode\_len} r_t \label{eq:oprew}\\
 d_0 &= 0.5\\
-d_{t+1} &= d_t - |v_{opt}| \cdot f \label{eq:dt1}\\ 
-r_{t} &= e^{-0.6 \cdot (d_{t+1} )} - 1 \label{eq:rew2}
+d_{t+1} &= d_t - |v_{opt}| \cdot \frac{1}{f} \label{eq:dt1}%\\
+%r_{t} &= e^{-0.6 \cdot (d_{t+1} )} - 1 \label{eq:rew2}
 \end{align}
 The distance at start $d_0$ is always 0.5. An optimal decision of the agent corresponds to an optimal velocity vector $v_{opt}$ that minimizes the distance to the goal with the given bounds of the maximum speed at the $\alpha$ of the action processing. The reward (\cref{eq:rew}) can then be reduced to \cref{eq:rew2} for every control step and summed up to the total optimal reward $R_{opt}$ (\cref{eq:oprew}).\\
 \newline
@@ -151,7 +302,7 @@ The expected distance in each axis $\mathbb{E}(d_i)$ mostly depend on the define
 \newline
 All other modes possess a wind class that trys to disrupt the agent. Since there are random wind fields and the corresponding force is not noramlly distributed, the optimal reward can just estimated downwords. Therefore, the used maximum wind force $W$ is used in order to approximate the maximum of disruptive distance and use it in order to update \cref{eq:dt1}.
 \begin{align}
-	d_{t+1} &= d_t - | v_{opt} | \cdot f + \frac{W}{m} \cdot f
+	d_{t+1} &= d_t - | v_{opt} | \cdot \frac{1}{f} + \frac{W}{m} \cdot \frac{1}{f}
 \end{align}
 \newpage
 
