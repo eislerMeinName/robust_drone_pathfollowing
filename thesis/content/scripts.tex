@@ -1,4 +1,3 @@
-% !TeX spellcheck = <none>
 The concept of implementation can be divided into the used packages (\emph{Stable Baselines3, Gym Pybullet Drones, ...}), the scripts, the environment classes and different support classes (\cref{fig:concept}).\\
 Stable Baselines3 is used as implementation of the PPO algorithm (\cref{alg:ppo}) in order to achieve the tasks. Gym Pybullet Drones has already some environments and is the foundation of the simulation. It already provides a suitable step function and a well designed physics engine.\\
 The scripts (\cref{sec:scripts} , lila) are used to either learn the agent on a given environment or evaluate it.\\
@@ -321,21 +320,31 @@ All other modes possess a wind class that trys to disrupt the agent. Since there
 \begin{algorithm}
 	\caption{Learning Script}
 	\label{alg:learn}
-	 Parse the arguments to the Script
+	\KwIn{parsed arguments $\xi$}
 	 
-	 Check the parsed arguments on contradiction and raise ParsingError if needed
+	 Check the parsed arguments $\xi$ on contradiction and raise ParsingError if needed
 	 
-	 Create training environment with the parsed parameters
+	 Create training environment $\epsilon_t$ with the parsed environment args $\lambda \subset \xi$
 	 
 	 Define the size of the actor and critic policy network
 	 
-	 Create or load the model based on the parsed load argument
+	 \If{parsed load parameter $\iota \in \xi$}{
+	 	Load model $\pi$
+	 }
+	 \Else{
+	 	Create model $\pi$
+	 }
 	 
-	 Create evaluation environment with the parsed parameters
+	 Create evaluation environment $\epsilon_t$ with the parsed environment args $\lambda \subset \xi$
 	 
 	 Define evaluation callbacks
 	 
-	 Learn the model with the parsed amount of time steps
+	 \If{parsed curriculm parameter $\zeta \in \xi$ is parsed as false}{
+	 	Learn the model with the parsed amount of time steps
+	 }
+	 \Else{
+	 	Learn the model with the curriculm method (\cref{alg:curri})
+	 }
 	 
 	 Save the model with the parsed preferred name
 	 
@@ -344,27 +353,66 @@ All other modes possess a wind class that trys to disrupt the agent. Since there
 
 \newpage
 
+\subsubsection{Exponentiell Curriculm Learning}
+
+\begin{algorithm}
+	\caption{Curriculm Learning Algorithm}
+	\label{alg:curri}
+	\KwIn{total steps $t_{total}$,  set of environment args $\lambda$, model $\pi$, number of parallel environments $\eta$, name, the minimum curriculm step $\gamma$}
+	
+	Initialize an empty set of curriculm steps $\Gamma$
+	
+	\Repeat{$t_{total}$ < $\gamma$}{
+		\If{last repetition step}{$\Gamma = \Gamma \cup t_{total}$}
+		\Else{$\Gamma = \Gamma \cup \gamma$}
+		
+		$t_{total} = t_{total} - \gamma$
+		
+		$\gamma = 2^{\gamma}$  
+	}
+	
+	Initialize current radius $r=0$
+	
+	Get desired radius $r^*$ from $\lambda$
+	
+	\For{each $\gamma \in \Gamma$}{
+		Change radius in $\lambda$ to $r$
+		
+		Initialize training environment $\epsilon_t$ with $\lambda, \eta$ as parameters
+		
+		Set the environment of $\pi$ to $\epsilon_t$
+		
+		Initialize evaluation environment $\epsilon_e$ with $\lambda, \eta$ as parameters
+		
+		Define evaluation callbacks
+		
+		Learn the model $\pi$ with an amount of $\gamma$ steps 
+		
+		Save the model
+		
+		$r =  \frac{r^*}{|\Gamma| - 1 }$
+	}
+\end{algorithm}
+
+\newpage
+
 \subsection{Evaluation Script}
 \begin{algorithm}
 	\caption{Evaluation Script}
 	\label{alg:eval}
-	Parse the arguments to the Script
+	\KwIn{parsed arguments $\xi$}
+	Check the parsed arguments $\xi$ on contradiction and raise ParsingError if needed
 	
-	Check the parsed arguments on contradiction and raise ParsingError if needed
+	Create evaluation environment $\epsilon_e$ with the parsed environment args $\lambda \subset \xi$
 	
-	Create evaluation environment with the parsed parameters
+	Load the model $\pi$
 	
-	Define the size of the actor and critic policy network
+	Instantiate an EvalWriter and evaluate the model $\pi$
 	
-	Load the model
-	
-	Instantiate an EvalWriter and evaluate the model
-	
-	\If{gui parameter was parsed as true}{
-		Instantiate a test environement, logger and a pathplotter
+	\If{parsed gui parameter $\rho \in \xi$}{
+		Instantiate a test environement $\epsilon_t$, logger and a pathplotter
 		
 		Reset environment and safe an observation $\sigma$
-		
 		
 		Safe current time $t$
 		
@@ -373,9 +421,9 @@ All other modes possess a wind class that trys to disrupt the agent. Since there
 		
 		Execute a step in the test environment and receive an observation $\sigma$, a reward $r$, a done value and a info
 		
-		Add current pose to pathplotter
+		Add current pose $p$ to pathplotter
 		
-		Log current drone state
+		Log current drone state $s$
 		
 		Sync simulation time $t_sim$ to the real time $t$}
 		Close test environment, show the plotted path and the values.
