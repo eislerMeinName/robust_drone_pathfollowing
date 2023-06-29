@@ -22,7 +22,7 @@ DEFAULT_OUTPUT_FOLDER = 'results'
 DEFAULT_NAME = 'results/success_model.zip'
 DEFAULT_MODE = 0
 DEFAULT_FORCE = 0
-DEFAULT_BOUND = 1
+DEFAULT_RADIUS = 0.2
 DEFAULT_EPISODE_LEN = 5
 DEFAULT_INIT = None
 DEFAULT_EPISODES = 100
@@ -34,7 +34,7 @@ def run(drone: DroneModel = DEFAULT_DRONE,
         folder: str = DEFAULT_OUTPUT_FOLDER,
         mode: int = DEFAULT_MODE,
         total_force: float = DEFAULT_FORCE,
-        upper_bound: float = DEFAULT_BOUND,
+        radius: float = DEFAULT_RADIUS,
         name: str = DEFAULT_NAME,
         debug_env: bool = False,
         episodes: int = DEFAULT_EPISODES,
@@ -46,13 +46,13 @@ def run(drone: DroneModel = DEFAULT_DRONE,
     # Create evaluation environment ####################################################################################
     if not (init is None):
         eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
-                            act=act, mode=mode, total_force=total_force, upper_bound=upper_bound,
+                            act=act, mode=mode, total_force=total_force, radius=radius,
                             episode_len=episode_len, debug=debug_env, drone_model=drone,
                             initial_xyzs=np.array(init[0:3]).reshape(1, 3),
                             initial_rpy=np.array(init[3:6]).reshape(1, 3))
     else:
         eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
-                            act=act, mode=mode, total_force=total_force, upper_bound=upper_bound,
+                            act=act, mode=mode, total_force=total_force, radius=radius,
                             drone_model=drone, debug=debug_env)
 
     # Decide path ######################################################################################################
@@ -70,7 +70,7 @@ def run(drone: DroneModel = DEFAULT_DRONE,
     # Create test environment and logger ###############################################################################
     if gui:
         test_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
-                            act=act, mode=mode, total_force=total_force, upper_bound=upper_bound,
+                            act=act, mode=mode, total_force=total_force, radius=radius,
                             drone_model=drone, debug=debug_env, gui=gui, record=record, episode_len=episode_len)
         logger = Logger(logging_freq_hz=int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS),
                         num_drones=1,
@@ -109,8 +109,8 @@ if __name__ == "__main__":
                         help='The mode of the training environment(default: 0)', metavar='')
     parser.add_argument('--total_force', default=DEFAULT_FORCE, type=float,
                         help='The max force in the simulated Wind field(default: 0)', metavar='')
-    parser.add_argument('--upper_bound', default=DEFAULT_BOUND, type=float,
-                        help='The upper bound of the area where the goal is simulated(default: 1)', metavar='')
+    parser.add_argument('--radius', default=DEFAULT_RADIUS, type=float,
+                        help='The radius(default: 0.2)', metavar='')
     parser.add_argument('--debug_env', action='store_const',
                         help='Parameter to the Environment that enables most of the Debug messages(default: False)',
                         const=True, default=False)
