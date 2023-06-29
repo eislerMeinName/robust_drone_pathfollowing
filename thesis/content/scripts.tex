@@ -271,7 +271,7 @@ d_0 &= 0.5\\
 d_{t+1} &= d_t - |v_{opt}| \cdot \frac{1}{f} \label{eq:dt1}%\\
 %r_{t} &= e^{-0.6 \cdot (d_{t+1} )} - 1 \label{eq:rew2}
 \end{align}
-The distance at start $d_0$ is always 0.5. An optimal decision of the agent corresponds to an optimal velocity vector $v_{opt}$ that minimizes the distance to the goal with the given bounds of the maximum speed at the $\alpha$ of the action processing. The reward (\cref{eq:rew}) can then be reduced to \cref{eq:rew2} for every control step and summed up to the total optimal reward $R_{opt}$ (\cref{eq:oprew}).\\
+The distance at start $d_0$ is always 0.5. An optimal decision of the agent corresponds to an optimal velocity vector $v_{opt}$ that minimizes the distance to the goal with the given bounds of the maximum speed at the $\alpha$ of the action processing. The reward (\cref{eq:rew}) can then be used for every control step and summed up to the total optimal reward $R_{opt}$ (\cref{eq:oprew}).\\
 \newline
 Since \emph{mode 1} does not posess a fixed goal position, only a expected optimal reward $\mathbb{E}(R_{opt})$ can be defined. Therefore, an expected starting distance $\mathbb{E}(d_0)$ has to be used:
 \begin{align}
@@ -346,7 +346,7 @@ All other modes possess a wind class that trys to disrupt the agent. Since there
 	 	Learn the model with the curriculm method (\cref{alg:curri})
 	 }
 	 
-	 Save the model with the parsed preferred name
+	 Save the model $\pi$ with the parsed preferred name
 	 
 	 
 \end{algorithm}
@@ -356,7 +356,7 @@ All other modes possess a wind class that trys to disrupt the agent. Since there
 \subsubsection{Exponentiell Curriculm Learning}
 
 \begin{algorithm}
-	\caption{Curriculm Learning Algorithm}
+	\caption{Exponentiell Curriculm Learning Algorithm}
 	\label{alg:curri}
 	\KwIn{total steps $t_{total}$,  set of environment args $\lambda$, model $\pi$, number of parallel environments $\eta$, name, the minimum curriculm step $\gamma$}
 	
