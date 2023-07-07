@@ -12,6 +12,7 @@ from gym_pybullet_drones.envs.WindSingleAgentAviary import WindSingleAgentAviary
 from gym_pybullet_drones.utils.enums import DroneModel
 from errors.ParsingError import ParsingError
 from typing import List
+import os
 
 DEFAULT_DRONE = DroneModel.CF2X
 DEFAULT_ACT = ActionType('rpm')
@@ -89,24 +90,18 @@ def run(cpu: int = DEFAULT_CPU,
 
 
 def curri_learn(total_steps: int, kwargs: dict,
-                model, cpu: int, name: str, minimum: int = int(1e7)):
-    steps: List = []
-    while total_steps > minimum:
-        steps.append(minimum)
-        total_steps -= minimum
-        minimum = minimum * 2
+                model, cpu: int, name: str):
 
-    steps[len(steps) - 1] += total_steps
-    curr_rad: float = 0
     radius: float = kwargs["radius"]
-    for step in steps:
+    curr_rad: float = 0.0
+
+    while curr_rad <= radius:
         kwargs["radius"] = curr_rad
         train_env = make_vec_env('WindSingleAgent-aviary-v0', env_kwargs=kwargs, n_envs=cpu, seed=0)
         model.env = train_env
         eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=kwargs, n_envs=cpu, seed=0)
 
-        # Train the model ##################################################################################################
-        callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=EPISODE_REWARD_THRESHOLD,
+        callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=-10,
                                                          verbose=1
                                                          )
         eval_callback = EvalCallback(eval_env,
@@ -120,10 +115,14 @@ def curri_learn(total_steps: int, kwargs: dict,
                                      )
 
         # Train the model ##############################################################################################
-        model.learn(total_timesteps=step, callback=eval_callback, log_interval=100)
-        save_name: str = name + 'curri_r' + str(curr_rad)
+        model.learn(total_timesteps=total_steps, callback=eval_callback, log_interval=100)
+        save_name: str = name.replace(".zip", '') + 'curri_r' + str(curr_rad) + '.zip'
         model.save(save_name)
-        curr_rad += radius / (len(steps) - 1)
+
+        # Rename Best Model ############################################################################################
+        os.rename('results/best_model.zip', 'results/best_modelcurri_r' + str(curr_rad) + '.zip')
+
+        curr_rad += radius / 5
 
 
 def check(cpu: int = DEFAULT_CPU,
@@ -140,7 +139,7 @@ def check(cpu: int = DEFAULT_CPU,
         curriculum: bool = False):
     if mode > 4:
         raise ParsingError(['Mode'], [mode], 'The specified mode is not defined in the environment.')
-    if curriculum and steps < 1e8:
+    if curriculum and steps < 1e7:
         raise ParsingError(['Curriculum', 'Steps'], [curriculum, steps],
                            'If you use curriculum learning, increase amount of simulation steps.')
     if curriculum and radius == 0.0:
