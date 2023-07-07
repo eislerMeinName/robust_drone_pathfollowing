@@ -81,12 +81,15 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             self.maxVelXY: float = 5  #m/s
             self.maxVelZ: float = 3  #m/s
         if drone_model == DroneModel.CF2X and initial_xyzs is None:
-            initial_xyzs: np.array = np.array([0, 0, 0.02]).reshape(1, 3)
-            self.minZ: float = 0.03
+            initial_xyzs: np.array = np.array([0, 0, 0.1]).reshape(1, 3)
+            self.minZ: float = 0.1
             self.maxVelXY: float = 3  # m/s
             self.maxVelZ: float = 1  # m/s
 
         self.maxDist: float = 20  #m
+
+        if mode == 0:
+            initial_xyzs: np.array = np.array([0, 0, 0.5]).reshape(1, 3)
 
         super().__init__(drone_model=drone_model,
                          initial_xyzs=initial_xyzs,
@@ -152,6 +155,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         reward: float = np.exp(-0.6 * np.linalg.norm(self.goal - state[0:3])) - 1
 
         if state[2] <= self.minZ and self.step_counter/self.SIM_FREQ >= 0.1:
+            reward += -200
+        if abs(state[3] > 1) or abs(state[4]) > 1:
             reward += -200
 
         return reward
@@ -237,6 +242,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         state: np.array = np.hstack([self.pos[0, :], self.rpy[0, :]]).reshape(6, )
         if state[2] <= self.minZ and self.step_counter / self.SIM_FREQ >= 0.1:
             return True
+        if abs(state[3] > 1) or abs(state[4]) > 1:
+            return True
         if self.step_counter/self.SIM_FREQ > self.EPISODE_LEN_SEC:
             return True
         else:
@@ -253,34 +260,51 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         # Initialize/reset the Wind specific parameters
         # mode 0 is a basic mode without wind and with an easy to reach static goal along the z axis
         if self.mode == 0:
-            #self.goal: np.array = np.array([0, 0, 2])
             self.goal: np.array = np.array([0, 0, 0.5])
 
-        # mode 1 is a basic mode without wind and a goal near [0,0,0.5] with a radius of r
+        # mode 0 is a basic mode without wind and with an easy to reach static goal along the z axis
         elif self.mode == 1:
-            rad_vector: np.array = np.array([random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(0, 1)])
-            rad_vector = random.uniform(0, 1) * self.radius * (rad_vector / np.linalg.norm(rad_vector)) if np.linalg.norm(rad_vector) > 0 else rad_vector
+            self.goal: np.array = np.array([0, 0, 0.5])
+
+        # mode 1 is a mode with a goal along the z axis
+        elif self.mode == 2:
+            self.goal: np.array = np.array([0, 0, random.uniform(0.5 - self.radius, 0.5 + self.radius)])
+
+        # mode 3 is a basic mode without wind and a goal near [0,0,0.5] with a radius of r
+        elif self.mode == 3:
+            # sample evenly distributed points inside a half sphere
+            rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                             random.uniform(-self.radius, self.radius),
+                                             random.uniform(0, self.radius)])
+            while np.linalg.norm(rad_vector) > self.radius:
+                rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                                 random.uniform(-self.radius, self.radius),
+                                                 random.uniform(0, self.radius)])
             self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
 
-        # mode 2 is a basic mode with random goals and a random constant wind field
-        elif self.mode == 2:
-            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(0, self.upper_bound)])
+        # mode 4 is a basic mode with random goals and a random constant wind field
+        elif self.mode == 4:
+            rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                             random.uniform(-self.radius, self.radius),
+                                             random.uniform(0, self.radius)])
+            while np.linalg.norm(rad_vector) > self.radius:
+                rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                                 random.uniform(-self.radius, self.radius),
+                                                 random.uniform(0, self.radius)])
+            self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
             self.wind = Wind(total_force=self.total_force, args=0)
 
         # mode with random goal and random generated wind field
-        elif self.mode == 3:
-            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(0, self.upper_bound)])
+        elif self.mode == 5:
+            srad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                             random.uniform(-self.radius, self.radius),
+                                             random.uniform(0, self.radius)])
+            while np.linalg.norm(rad_vector) > self.radius:
+                rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
+                                                 random.uniform(-self.radius, self.radius),
+                                                 random.uniform(0, self.radius)])
+            self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
             self.wind = Wind(total_force=self.total_force, args=random.randint(0, 10))
-
-        elif self.mode == 4:
-            self.goal = np.array([random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(-self.upper_bound / 2, self.upper_bound / 2),
-                                  random.uniform(0, self.upper_bound)])
-            self.startXYZ = self.goal.reshape(1, 3)
 
         super()._housekeeping()
 
@@ -308,7 +332,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         # wind force
         # debug(bcolors.WARNING, 'WIND')
-        if self.mode != 0 and self.mode != 1 and self.mode != 4:
+        if self.mode >= 4:
             pos = self._getDroneStateVector(0)[0:3]
             p.applyExternalForce(self.DRONE_IDS[nth_drone],
                                  -1,
@@ -338,8 +362,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         #max_xy = 15 * self.EPISODE_LEN_SEC  # velocity of 15m/s in x and y direction
         #max_z = 14 * self.EPISODE_LEN_SEC   # max velocity of 14m/s in z direction
 
-        max_xy = 20
-        max_z = 10
+        max_xy = 5
+        max_z = 5
 
         clipped_pos_xy = np.clip(state[0:2], -max_xy, max_xy)
         clipped_pos_z = np.clip(state[2], 0, max_z)
