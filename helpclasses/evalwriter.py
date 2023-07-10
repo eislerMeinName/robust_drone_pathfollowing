@@ -66,6 +66,9 @@ class EvalWriter:
         self.overshoot: List[float] = []
         self.enddist: List[float] = []
         self.settled: int = 0
+        self.X: List[float] = []
+        self.Y: List[float] = []
+        self.Z: List[float] = []
 
         self.housekeeping(env)
 
@@ -100,10 +103,15 @@ class EvalWriter:
         simtime = self.env.getSimTime() + (self.STEP * self.episode_len)
         self.times.append(simtime)
         self.distances.append(dist)
+        pose: np.array = self.env.getPose()
+        goal: np.array = self.env.goal
+        self.X.append(abs(goal[0] - pose[0]))
+        self.Y.append(abs(goal[1] - pose[1]))
+        self.Z.append(abs(goal[2] - pose[2]))
 
         # Safe pos if only one episode is evaluated
         if self.total_steps == 1:
-            self.pathPlotter.addPose(self.env.getPose())
+            self.pathPlotter.addPose(pose)
 
         # Check if half way through
         if (simtime - (self.STEP * self.episode_len)) >= self.episode_len / 2:
@@ -118,7 +126,7 @@ class EvalWriter:
 
         # update overshoot
         if self.succeeded:
-            if dist > self.threshold and dist > self.overshoot[self.STEP]:
+            if dist > 0 and dist > self.overshoot[self.STEP]:
                 self.overshoot[self.STEP] = dist
 
         # Check if success
@@ -145,7 +153,6 @@ class EvalWriter:
 
         self.mean_reward, self.std_reward = evaluate_policy(model, self.env, n_eval_episodes=self.total_steps)
         obs = self.env.reset()
-        start = time.time()
         for j in range(0, self.total_steps):
             for i in range(self.episode_len * int(self.env.SIM_FREQ / self.env.AGGR_PHY_STEPS)):
                 action, _states = model.predict(obs, deterministic=True)
@@ -217,10 +224,28 @@ class EvalWriter:
         # Plot
         if self.total_steps == 1:
             self.pathPlotter.show()
-        plt.plot(self.times, self.distances)
-        plt.xlabel('Time [s]')
-        plt.ylabel('Distance [m]')
-        plt.title('Distance to goal')
+
+        if self.env.ACT_TYPE != ActionType.ONE_D_RPM:
+            fig, ax = plt.subplots(2, 1)
+            ax[0].plot(self.times, self.distances)
+            ax[1].plot(self.times, self.X, label='Distance in X Axis [m]')
+            ax[1].plot(self.times, self.Y, label='Distance in Y Axis [m]')
+            ax[1].plot(self.times, self.Z, label='Distance in Z Axis [m]')
+
+            ax[0].set_xlabel('Time [s]')
+            ax[0].set_ylabel('Complete Distance [m]')
+            ax[1].legend()
+
+            ax[1].set_xlabel('Time [s]')
+            ax[1].set_ylabel('Distance in each coordinate [m]')
+
+        else:
+            plt.plot(self.times, self.distances)
+            plt.xlabel('Time [s]')
+            plt.ylabel('Distance [m]')
+            plt.title('Distance to goal')
+            plt.show()
+
         plt.show()
 
 
