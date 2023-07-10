@@ -4,7 +4,7 @@ from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import Actio
 import gym
 import torch
 import numpy as np
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, SAC
 from stable_baselines3.common.policies import ActorCriticPolicy as a2cppoMlpPolicy
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 from stable_baselines3.common.cmd_util import make_vec_env
@@ -13,6 +13,7 @@ from gym_pybullet_drones.utils.enums import DroneModel
 from errors.ParsingError import ParsingError
 from typing import List
 import os
+from stable_baselines3.sac.policies import SACPolicy as sacMlpPolicy
 
 DEFAULT_DRONE = DroneModel.CF2X
 DEFAULT_ACT = ActionType('rpm')
@@ -27,6 +28,7 @@ DEFAULT_FORCE = 0
 DEFAULT_RADIUS = 0.0
 DEFAULT_EPISODE_LEN = 5
 DEFAULT_INIT = None
+DEFAULT_ALGO = 'ppo'
 
 
 def run(cpu: int = DEFAULT_CPU,
@@ -40,7 +42,8 @@ def run(cpu: int = DEFAULT_CPU,
         drone: DroneModel = DEFAULT_DRONE,
         act: ActionType = DEFAULT_ACT,
         name: str = DEFAULT_NAME,
-        curriculum: bool = False
+        curriculum: bool = False,
+        algo: str = DEFAULT_ALGO
         ):
 
     # Create training environment ######################################################################################
@@ -52,16 +55,29 @@ def run(cpu: int = DEFAULT_CPU,
 
     onpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU,
                                  net_arch=[dict(vf=[256, 256, 128], pi=[256, 256, 64])])
+    offpolicy_kwargs: dict = dict(activation_fn=torch.nn.ReLU,
+                                  net_arch=[256, 256, 128])
 
     if load == DEFAULT_LOAD:
-        model = PPO(a2cppoMlpPolicy,
-                    train_env,
-                    policy_kwargs=onpolicy_kwargs,
-                    tensorboard_log='results/tb/',
-                    verbose=1
-                    )
+        if algo == 'ppo':
+            model = PPO(a2cppoMlpPolicy,
+                        train_env,
+                        policy_kwargs=onpolicy_kwargs,
+                        tensorboard_log='results/tb/',
+                        verbose=1
+                        )
+        elif algo == 'sac':
+            model = SAC(sacMlpPolicy,
+                        train_env,
+                        policy_kwargs=offpolicy_kwargs,
+                        tensorboard_log='results/tb/',
+                        verbose=1
+                        )
     else:
-        model = PPO.load(load, train_env, tensorboard_log='results/tb/')
+        if algo == 'ppo':
+            model = PPO.load(load, train_env, tensorboard_log='results/tb/')
+        elif algo == 'sac':
+            model = SAC.load(load, train_env, tensorboard_log='results/tb/')
 
     # Create eval Environment ##########################################################################################
     eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=sa_env_kwargs, n_envs=cpu, seed=0)
@@ -122,7 +138,7 @@ def curri_learn(total_steps: int, kwargs: dict,
         # Rename Best Model ############################################################################################
         os.rename('results/best_model.zip', 'results/best_modelcurri_r' + str(curr_rad) + '.zip')
 
-        curr_rad += radius / 5
+        curr_rad += 0.05
 
 
 def check(cpu: int = DEFAULT_CPU,
@@ -136,7 +152,8 @@ def check(cpu: int = DEFAULT_CPU,
         drone: DroneModel = DEFAULT_DRONE,
         act: ActionType = DEFAULT_ACT,
         name: str = DEFAULT_NAME,
-        curriculum: bool = False):
+        curriculum: bool = False,
+        algo: str = DEFAULT_ALGO):
     if mode > 4:
         raise ParsingError(['Mode'], [mode], 'The specified mode is not defined in the environment.')
     if curriculum and steps < 1e7:
@@ -145,6 +162,8 @@ def check(cpu: int = DEFAULT_CPU,
     if curriculum and radius == 0.0:
         raise ParsingError(['Curriculum', 'Radius'], [curriculum, radius],
                            'If you use curriculum learning, radius can not be 0.')
+    if algo != 'ppo' and algo != 'sac':
+        raise ParsingError(['Algo'], [algo], 'The specified Algorithm can not be used in this script. Check spelling!')
 
 
 if __name__ == "__main__":
@@ -171,9 +190,11 @@ if __name__ == "__main__":
     parser.add_argument('--act', default=DEFAULT_ACT, type=ActionType,
                         help='The action type of the environment (default: rpm)', metavar='')
     parser.add_argument('--name', default=DEFAULT_NAME, type=str,
-                        help='The name of the model after training (default: results/success_model.zip', metavar='')
+                        help='The name of the model after training (default: results/success_model.zip)', metavar='')
     parser.add_argument('--curriculum', action='store_const', help='Use curriculum learning(default: False)',
                         const=True, default=False)
+    parser.add_argument('--algo', default=DEFAULT_ALGO, type=str,
+                        help='The algorithm (default: ppo).', metavar='')
 
     ARGS = parser.parse_args()
 

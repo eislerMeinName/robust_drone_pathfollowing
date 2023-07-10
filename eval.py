@@ -3,7 +3,7 @@ import time
 import argparse
 import numpy as np
 import gym
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, SAC
 from stable_baselines3 import DDPG
 from gym_pybullet_drones.utils.Logger import Logger
 from gym_pybullet_drones.envs.single_agent_rl.BaseSingleAgentAviary import ActionType, ObservationType
@@ -27,6 +27,7 @@ DEFAULT_EPISODE_LEN = 5
 DEFAULT_INIT = None
 DEFAULT_EPISODES = 100
 DEFAULT_ENV = 'WindSingleAgent-aviary-v0'
+DEFAULT_ALGO = 'ppo'
 
 
 def run(drone: DroneModel = DEFAULT_DRONE,
@@ -41,7 +42,8 @@ def run(drone: DroneModel = DEFAULT_DRONE,
         gui: bool = True,
         episode_len: int = DEFAULT_EPISODE_LEN,
         init: np.array = DEFAULT_INIT,
-        record: bool = False
+        record: bool = False,
+        algo: str = DEFAULT_ALGO
         ):
     # Create evaluation environment ####################################################################################
     if not (init is None):
@@ -60,11 +62,14 @@ def run(drone: DroneModel = DEFAULT_DRONE,
         print("[ERROR]: no model under the specified path", name)
 
     # Load model #######################################################################################################
-    model = PPO.load(name)
+    if algo == 'ppo':
+        model = PPO.load(name)
+    elif algo == 'sac':
+        model = SAC.load(name)
 
     # Evaluate and write ###############################################################################################
     eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
-                                  episode_len=episode_len, threshold=0.05)
+                                  episode_len=episode_len, threshold=0.01)
     eval.evaluateModel(model)
 
     # Create test environment and logger ###############################################################################
@@ -126,6 +131,8 @@ if __name__ == "__main__":
                         help='The name of the model (default: results/succcess_model.zip', metavar='')
     parser.add_argument('--record', action='store_const',
                         help='Record an mp4 video (default: False)', const=True, default=False)
+    parser.add_argument('--algo', default=DEFAULT_ALGO, type=str,
+                        help='The algorithm (default: ppo).', metavar='')
 
     ARGS = parser.parse_args()
 
