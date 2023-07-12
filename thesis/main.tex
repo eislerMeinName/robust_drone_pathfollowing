@@ -8,6 +8,7 @@
 \usepackage{lmodern}
 \usepackage{svg}
 \usepackage{pythonhighlight}
+\usepackage{longtable}
 
 \graphicspath{{figures/}}
 
@@ -101,9 +102,126 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\input{content/evaluation.tex}
 
 \chapter{Conclusion \& Future Work}
+	\input{content/conclusion.tex}
 
-\chapter{Appendix}
-	\input{content/appendix.tex}
+%\chapter{Appendix}
+%	\input{content/appendix.tex}
+	
+\chapter*{Symbol Bibliography}
+\begin{longtable}{|c|c|}
+	\caption{Overview of the used symbols}\label{tab:symbols}\\
+	
+	\hline
+	Symbol & Explanation \\
+	\hline
+	%\toprule
+	\endfirsthead
+	\caption[]{Overview of the used symbols}
+	\endhead
+	
+	\hline
+	$\Theta, \psi, \phi$ & Euler Angles of the drone frame around $x,y,z$ axis \\
+	$f$ & upward thrust\\
+	$\omega_i$ & rotational speeds of a motor $i$\\
+	$b$ & thurst factor \\
+	$u_f, u_{\Theta}, u_{\phi}, u_{\psi}$ & aerodynamic effect\\
+	$p = \left( \begin{array}{c}
+		x_p\\
+		y_p\\
+		z_p\\
+	\end{array}\right)$ & pose vector of the drone in 3D\\
+	$F, g$ & upward force and gravitational force\\
+	$S$ & set of motor signals\\
+	$p = \{p^*, a^*\}$ & pose of drone combining 3D pose and attitude\\
+	$\overrightarrow{g}$ & goal in 3D\\
+	$K_p, K_i, K_d$ & gains of a PID controller\\
+	$T $ & sampling time period of PID controller\\
+	$f$ & throttle coefficient\\
+	$M_i$ & set of mixer values\\
+	$\Lambda$ & set of waypoints\\
+	\hline
+	\hline
+	$r$ & reward\\
+	$s$ & state\\
+	$a$ & action \\
+	$o, \sigma$ & observation\\
+	$S$ & state space of a MDP\\
+	$A$ & action space of a MDP\\
+	$R$ & reward function of a MDP\\
+	$P$ & state transition probability function of a MDP\\
+	$p_0$ & starting state distribution of a MDP\\
+	$T(s_t, a_t, a_{t+1}) $ & transition in a MDP\\
+	$\tau$ & trajectory threw a MDP\\
+	$\pi $ & policy\\
+	$\pi^*$ & optimal policy\\
+	$J(\pi)$ & expected reward of a policy \\
+	$\gamma$ & discount factor\\
+		\hline
+		\newpage
+	\hline
+	$x_i$ & input of a NN\\
+	$z$ &  output of a NN\\
+	$\omega_i$ & weight of edge $i$ in a NN\\
+	$g()$ & activation function in a NN\\
+	$V_{\phi}$ & NN that approximates value function with the set of parameters $\phi$\\
+	$\pi_{\Theta}$ & NN that approximates policy with the set of parameters $\Theta$\\
+	$a$ & 4-tupel action\\
+	$\sigma$ & sensor values\\
+	\hline
+	\hline
+	$\omega[N]$ & force bound of wind field\\
+	$\overrightarrow{\Omega}$ & wind force vector\\
+	$F^*$ & set of 3D functions\\
+	$G_{HS}$ & evenly distribution in half sphere\\
+	$R[m]$ & radius\\
+	$\overrightarrow{\nu}$ & vector sampled evenly from a cupoid\\
+	$\alpha$ & processing range \\
+	$\overrightarrow{v}$ & velocity vector\\ 
+	$dist_t[m]$ & distance to goal at timestep $t$\\
+	$r_{opt}$ & optimal reward\\
+	$d_0[m]$ & starting distance\\
+	$m[kg]$ & mass of drone\\
+	$f[Hz]$ & frequency\\
+	$\xi$ & parsed arguments\\
+	$\epsilon$ & environment \\
+	$\lambda$ & parsed environemt arguments\\
+	$\iota$ & parsed load parameters\\
+	$\zeta$ & parsed curriculum parameters\\
+	$\gamma$ & parsed gui parameter\\
+	$t_{sim}$ & simulation time \\
+	$T$ & episode length\\
+	$\Omega$ & threshold\\
+	$e$ & amount of evalution episodes\\
+	\hline
+\end{longtable}
+\newpage
+\chapter*{Abbreviation Bibliography}
+\begin{longtable}{|c|c|}
+	\caption{Overview of the used abbreviations}\label{tab:abbrev}\\
+	
+	\hline
+	Abbreviation & Prolongation\\
+	\hline
+	%\toprule
+	\endfirsthead
+	\caption[]{Overview of the used abbreviations}
+	\endhead
+	
+	RL & Reinforcement Learning\\
+	PID Controller & Proportional Integral Derivative Controller\\
+	DOF & Degree of Freedom\\
+	FC & Flight Controller\\
+	NLP & Natural Language Processing\\
+	ML & Machine Learing\\
+	MDP & Markov Decision Process\\
+	V Function & Value Function\\
+	Q Function & State-Action Value Function\\
+	NN & Neural Network\\
+	RNN & Recurrent Neural Network\\
+	PPO & Proximal Policy Optimization\\
+	UAV & Unmanned Aerial Vehicle\\
+	\hline
+\end{longtable}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
