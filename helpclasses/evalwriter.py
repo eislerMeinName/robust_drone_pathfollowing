@@ -141,7 +141,7 @@ class EvalWriter:
 
         self.last_dist = dist
 
-    def evaluateModel(self, model):
+    def evaluateModel(self, model, show: bool = True):
         """Method that evaluates a given Model.
 
         Parameters
@@ -166,8 +166,11 @@ class EvalWriter:
                 obs = self.env.reset()
                 self.housekeeping(self.env)
 
-        self.close()
-        self.env.close()
+        if show:
+            self.close()
+            self.env.close()
+
+        return self.mean_reward, self.std_reward
 
     def close(self):
         """Method that closes the writer and writes."""
