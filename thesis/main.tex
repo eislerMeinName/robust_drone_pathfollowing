@@ -107,122 +107,136 @@ Prof.\ Dr.\ Carlo D'Eramo
 %\chapter{Appendix}
 %	\input{content/appendix.tex}
 	
-\chapter*{Symbol Bibliography}
-\begin{longtable}{|c|c|}
-	\caption{Overview of the used symbols}\label{tab:symbols}\\
-	
-	\hline
-	Symbol & Explanation \\
-	\hline
-	%\toprule
-	\endfirsthead
-	\caption[]{Overview of the used symbols}
-	\endhead
-	
-	\hline
-	$\Theta, \psi, \phi$ & Euler Angles of the drone frame around $x,y,z$ axis \\
-	$f$ & upward thrust\\
-	$\omega_i$ & rotational speeds of a motor $i$\\
-	$b$ & thurst factor \\
-	$u_f, u_{\Theta}, u_{\phi}, u_{\psi}$ & aerodynamic effect\\
-	$p = \left( \begin{array}{c}
-		x_p\\
-		y_p\\
-		z_p\\
-	\end{array}\right)$ & pose vector of the drone in 3D\\
-	$F, g$ & upward force and gravitational force\\
-	$S$ & set of motor signals\\
-	$p = \{p^*, a^*\}$ & pose of drone combining 3D pose and attitude\\
-	$\overrightarrow{g}$ & goal in 3D\\
-	$K_p, K_i, K_d$ & gains of a PID controller\\
-	$T $ & sampling time period of PID controller\\
-	$f$ & throttle coefficient\\
-	$M_i$ & set of mixer values\\
-	$\Lambda$ & set of waypoints\\
-	\hline
-	\hline
-	$r$ & reward\\
-	$s$ & state\\
-	$a$ & action \\
-	$o, \sigma$ & observation\\
-	$S$ & state space of a MDP\\
-	$A$ & action space of a MDP\\
-	$R$ & reward function of a MDP\\
-	$P$ & state transition probability function of a MDP\\
-	$p_0$ & starting state distribution of a MDP\\
-	$T(s_t, a_t, a_{t+1}) $ & transition in a MDP\\
-	$\tau$ & trajectory threw a MDP\\
-	$\pi $ & policy\\
-	$\pi^*$ & optimal policy\\
-	$J(\pi)$ & expected reward of a policy \\
-	$\gamma$ & discount factor\\
-		\hline
-		\newpage
-	\hline
-	$x_i$ & input of a NN\\
-	$z$ &  output of a NN\\
-	$\omega_i$ & weight of edge $i$ in a NN\\
-	$g()$ & activation function in a NN\\
-	$V_{\phi}$ & NN that approximates value function with the set of parameters $\phi$\\
-	$\pi_{\Theta}$ & NN that approximates policy with the set of parameters $\Theta$\\
-	$a$ & 4-tupel action\\
-	$\sigma$ & sensor values\\
-	\hline
-	\hline
-	$\omega[N]$ & force bound of wind field\\
-	$\overrightarrow{\Omega}$ & wind force vector\\
-	$F^*$ & set of 3D functions\\
-	$G_{HS}$ & evenly distribution in half sphere\\
-	$R[m]$ & radius\\
-	$\overrightarrow{\nu}$ & vector sampled evenly from a cupoid\\
-	$\alpha$ & processing range \\
-	$\overrightarrow{v}$ & velocity vector\\ 
-	$dist_t[m]$ & distance to goal at timestep $t$\\
-	$r_{opt}$ & optimal reward\\
-	$d_0[m]$ & starting distance\\
-	$m[kg]$ & mass of drone\\
-	$f[Hz]$ & frequency\\
-	$\xi$ & parsed arguments\\
-	$\epsilon$ & environment \\
-	$\lambda$ & parsed environemt arguments\\
-	$\iota$ & parsed load parameters\\
-	$\zeta$ & parsed curriculum parameters\\
-	$\gamma$ & parsed gui parameter\\
-	$t_{sim}$ & simulation time \\
-	$T$ & episode length\\
-	$\Omega$ & threshold\\
-	$e$ & amount of evalution episodes\\
-	\hline
-\end{longtable}
-\newpage
-\chapter*{Abbreviation Bibliography}
-\begin{longtable}{|c|c|}
-	\caption{Overview of the used abbreviations}\label{tab:abbrev}\\
-	
-	\hline
-	Abbreviation & Prolongation\\
-	\hline
-	%\toprule
-	\endfirsthead
-	\caption[]{Overview of the used abbreviations}
-	\endhead
-	
-	RL & Reinforcement Learning\\
-	PID Controller & Proportional Integral Derivative Controller\\
-	DOF & Degree of Freedom\\
-	FC & Flight Controller\\
-	NLP & Natural Language Processing\\
-	ML & Machine Learing\\
-	MDP & Markov Decision Process\\
-	V Function & Value Function\\
-	Q Function & State-Action Value Function\\
-	NN & Neural Network\\
-	RNN & Recurrent Neural Network\\
-	PPO & Proximal Policy Optimization\\
-	UAV & Unmanned Aerial Vehicle\\
-	\hline
-\end{longtable}
+\chapter*{List of Symbols}
+\addcontentsline{toc}{chapter}{List of Symbols}
 
+\begin{description}
+	\item $\Theta$ \dotfill Roll Euler Angle
+	\item $\phi$  \dotfill Pitch Euler Angle
+	\item $\psi$ \dotfill Yaw Euler Angle
+	\item $M_i \qquad i \in [1,4]$ \dotfill Motor of a Quadrocopter
+	\item $\tilde{f}$ \dotfill Upward Thrust of a UAV
+	\item $\omega_i \qquad i \in [1,4]$ \dotfill  Rotational speed of a propeller of a Quadrocopter
+	\item $\omega_i^* \qquad i \in [1,4]$ \dotfill Changed Rotational speed 
+	\item $b$ \dotfill Quadrocopter constant
+	\item $u_{\Theta}, u_{\phi}, u_{\psi}$ \dotfill Rotational movement
+	\item $p_{3D}$ \dotfill Pose in 3D space
+	\item $x_p, y_p, z_p$ \dotfill Coordinates in 3D space
+	\item $F$ \dotfill Upward Thrust Force
+	\item $G$ \dotfill Gravitational Force
+	\\
+	\item $g$ \dotfill Mission Goal
+	\item $a$ \dotfill Attitude
+	\item $a^*$ \dotfill Estimated Attitude
+	\item $e_a$ \dotfill Attitude Error
+	\item $S$ \dotfill Set of Motor Signals
+	\item $p$ \dotfill Estimated Pose
+	\item $p_{3D}^*$ \dotfill Estimated 3D Pose
+	\item $(K_p, K_i, K_d), (K, T_n, T_v)$  \dotfill Tuple of PID controll gains
+	\item $u(t)$ \dotfill Control Signal
+	\item $e(t)$ \dotfill Error Signal
+	\item $\tilde{T}$ \dotfill Sampling Time Period
+	\item $f'$ \dotfill Throttle Coefficient
+	\item $m_{i,\Theta} , m_{i, \phi}, m_{i, \psi}$ \dotfill Mixer Values of the Motors
+	\item $\Lambda$ \dotfill Set of Waypoints
+	\item $\lambda_i \qquad i \in [0...n]$ \dotfill Waypoint
+	\\
+	\item $S$ \dotfill Set of states
+	\item $A$ \dotfill Set of actions
+	\item $R$ \dotfill Reward function
+	\item $P$ \dotfill State Transition probability
+	\item $p_0$ \dotfill Starting State Distribution
+	\item $s_t$ \dotfill Observed State at timestep $t$
+	\item $s_t^*$ \dotfill Real State at timestep $t$
+	\item $a_t$ \dotfill Action at timestep $t$
+	\item $r_t$ \dotfill Reward at timestep $t$
+	\item $\pi$ \dotfill Policy
+	\item $\pi^*$ \dotfill Optimal Policy
+	\item $\tau$ \dotfill Trajectory
+	\item $T$ \dotfill Amount of steps in a trajectory
+	\item $\gamma$ \dotfill Discount factor
+	\item $V^{\pi}(s)$ \dotfill Value Function under a policy
+	\item $V^*(s)$ \dotfill Optimal Value Function
+	\item $Q^{\pi} (s,a)$ \dotfill Q Function under a policy
+	\item $Q^*(s,a)$ \dotfill Optimal Q Function
+	\item $x_i$ \dotfill Input to a NN
+	\item $w_i$ \dotfill Weight of edge in a NN
+	\item $g()$ \dotfill Activation Function
+	\item $\Theta$ \dotfill Policy Parameters
+	\item $\phi$ \dotfill Value Function Parameters in PPO
+	\item $L(s_t, a_t, \Theta_{old}, \Theta)$ \dotfill Policy Loss in PPO
+	\item $g(\epsilon, A)$ \dotfill Surrogate Objective
+	\item $\epsilon$ \dotfill Learning Rate
+	\item $A$ \dotfill Advantage Function
+	\item $\alpha$ \dotfill Trade-Off coefficient in SAC
+	\item $H$ \dotfill Entropy
+	\item $\mathcal{D}$ \dotfill Replay Buffer
+	\item $L(\phi_i, \mathcal{D})$ \dotfill Loss Function in SAC
+	\item $d$ \dotfill Done Value
+	\item $y(r, s', d)$ \dotfill Target in SAC
+	\item $\tilde{a}$ \dotfill Next Action sampled from the policy
+	\item $\mathcal{B}$ \dotfill Batch of Transitions
+	\item $\rho$ \dotfill Polyak averging hyperparameter
+	\\
+	\item $\overrightarrow{g}$ \dotfill Goal Vector
+	\item $g_x, g_y, g_z$ \dotfill Goal Coordinates
+	\item $p$ \dotfill Position Tupel
+	\item $\overrightarrow{p_t}$ \dotfill Position Vector at time step $t$
+	\item $\dot{p_i} \qquad i \in \{x,y,z\}$ \dotfill Linear Velocities
+	\item $\dot{\Theta}, \dot{\phi}, \dot{\psi}$ \dotfill Angular Velocities
+	\item $\sigma$ \dotfill Sensor Values
+	\item $f_s$ \dotfill Simulation Frequency
+	\item $\aleph$ \dotfill Number of physics steps within a step
+	\item $\omega_w$ \dotfill Wind Force Bound
+	\item $T$ \dotfill Episode length
+	\item $R$ \dotfill Radius
+	\item $\overrightarrow{W}$ \dotfill Wind Force Vector
+	\item $\overrightarrow{p_0}$ \dotfill Starting State Vector
+	\item $z_{min}$ \dotfill Minimum height of Coordinate Frame
+	\item $\daleth$ \dotfill Observation Space
+	\item $\daleth_t$ \dotfill Observation at time step $t$
+	\item $v_i \qquad i \in [0,11]$ \dotfill Predefined Clipping Values
+	\item $dist_t$ \dotfill Distance at time step $t$
+	\item $t_s$ \dotfill SImulation time step
+	\item $r_{opt}$ \dotfill Optimal Reward
+	\item $f_c$ \dotfill Control Frequency
+	\item $m$ \dotfill Mass of UAV
+	\\
+	\item $\xi$ \dotfill Set of parsed agruments to a script
+	\item $\tilde{\lambda}$ \dotfill Set of environment arguments
+	\item $\nu$ \dotfill Amount of parallel training environments
+	\item $t_{total}$ \dotfill Training steps
+	\item $\iota$ \dotfill Parsed load parameter
+	\item $\zeta$ \dotfill Parsed curriculum parameter
+	\item  $\epsilon_t$ \dotfill Training environment
+	\item $\epsilon_e$ \dotfill Evaluation environment
+	\item $\epsilon$ \dotfill Environment
+	\item $R_{max}$ \dotfill Maximum radius in LCL
+	\item $\tilde{\rho}$ \dotfill Parsed gui parameter
+	\item $t^*$ \dotfill Real time
+	\item  $t_{sim}$ \dotfill Simulation time
+	\item $\Sigma$ \dotfill Threshold of EvalWriter
+	\item $\gimel$ \dotfill Evaluation episodes
+	\item $\beth$ \dotfill Time Rate
+	\item $\mu_r$ \dotfill Mean reward
+	\item $\sigma_r$ \dotfill Std reward
+\end{description}
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+
+\begin{description}
+	\item DOF \dotfill Degree of Freedom
+	\item FC \dotfill Flight controller
+	\item PID controller \dotfill Proportional-Integral-Differential controller
+	\item RL \dotfill Reinforcement Learning
+	\item NLP \dotfill Natural Language Processing
+	\item ML \dotfill Machine Learning
+	\item MDP \dotfill Markov Decision Process
+	\item NN \dotfill Neural Network
+	\item PPO \dotfill Proximal Policy Optimization
+	\item SAC \dotfill Soft Actor-Critic
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
