@@ -2,22 +2,170 @@
 
 \newpage
 
-\section{Setup \& Policies}
-
-\newpage
+\section{Setup}
 
 \section{Results}
 
-\subsection{Mode 0}
+\newpage
+
+\subsection{Fixed Goal Modes}
+
+\subsubsection{Policies}
+
+\begin{longtable}{|c|c|c|c|c|c|}
+	\caption{Overview of the evaluated Policies on fixed goal modes}\label{tab:pi1}\\
+	
+	\hline
+	Name & Algorithm & ActionType & $\frac{f_s}{\aleph}$ & $t_{total}$ & Mode\\
+	\hline
+	%\toprule
+	\endfirsthead
+	\caption[]{Overview of the evaluated Policies on fixed goal modes}
+	\endhead
+	PPO4D\_0.zip & PPO & $rpm$ & $48Hz$ & $5e6$ & 0\\
+	\hline
+	SAC4D\_0.zip & SAC & $rpm$ & $48Hz$ & $5e6$ & 0\\
+	\hline
+	PPO1D\_1.zip & PPO & $one\_d\_rpm$ & $48 Hz$ & $5e6$ & 1\\
+	\hline
+	SAC1D\_1.zip & SAC & $one\_d\_rpm$ & $48 Hz$ & $5e6$ & 1\\
+	\hline
+	PPO4D\_1.zip & PPO & $rpm$ & $48Hz$ & $5e7$ & 1\\
+	\hline
+	SAC4D24\_1.zip & SAC & $rpm$ & $24Hz$ & $5e7$ & 1\\
+	\hline
+	SAC4D48\_1.zip & SAC & $rpm$ & $24Hz$ & $5e7$ & 1\\
+	\hline
+	$\pi_{opt}$ & & $rpm/$ & & & \\
+	& & $one\_d\_rpm$ & & & \\
+	\hline
+\end{longtable}
 
 \newpage
 
-\subsection{Mode 1}
+\subsubsection{Training Comparison}
 
 \newpage
 
-\subsection{Mode 2}
+\subsubsection{Overall Comparison}
+
+\begin{align}
+	r_{opt} &=
+	\left\{
+	\begin{array}{ll}
+		0 & \mbox{if } mode = 0\\
+		-4.874 &\mbox{if } mode = 1 \land \frac{f_s}{\aleph} = 48Hz\\
+		-2.39 &\mbox{if } mode = 1 \land \frac{f_s}{\aleph} = 24Hz\\
+	\end{array}
+	\right. \label{eq:optrew}\\
+	\beth_{opt} &= 
+	\left\{
+	\begin{array}{ll}
+		1 & \mbox{if } mode = 0\\
+		0.83750 &\mbox{if } mode = 1 \\
+	\end{array}
+	\right.
+\end{align}
+
+\begin{longtable}{|c|c|c|c|c|c|}
+	\caption{Evaluation of the Policies with mode 1}\label{tab:eval0}\\
+	
+	\hline
+	& PPO1D\_1 & SAC1D\_1 & PPO4D\_1 & SAC4D24\_1 & SAC4D48\_1 \\
+	\hline
+	%\toprule
+	\endfirsthead
+	\caption[]{Overview of the evaluated Policies on fixed goal modes}
+	\endhead
+	\hline
+	Reward $r_e$ & & & & & \\
+	\hline
+	Optimality\textsubscript{$r$} $\frac{r_{opt}}{r_e}$ & & & & & \\
+	\hline
+	Sucess & & & & & \\
+	\hline
+	Time Rate $\beth$ & & & & & \\
+	\hline
+	Optimality\textsubscript{$\beth$} $\frac{\beth}{\beth_{opt}}$ & & & & & \\
+	\hline
+	dist($\frac{T}{2}$) & & & & & \\
+	\hline
+	dist($T$) & & & & & \\
+	\hline
+	Settled & & & & & \\
+	\hline
+	Overshoot & & & &  &\\
+	\hline
+\end{longtable}
+
 
 \newpage
 
-\subsection{Mode 3}
+\subsubsection{Comparison for different episode lengths}
+
+\newpage
+
+\subsubsection{Hovering in Goal}
+
+% SAC1D
+% PPO1D
+% SAC4D
+% PPO 4D
+
+% comparing results
+% comparing rpms
+% comparing results for different episode lengths
+\subsubsection{Comparison of control frequencies}
+
+% comparing training
+% comparing results (general)
+% comparing rpms
+% comparing results for different episode lengths
+
+
+
+\newpage
+
+\subsection{Random Goal Modes}
+\subsubsection{Policies}
+
+\begin{longtable}{|c|c|c|c|c|}
+	\caption{Overview of the evaluated Policies on random goal modes}\label{tab:pi2}\\
+	
+	\hline
+	Name & Algorithm & ActionType & $\frac{f_s}{\aleph}$ & $t_{total}$ \\
+	\hline
+	%\toprule
+	\endfirsthead
+	\caption[]{Overview of the evaluated Policies on fixed goal modes}
+	\endhead
+	SAC4D\_2.zip & SAC & $rpm$ & $48Hz$ & $1e8$\\
+	\hline
+	SAC4Dcurri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$\\
+	\hline
+	SAC4Dsp\_curri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$\\
+	\hline
+\end{longtable}
+% SAC4D
+% SAC4DCurriculum
+% SAC4DSelf-PasedCurriculum
+
+% comparing training
+% comparing results
+% comparing results for different episode lengths and radi
+
+\subsubsection{Training Comparison}
+
+\subsubsection{Overall Comparison}
+
+\subsubsection{Comparison for different radii}
+
+\newpage
+
+\subsection{Wind Disruption}
+
+% SAC4D
+% SAC4DCurriculum
+% SAC4DSelf-PasedCurriculum
+
+% comparing in different wind fields of different strength

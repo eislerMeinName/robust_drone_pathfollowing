@@ -24,24 +24,24 @@ As a consequence it has the ability to maneuver in 3D space with all possible ro
 The heart of the quadrocopter is the flight controller ($FC$) which consists of sensors and a MCU that controls the flight. Besides, the aircraft possesses 4 motors with corresponding propellers. There are different configurations how the motors can be placed in relation to the axis. The two most common configuration, the "X" and "+" configuration, can be seen in the above figure. The "+" configuration places the motors alongside the x and y axis. In contrast to that the each motor has an angle of $45^{\circ}$ to the x and y axis in the "X" configuration.\\
 Each of the propeller can be described by their rotational speed $\omega_i$ with $i \in [1...M]$ and spins either clockwise or counter clockwise (\cref{fig:quad}).  Depending on the configuration of the motors,
 the rotation speeds directly influence the \emph{Euler Angles} $\Theta, \phi, \psi$ and
-the upward thrust $f$. However, hereafter the most common "X" configuration is used to explain the quadrocopter further.
+the upward thrust $\tilde{f}$. However, hereafter the most common "X" configuration is used to explain the quadrocopter further.
 
 \newpage 
 
 
 \subsection{Quadrocopter Flight Dynamics}
-The quadrocopter flight dynamics mainly depend on the rotational speed $\omega_i$ of the propellers, which mainly produce the translatational  and rotational movements. Besides, the thrust factor $b$ which is a constant that mainly consists of propeller geometry and frame characteristics also influences the movement. Depending on the different $\omega_i, b$ an upward thrust $f$ and a rotation $u_{\Theta}, u_{\phi}, u_{\psi}$ is produced that can be comprehended with the following set of formulas:
+The quadrocopter flight dynamics mainly depend on the rotational speed $\omega_i$ of the propellers, which mainly produce the translatational  and rotational movements. Besides, the thrust factor $b$ which is a constant that mainly consists of propeller geometry and frame characteristics also influences the movement. Depending on the different $\omega_i, b$ an upward thrust $\tilde{f}$ and a rotation $u_{\Theta}, u_{\phi}, u_{\psi}$ is produced that can be comprehended with the following set of formulas:
 
 \begin{align}
-	u_f &= b \cdot \sum_{i=1}^{4}\omega_i^2 = b \cdot ( \omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2)\label{form:quad}\\
+	u_{\tilde{f}} &= b \cdot \sum_{i=1}^{4}\omega_i^2 = b \cdot ( \omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2)\label{form:quad}\\
 	u_{\Theta} &= b \cdot (\omega_1^2 - \omega_2^2 + \omega_3^2 - \omega_4^2) \label{form:quad2}\\
 	u_{\phi} &= b \cdot (\omega_1^2 + \omega_2^2 - \omega_3^2 - \omega_4^2)\label{form:quad3}\\
 	u_{\psi} &= b \cdot (\omega_1^2 - \omega_2^2 - \omega_3^2 + \omega_4^2)\label{form:quad4}
 \end{align}
 
 \subsubsection{Hover, Rise \& Fall} \label{sec:hover}
-\emph{Hovering} can be described as holding a pose $p = {x_p, y_p, z_p}$ above the ground, rising can be seen as increasing $z_p$ and falling as decreasing $z_p$. Therefore, the quadrocopter should not have a rotation on $x,y,z$ axis and mainly depends on \cref{form:quad}.  \\
-The product of the thrust factor $b$ and the sum of the squared rotational speeds produces an upward thrust $f$. In order to hover equal rotational speeds must be applied to each motor/propeller in order to avoid a rotational movement, because:
+\emph{Hovering} can be described as holding a pose $p_{3D} = (x_p, y_p, z_p)$ above the ground, rising can be seen as increasing $z_p$ and falling as decreasing $z_p$. Therefore, the quadrocopter should not have a rotation on $x,y,z$ axis and mainly depends on \cref{form:quad}.  \\
+The product of the thrust factor $b$ and the sum of the squared rotational speeds produces an upward thrust $\tilde{f}$. In order to hover equal rotational speeds must be applied to each motor/propeller in order to avoid a rotational movement, because:
 
 \begin{align}
 	u_{\Theta} &= b \cdot (\omega_1^2 - \omega_2^2 + \omega_3^2 - \omega_4^2) = b \cdot 0 = 0\\
@@ -49,12 +49,12 @@ The product of the thrust factor $b$ and the sum of the squared rotational speed
 	u_{\psi} &= b \cdot (\omega_1^2 - \omega_2^2 - \omega_3^2 + \omega_4^2)	= b \cdot 0 = 0
 \end{align}
 Since all rotational movements null itself, there is only an upward thrust as aerodynamic effect.
-Depending on the upward force $F$ and gravitational Force $g$ the thrust produces the already mentioned movements:
+Depending on the upward force $F$ and gravitational Force $G$ the thrust produces the already mentioned movements:
 
 \begin{itemize}
-	\item $F < g$: Fall
-	\item $F = g$: Hover
-	\item $F > g$: Rising 
+	\item $F < G$: Fall
+	\item $F = G$: Hover
+	\item $F > G$: Rising 
 \end{itemize}
 
 \newpage
@@ -123,7 +123,7 @@ The thrust force $F$ has only a $z$ component. A yaw rotational movement does no
 	\caption{Sketch of an autonomous quadrocopter flight control system}
 	\label{fig:autoquad}
 \end{figure}
-Autonomus quadrocopter are especially interesting research topics, because it helps automating a lot of purposes. The general task can be in general defined as calculating the optimal motor signals $S = \{s_1, s_2, s_3, s_4\}$ based on the mission goals $g$ and the current pose $p = \{ p^*, a^*\}$ in order to achieve a stable flight and satisfy the goals. 
+Autonomus quadrocopter are especially interesting research topics, because it helps automating a lot of purposes. The general task can be in general defined as calculating the optimal motor signals $S = \{s_1, s_2, s_3, s_4\}$ based on the mission goals $g$ and the current pose $p = \{ p_{3D}^*, a^*\}$ in order to achieve a stable flight and satisfy the goals. 
 Therefore, it consists of on \emph{inner} and an \emph{outer control loop}.\\
 \newline
 The inner loop controls the attitude based on the current desired attitude $a$ and the estimated attitude $a^*$. By subtracting these the attitude error $e_a$ can used to calculate the signals $S$, which are most commonly pwm signals. The signals are then applied by the motors, which act as actuators and apply a rotational force to the propellers. As a consequence the propeller get the rotational speeds ${\Huge \omega } = \{ \omega_1, \omega_2, \omega_3, \omega_4 \}$ which directly influence the position of the drone in the environment. The state of the drone is captured by the sensor and the corresponding sensor values $\sigma$, which are falsified by noise and offsets. They are then used to estimate the attitude. \\
@@ -143,16 +143,16 @@ Common attitude controller often use \emph{PID controller}  as one of the most e
 \end{align}
 \newline
 However, since both are mathematically the same just with other gain definitions \cref{form:pid} will be the relevant one hereafter. The control signal $u(t)$ is calculated with the use of the configurable constant gains $K_p, K_i, K_d$, which weigh the different parts of the controller.\\
-Within a PID controller the proportional term considers the current error $e(t)$, the integral term considers the history of errors by integrating about them and the differential term estimates the future error by considering change of the error. Since the attitude control is time discrete in software, \cref{form:pid} must be transformed with the use of the sampling time period $T$:
+Within a PID controller the proportional term considers the current error $e(t)$, the integral term considers the history of errors by integrating about them and the differential term estimates the future error by considering change of the error. Since the attitude control is time discrete in software, \cref{form:pid} must be transformed with the use of the sampling time period $\tilde{T}$:
 
 \begin{align}
-	u(t) &= K_p \cdot e(t) + K_i \cdot T \cdot \sum_{0}^{t}e(\tau) + K_d \cdot \frac{e(t) - e(t-1)}{T} \label{form:pid2}
+	u(t) &= K_p \cdot e(t) + K_i \cdot \tilde{T} \cdot \sum_{0}^{t}e(\tau) + K_d \cdot \frac{e(t) - e(t-1)}{\tilde{T}} \label{form:pid2}
 \end{align}
 \newline
-In a quadrocopter there is a PID controller for each of the three axis(roll, pitch, yaw), which are all working parallel during an inner loop control cycle. Then mixing is used to translate the PID values of each axis to a pwm signal $s_i$ for each motor. This process uses a table, which consists of constants that describe the geometry of the frame.  The throttle coefficient $f$ and the mixer values of the motor $M_i$ ($m_{i,\phi}, m_{i,\Theta}, m_{i,\psi}$).
+In a quadrocopter there is a PID controller for each of the three axis(roll, pitch, yaw), which are all working parallel during an inner loop control cycle. Then mixing is used to translate the PID values of each axis to a pwm signal $s_i$ for each motor. This process uses a table, which consists of constants that describe the geometry of the frame.  The throttle coefficient $f'$ and the mixer values of the motor $M_i$ ($m_{i,\phi}, m_{i,\Theta}, m_{i,\psi}$).
 
 \begin{align}
-	s_i &= f \cdot (m_{i,\phi} \cdot u_{\phi} + m_{i, \Theta} \cdot u_{\Theta} + m_{i,\psi} \cdot u_{\psi}) \label{form:mix}
+	s_i &= f' \cdot (m_{i,\phi} \cdot u_{\phi} + m_{i, \Theta} \cdot u_{\Theta} + m_{i,\psi} \cdot u_{\psi}) \label{form:mix}
 \end{align}
 \newline
 This implementation is modern state of the art attitude control. It is easy to implement, because \cref{form:pid2} and \cref{form:mix} are simple equations and \cref{form:mix} is just in need of some constants. In addition, there are not many calculations, so the process can be implemented in realtime. Also, this classic approach shows close to ideal performance in stable environments.\\
@@ -169,7 +169,7 @@ the use of sensors for the Kalman Filter is limited in realtime tasks. In additi
 For example, \cite{shi2022deep} shows Deep Kalman Filters, which combine the learning ability of deep learning method and the noise filtering ability of the classic Kalman Filter can further enhance trajectory estimation. Although it should be mentioned that the mentioned work uses external satellite images of moving targets. So, the use case is quite different, but in theory adaptable. 
 
 \subsubsection{Pathfollowing Controller}
-Pathfollowing Controller work in the outer control loop as Mission Goal Controller (\cref{fig:autoquad}) with the goal $g$ typically defined as a list of waypoints $\Lambda = \{ \lambda_0 ... \lambda_i \quad i \in [0...n]\}$. These waypoints can be defined in different ways:
+Pathfollowing Controller work in the outer control loop as Mission Goal Controller (\cref{fig:autoquad}) with the goal $g$ typically defined as a set of waypoints $\Lambda = \{\lambda_i \quad i \in [0...n]\}$. These waypoints can be defined in different ways:
 \begin{itemize}
 	\item  $\lambda_i = \{x,y,z\}$: classic point in 3D space
 	\item  $\lambda_i = \{x,y,z,\Theta, \phi, \psi\}$: point in 3D space with attitude
@@ -400,7 +400,7 @@ It was already discussed how optimal V and Q functions can be calculated and use
 	Q^*(s,a) &= \mathbb{E}_{s' \sim P(\cdot | s,a)} [R(s,a,s') + \gamma \cdot \max_{a'} Q^*(s',a')] \label{eq:bopQ}
 \end{align}
 
-\subsubsection{Monte-Carlo \& TD-Sampling}
+%\subsubsection{Monte-Carlo \& TD-Sampling}
 
 
 \newpage
@@ -555,7 +555,7 @@ PPO is an on-policy algorithm, so the actions are selected according to the late
 \newpage
 \subsubsection{PPO - Algorithm}
 The PPO algorithm (\cref{alg:ppo})first initializes the policy and value net with the matching parameters $\Theta_0$ and $\phi_0$.\\
-Then the following steps are then executed until convergence:\\
+Then the following steps are executed until convergence:\\
 By running the current policy $\pi_{\Theta_k}$ a set of Trajectories $D_k$ is collected and the rewards $R_t$ are computed. Then the advantage $A$ is computed based in the current value function approximation $V_{\phi_k}$. With the use of this values the surrogate objective (\cref{eq:obj}) is calculated and used to update the policy $\pi$. Typically stochastic gradient ascent is used in order to update the policy. At last the value function is updated by using regression on the mean squared error.\\
 \newline
 Since the release of PPO it is known to be a state of the art algorithm with a good performance that is at least as good as other Policy Optimization methods on a variety of environments. In addition, the base algorithm is quite easy to implement.\\
@@ -592,10 +592,125 @@ PPO seems to be unstable when the reward function is not bounded on continuous a
 \end{algorithm}
 
 \subsubsection{SAC - Basics}
+\emph{Soft Actor-Critic (SAC)} \cite{haarnoja2018soft} is an offpolicy Rl algorithm that optimizes a strochastic policy. It can be categorized as a mixed method between policy optimization and value based methods.
+A key feature of SAC is entropy regularization. The policy is trained to maximize a trade-off between expected return and entropy. 
+The entropy of a policy can roughly be defined as a metric of measuring the randomness in a policy. Increasing the entropy results in more exploration, which accelerates training and can prevent the policy from converging to a bad local optimum.
+As a consequence, the RL problem changes to \cref{eq:sac1} with trade-off coefficient $\alpha$ and entropy $H$.
+\begin{align}
+	\pi^* = \underset{\pi} {\arg \max} \enspace \mathbb{E}_{\tau \sim \pi} [\sum_{t = 0}^{\infty} \gamma^t \cdot 
+	(R(s_t, a_t, s_{t+1} + \alpha H (\pi(\cdot | s_t)))] \label{eq:sac1}
+\end{align}
+As a consequence the definition of the V function and Q function changes to \cref{eq:sacv} and \cref{eq:sacq}.
+\begin{align}
+	V^{\pi}(s) &= \mathbb{E}_{\tau \sim \pi} [\sum_{t=0}^{\infty} \gamma^t \cdot (R(s_t, a_t, s_{t+1} + 
+	\alpha H (\pi(\cdot |s_t))) | s_0 = s] \nonumber\\
+	&= \mathbb{E}_{\tau \sim \pi} [\sum_{t=0}^{\infty} \gamma^t \cdot (R(s_t, a_t, s_{t+1} - \alpha \log \pi(a|s)]
+	\nonumber \\
+	&= \mathbb{E}_{a \sim \pi} [Q^{\pi} (s,a) - \alpha \log \pi(a|s) ]\label{eq:sacv}\\
+	Q^{\pi} (s, a) &= 
+	\mathbb{E}_{\tau \sim \pi} [\sum_{t=0}^{\infty} \gamma^t \cdot R(s_t, a_t, s_{t+1} + \alpha
+	\sum_{t=1}^{\infty} \gamma^t \cdot H(\pi(\cdot | s_t))
+	)|s_0 = s, a_0 = a]
+	\label{eq:sacq}
+\end{align}
+SAC solves this new RL problem by learning a policy $\pi_{\Theta}$ and two Q funcions $Q_{\phi_1}, Q_{\phi_2}$.
+The Q functions are learned by regressing to a single shared target with the loss function seen in \cref{eq:sacloss}.
 
-\newpage
+\begin{align}
+	L(\phi_i, \mathcal{D}) &= \mathbb{E}_{(s, a, r, s',d) \sim D} [(y(r,s',d) - Q_{\phi_i}(s,a))^2] \label{eq:sacloss}\\
+	y(r,s',d) &= r + \gamma \cdot (1-d) \cdot
+	(
+	\min_{j=1,2} 
+	{{}Q_\phi}_{targ_j}
+	(s', \tilde{a}') - \alpha \log 
+	\pi_{\Theta} (\tilde{a}'|s') )\label{eq:sactarget}\\
+	\tilde{a}' &\sim \pi_{\Theta}(\cdot | s') \nonumber
+ \end{align}
+ There, $\tilde{a}'$ is the next action. Unlike $r,s'$ the next action is sampled from the policy and not from the replay buffer $\mathcal{D}$.
+ \newpage
+ The policy should learn to maximize the value of each state $V^{\pi} (s)$ (\cref{eq:sacv}). Therfore, the \emph{reparameterization trick} is used, in which a sample from $\pi_{\Theta}(\cdot | s)$ is collected with the use of a squashed Gaussian policy. There, samples are collected according to \cref{eq:sacsq} and used in the V function (\cref{eq:secv2}). Then, the policy is loss is given by choosing the minimum of the 2 Q function approximators as Q function (\cref{eq:secv3}).
+ 
+ \begin{align}
+ 	\tilde{a_\Theta} (s, \xi) &= tanh(\mu_{\Theta}(s) + \sigma_{\Theta}(s) \odot \xi) \qquad \xi \in \mathcal{N}(0,I) \label{eq:sacsq}\\
+ 	V^{\pi} (s) &= \mathbb{E}_{\xi \sim \mathcal{N}} [Q^{\pi_\Theta} (s, \tilde{a}_\Theta(s, \xi)) - \alpha \cdot 
+ 	\log \pi_\Theta (\tilde{a}_\Theta(s, \xi)| s)
+ 	] \label{eq:secv2}\\
+ 	&= \mathbb{E}_{s \sim \mathcal{D}, \xi \sim \mathcal{N}} [\min_{j=1,2}
+ 	 Q_{\phi_j} (s, \tilde{a}_\Theta(s, \xi)) - \alpha \cdot 
+ 	\log \pi_\Theta (\tilde{a}_\Theta(s, \xi)| s)
+ 	] \label{eq:secv3}
+ \end{align}
+  The explore-exploit tradeoff is controlled with $\alpha$. A lower $\alpha$ corresponds to more exploitation, a higher $\alpha$ to more exploration. During training it is optimized in order to avoid getting stuck in local optima.
 
 \subsubsection{SAC - Algorithm}
+The SAC algorithm (\cref{alg:sac}) gets the policy parameters $\Theta$, function parameters $\phi_1, \phi_2$ and an empty replay buffer $\mathcal{D}$ as input. First, the target parameters are set equal to the main parameters.\\
+Then the following steps are executed until convergence:\\
+The state $s$ is abserved and an action is taken with the use of the policy $\pi_{\Theta}$ and executed.
+Then, the next state $s'$, reward $r$ and the done signal $d$ are observed and the 5-tupel $(s, a, r, s', d)$ is stored in the replay buffer $\mathcal{D}$. If the done signal $d$ indicated that $s'$ is a terminal state, the environement is reset.
+If it is time to update an amount of updates are performed.\\
+In the update a batch of transitions $\mathcal{B}= \{(s,a,r,s', d)\}$ is sampled from the replay buffer $\mathcal{D}$ and the targets are computed according to \cref{eq:sactarget} and used to update the two Q functions via gradient descent. Then, the policy is updated with the use of gradient ascent with the loss seen in \cref{eq:secv3}.
+At last, the target networks are updated with Polyak averging, where $\rho \in [0,1]$ is a hyperparamter.\\
+\newline
+Sometimes, implementations use a trick to improve exploration at the start of the training by taking actions sampled from a uniform random distribution over valid actions for a fixed amount of steps. Afterwards, the algorithm works like previously defined.\\
+SAC is known for stable performance.
+
+\begin{algorithm}
+	\caption{Soft Actor-Critic \cite{haarnoja2018soft}}
+	\label{alg:sac}
+	
+	\KwIn{initial policy parameters $\Theta$, Q function parameters $\phi_1, \phi_2$, empty replay buffer $\mathcal{D}$}
+	
+	Set target parameters equal to main parameters $\phi_{targ,1} \leftarrow \phi_1, \phi_{targ,2} \leftarrow \phi_2$
+	
+	 \Repeat{convergence}{
+	 	Observe state $s$ and select action $a \sim \pi_{\Theta}(\cdot | s)$
+	 	
+	 	Execute $a$ in the environment
+	 	
+	 	Observe next state $s'$, reward $r$ and done signal $d$ to indicate wether $s'$ is terminal
+	 	
+	 	Store $(s, a, r, s', d)$ in replay buffer $\mathcal{D}$
+	 	
+	 	\If{$s'$ is terminal}{reset environment state}
+	 	
+	 	\If{it is time to update }{
+	 		\For{j in range (however many updates)}{
+	 		Randomly sample a batch of transitions, $\mathcal{B} = \{(s,a,r,s', d)\}$ from $\mathcal{D}$
+	 		
+	 		Compute targets for the Q functions:
+	 		\begin{align*}
+	 			y(r,s',d) &= r + \gamma \cdot (1-d) \cdot
+	 			(
+	 			\min_{j=1,2} 
+	 			{{}Q_\phi}_{targ_j}
+	 			(s', \tilde{a}') - \alpha \log 
+	 			\pi_{\Theta} (\tilde{a}'|s') )\\
+	 			\tilde{a}' &\sim \pi_{\Theta}(\cdot | s') 
+	 		\end{align*}
+	 		
+	 		Update Q functions by gradient descent:
+	 		\begin{align*}
+	 			\nabla_{\phi_i} \frac{1}{|\mathcal{B}|} \sum_{(s,a,r,s',d) \in \mathcal{B}}  (y(r,s',d) - Q_{\phi_i}(s,a))^2
+	 		\end{align*}
+	 		for $i=1,2$
+	 		
+	 		Update policy by one step of gradient ascent:
+	 		\begin{align*}
+	 			\nabla_{\Theta} \frac{1}{|\mathcal{B}|} \sum_{s \in \mathcal{B}} (\min_{j=1,2}
+	 			Q_{\phi_j} (s, \tilde{a}_\Theta(s, \xi)) - \alpha \cdot 
+	 			\log \pi_\Theta (\tilde{a}_\Theta(s, \xi)| s))
+	 		\end{align*}
+	 		where $\tilde{a_\Theta}(s)$ is a sample from  $\pi_{\Theta}(\cdot|s)$ which is differentiable wrt $\Theta$
+	 		
+	 		Update target networks with Polyak averging:
+	 		\begin{align*}
+	 			\phi_{targ,i} \leftarrow \rho \phi_{targ,i} + (1 - \rho ) \phi_i
+	 		\end{align*}
+	 		for $i=1,2$
+	 	}
+	 	}
+	 }
+\end{algorithm}
 
 \newpage
 
