@@ -235,6 +235,12 @@ class EvalWriter:
             ax[1].plot(self.times, self.Y, label='Distance in Y Axis [m]')
             ax[1].plot(self.times, self.Z, label='Distance in Z Axis [m]')
 
+            thresh: List[float] = []
+            for t in self.times:
+                thresh.append(self.threshold)
+
+            ax[0].fill_between(self.times, thresh, color='red', alpha=.25)
+
             ax[0].set_xlabel('Time [s]')
             ax[0].set_ylabel('Complete Distance [m]')
             ax[1].legend()
@@ -247,7 +253,11 @@ class EvalWriter:
             plt.xlabel('Time [s]')
             plt.ylabel('Distance [m]')
             plt.title('Distance to goal')
-            plt.show()
+            thresh: List[float] = []
+            for t in self.times:
+                thresh.append(self.threshold)
+
+            plt.fill_between(self.times, thresh, color='red', alpha=.25)
 
         plt.show()
 
