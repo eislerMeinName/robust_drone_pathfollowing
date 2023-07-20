@@ -29,6 +29,8 @@ DEFAULT_EPISODES = 100
 DEFAULT_ENV = 'WindSingleAgent-aviary-v0'
 DEFAULT_ALGO = 'ppo'
 
+PHY_STEP = 10
+
 
 def run(drone: DroneModel = DEFAULT_DRONE,
         act: ActionType = DEFAULT_ACT,
@@ -47,14 +49,14 @@ def run(drone: DroneModel = DEFAULT_DRONE,
         ):
     # Create evaluation environment ####################################################################################
     if not (init is None):
-        eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
+        eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=PHY_STEP, obs=ObservationType('kin'),
                             act=act, mode=mode, total_force=total_force, radius=radius,
                             episode_len=episode_len, debug=debug_env, drone_model=drone,
                             initial_xyzs=np.array(init[0:3]).reshape(1, 3),
                             initial_rpy=np.array(init[3:6]).reshape(1, 3))
     else:
-        eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
-                            act=act, mode=mode, total_force=total_force, radius=radius,
+        eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=PHY_STEP, obs=ObservationType('kin'),
+                            act=act, mode=mode, total_force=total_force, radius=radius, episode_len=episode_len,
                             drone_model=drone, debug=debug_env)
 
     # Decide path ######################################################################################################
@@ -69,12 +71,12 @@ def run(drone: DroneModel = DEFAULT_DRONE,
 
     # Evaluate and write ###############################################################################################
     eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
-                                  episode_len=episode_len, threshold=0.01)
+                                  episode_len=episode_len, threshold=0.05)
     eval.evaluateModel(model)
 
     # Create test environment and logger ###############################################################################
     if gui:
-        test_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
+        test_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=PHY_STEP, obs=ObservationType('kin'),
                             act=act, mode=mode, total_force=total_force, radius=radius,
                             drone_model=drone, debug=debug_env, gui=gui, record=record, episode_len=episode_len)
         logger = Logger(logging_freq_hz=int(test_env.SIM_FREQ/test_env.AGGR_PHY_STEPS),
