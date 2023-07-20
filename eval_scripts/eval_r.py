@@ -43,7 +43,7 @@ def run(episodes: int,
                                 drone_model=DroneModel("hb"))
 
             eval: EvalWriter = EvalWriter(name='TestWriter', eval_steps=episodes, path='test.xlsx', env=eval_env,
-                                          episode_len=t, threshold=0.05)
+                                          episode_len=5, threshold=0.05)
             mean, std = eval.evaluateModel(model, False)
             stds.append(std)
             means = np.append(means, mean)
