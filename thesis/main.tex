@@ -41,6 +41,10 @@ Prof.\ Dr.\ Carlo D'Eramo
 
 
 \begin{document}
+\newpage 
+\thispagestyle{empty}
+\quad 
+\newpage
 \pagenumbering{roman}
 	
 \begin{declaration}
@@ -63,10 +67,27 @@ Prof.\ Dr.\ Carlo D'Eramo
 \listoftables
 \listofalgorithms
 
+\newpage 
+\thispagestyle{empty}
+\quad 
 \newpage
 
 \begin{abstract}
-	content...
+	\addcontentsline{toc}{chapter}{Abstract}
+	The control of drones, also known as unmanned aerial vehicles (UAV), 
+	is a difficult task which is of great interest to modern research.
+	Modern UAVs are in need of reliable, precise, and robust flight control in order to
+	be able to operate in a wide range of environments. Especially in harsh environments,
+	the performance of classic controllers is far from optimal.
+	Reinforcement Learning is known for its ability to create intelligent, robust
+	controllers that can operate in harsh environments.
+	This work shows the basic concept of UAV flight and Reinforcement Learning,
+	proposes a simple intelligent flight control,
+	and evaluates different intelligent controllers that were trained for
+	a couple of UAV flight problems with different algorithms, training concepts 
+	and steps.
+	In addition, it aims at providing a general overview of intelligent flight
+	control and promises ideas for future work in this designated area of research.
 \end{abstract}
 
 
@@ -132,7 +153,7 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\item $S$ \dotfill Set of Motor Signals
 	\item $p$ \dotfill Estimated Pose
 	\item $p_{3D}^*$ \dotfill Estimated 3D Pose
-	\item $(K_p, K_i, K_d), (K, T_n, T_v)$  \dotfill Tuple of PID controll gains
+	\item $(K_p, K_i, K_d), (K, T_n, T_v)$  \dotfill Tuple of PID control gains
 	\item $u(t)$ \dotfill Control Signal
 	\item $e(t)$ \dotfill Error Signal
 	\item $\tilde{T}$ \dotfill Sampling Time Period
@@ -197,12 +218,12 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\item $\daleth_t$ \dotfill Observation at time step $t$
 	\item $v_i \qquad i \in [0,11]$ \dotfill Predefined Clipping Values
 	\item $dist_t$ \dotfill Distance at time step $t$
-	\item $t_s$ \dotfill SImulation time step
+	\item $t_s$ \dotfill Simulation time step
 	\item $r_{opt}$ \dotfill Optimal Reward
 	\item $f_c$ \dotfill Control Frequency
 	\item $m$ \dotfill Mass of UAV
 	\\
-	\item $\xi$ \dotfill Set of parsed agruments to a script
+	\item $\xi$ \dotfill Set of parsed arguments to a script
 	\item $\tilde{\lambda}$ \dotfill Set of environment arguments
 	\item $\nu$ \dotfill Amount of parallel training environments
 	\item $t_{total}$ \dotfill Training steps
@@ -237,6 +258,7 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\item PPO \dotfill Proximal Policy Optimization
 	\item SAC \dotfill Soft Actor-Critic
 \end{description}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
