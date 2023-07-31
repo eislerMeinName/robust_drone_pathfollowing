@@ -48,23 +48,18 @@ def read(name: str, max: float):
 if __name__ == "__main__":
     plt.rc('font', size=20)
     #plt.grid()
-    name: List[str] = ['../files/CSV/SAC24Hz.csv', '../files/CSV/SAC48Hz.csv', '../files/CSV/PPO48Hz.csv']
-    step, rew = read(name[0], 3e7)
+    name: List[str] = ['../files/CSV/PPO1D.csv', '../files/CSV/SAC1D.csv']
+    step, rew = read(name[0], 1e6)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='b', alpha=0.25, label='SAC4D24_1')
-    plt.plot(step, smoothed, color='b', label='SAC4D24_1 Smoothed')
+    plt.plot(step, rew, color='b', alpha=0.25, label='PPO1D_1')
+    plt.plot(step, smoothed, color='b', label='PPO1D_1 Smoothed')
 
-    step, rew = read(name[1], 3e7)
+    step, rew = read(name[1], 1e6)
     smoothed = smooth(rew, 0.99)
     plt.plot(step, rew, color='r', alpha=0.25, label='SAC4D48_1')
-    plt.plot(step, smoothed, color='r', label='SAC4D48_1 Smoothed')
+    plt.plot(step, smoothed, color='r', label='SAC1D_1 Smoothed')
 
-    step, rew = read(name[2], 3e7)
-    smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='g', alpha=0.25, label='PPO4D48_1')
-    plt.plot(step, smoothed, color='g', label='PPO4D48_1 Smoothed')
-
-    plt.xlim(0, 3e7)
+    plt.xlim(0, 1e6)
     plt.xlabel('training steps')
     plt.ylabel('reward')
     plt.legend()

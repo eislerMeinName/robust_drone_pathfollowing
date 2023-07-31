@@ -31,7 +31,7 @@ def run(episodes: int,
         elif algo[i] == 'sac':
             model = SAC.load(n)
 
-        t_max: np.array = np.arange(5, 61, 1)
+        t_max: np.array = np.arange(5, 31, 1)
         stds: List[float] = []
         means: np.array = np.array([])
 
@@ -62,6 +62,7 @@ def run(episodes: int,
     plt.legend()
     plt.xlabel('time[s]')
     plt.ylabel('reward')
+    #plt.yscale('symlog')
     plt.show()
 
 
