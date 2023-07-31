@@ -29,7 +29,7 @@ DEFAULT_EPISODES = 100
 DEFAULT_ENV = 'WindSingleAgent-aviary-v0'
 DEFAULT_ALGO = 'ppo'
 
-PHY_STEP = 10
+PHY_STEP = 5
 
 
 def run(drone: DroneModel = DEFAULT_DRONE,

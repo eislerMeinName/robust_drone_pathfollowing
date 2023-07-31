@@ -117,7 +117,7 @@ def curri_learn(total_steps: int, kwargs: dict,
         model.env = train_env
         eval_env = make_vec_env(WindSingleAgentAviary, env_kwargs=kwargs, n_envs=cpu, seed=0)
 
-        callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=-10,
+        callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=-8,
                                                          verbose=1
                                                          )
         eval_callback = EvalCallback(eval_env,
