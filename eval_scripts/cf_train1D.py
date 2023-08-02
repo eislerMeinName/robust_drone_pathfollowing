@@ -51,13 +51,13 @@ if __name__ == "__main__":
     name: List[str] = ['../files/CSV/PPO1D.csv', '../files/CSV/SAC1D.csv']
     step, rew = read(name[0], 1e6)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='b', alpha=0.25, label='PPO1D_1')
-    plt.plot(step, smoothed, color='b', label='PPO1D_1 Smoothed')
+    plt.plot(step, rew, color='tab:red', alpha=0.25, label='PPO1D_1')
+    plt.plot(step, smoothed, color='tab:red', label='PPO1D_1 Smoothed')
 
     step, rew = read(name[1], 1e6)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='r', alpha=0.25, label='SAC4D48_1')
-    plt.plot(step, smoothed, color='r', label='SAC1D_1 Smoothed')
+    plt.plot(step, rew, color='tab:green', alpha=0.25, label='SAC4D48_1')
+    plt.plot(step, smoothed, color='tab:green', label='SAC1D_1 Smoothed')
 
     plt.xlim(0, 1e6)
     plt.xlabel('training steps')

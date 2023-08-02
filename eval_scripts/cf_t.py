@@ -16,9 +16,24 @@ from typing import List
 import matplotlib.pyplot as plt
 
 
+def defineColor(name: str) -> str:
+    if "SAC4D24" in name:
+        return "tab:blue"
+    if "SAC4D48" in name:
+        return "tab:orange"
+    if "SAC1D" in name:
+        return "tab:green"
+    if "PPO1D" in name:
+        return "tab:red"
+    if "PPO4D" in name:
+        return "tab:purple"
+    else:
+        return ''
+
+
 if __name__ == "__main__":
     plt.rc('font', size=20)
-    name: List[str] = ['../results/SAC4D48_1.zip', '../results/SAC4D24_1.zip', '../results/PPO4D_1.zip']
+    name: List[str] = ['../results/SAC4D48_1.zip', '../results/SAC4D24_1.zip']#'../results/PPO4D_1.zip']
 
     for i, n in enumerate(name):
         debug(bcolors.OKBLUE, '[INFO] Model: ' + n)
@@ -46,8 +61,9 @@ if __name__ == "__main__":
             means = np.append(means, mean)
 
         # plot
+        color: str = defineColor(n)
         clean_name: str = n.replace('..', '').replace('results', '').replace('/', '').replace('.zip', '') + "-48Hzenv"
-        plt.plot(t_max, means, label=clean_name)
+        plt.plot(t_max, means, c=color, label=clean_name)
         debug(bcolors.BOLD, '[Result] ' + str(means[0]))
         debug(bcolors.BOLD, '[Result] ' + str(means[len(means) - 1]))
 
@@ -69,7 +85,7 @@ if __name__ == "__main__":
 
         # plot
         clean_name: str = n.replace('..', '').replace('results', '').replace('/', '').replace('.zip', '') + "-24Hzenv"
-        plt.plot(t_max, means, label=clean_name)
+        plt.plot(t_max, means, c=color, alpha=0.5, label=clean_name)
         debug(bcolors.BOLD, '[Result] ' + str(means[0]))
         debug(bcolors.BOLD, '[Result] ' + str(means[len(means) - 1]))
 

@@ -51,18 +51,18 @@ if __name__ == "__main__":
     name: List[str] = ['../files/CSV/SAC24Hz.csv', '../files/CSV/SAC48Hz.csv', '../files/CSV/PPO48Hz.csv']
     step, rew = read(name[0], 3e7)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='b', alpha=0.25, label='SAC4D24_1')
-    plt.plot(step, smoothed, color='b', label='SAC4D24_1 Smoothed')
+    plt.plot(step, rew, color='tab:blue', alpha=0.25, label='SAC4D24_1')
+    plt.plot(step, smoothed, color='tab:blue', label='SAC4D24_1 Smoothed')
 
     step, rew = read(name[1], 3e7)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='r', alpha=0.25, label='SAC4D48_1')
-    plt.plot(step, smoothed, color='r', label='SAC4D48_1 Smoothed')
+    plt.plot(step, rew, color='tab:orange', alpha=0.25, label='SAC4D48_1')
+    plt.plot(step, smoothed, color='tab:orange', label='SAC4D48_1 Smoothed')
 
     step, rew = read(name[2], 3e7)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='g', alpha=0.25, label='PPO4D48_1')
-    plt.plot(step, smoothed, color='g', label='PPO4D48_1 Smoothed')
+    plt.plot(step, rew, color='tab:purple', alpha=0.25, label='PPO4D48_1')
+    plt.plot(step, smoothed, color='tab:purple', label='PPO4D48_1 Smoothed')
 
     plt.xlim(0, 3e7)
     plt.xlabel('training steps')

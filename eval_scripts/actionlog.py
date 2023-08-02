@@ -74,10 +74,11 @@ def run():
 
         name = n.replace("../results/", "")
         n = name
-        ax[0].plot(times, one, label=n)
-        ax[1].plot(times, two, label=n)
-        ax[2].plot(times, three, label=n)
-        ax[3].plot(times, four, label=n)
+        color: str = defineColor(n)
+        ax[0].plot(times, one, c=color, label=n)
+        ax[1].plot(times, two, c=color, label=n)
+        ax[2].plot(times, three, c=color, label=n)
+        ax[3].plot(times, four, c=color, label=n)
 
     ax[0].legend(loc="lower left")
     ax[0].set_xlabel('Time [s]')
@@ -98,6 +99,19 @@ def run():
     plt.show()
     env.close()
 
+def defineColor(name: str) -> str:
+    if "SAC4D24" in name:
+        return "tab:blue"
+    if "SAC4D48" in name:
+        return "tab:orange"
+    if "SAC1D" in name:
+        return "tab:green"
+    if "PPO1D" in name:
+        return "tab:red"
+    if "PPO4D" in name:
+        return "tab:purple"
+    else:
+        return ''
 
 if __name__ == "__main__":
     fig, ax = plt.subplots(4, 1)

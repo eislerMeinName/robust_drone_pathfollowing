@@ -16,6 +16,20 @@ from typing import List
 import matplotlib.pyplot as plt
 
 
+def defineColor(name: str) -> str:
+    if "SAC4D24" in name:
+        return "tab:blue"
+    if "SAC4D48" in name:
+        return "tab:orange"
+    if "SAC1D" in name:
+        return "tab:green"
+    if "PPO1D" in name:
+        return "tab:red"
+    if "PPO4D" in name:
+        return "tab:purple"
+    else:
+        return ''
+
 def run(episodes: int,
         act: List[ActionType],
         mode: int,
@@ -31,14 +45,14 @@ def run(episodes: int,
         elif algo[i] == 'sac':
             model = SAC.load(n)
 
-        t_max: np.array = np.arange(5, 31, 1)
+        t_max: np.array = np.arange(5, 61, 1)
         stds: List[float] = []
         means: np.array = np.array([])
 
         # evaluate for different ts
         for t in t_max:
             debug(bcolors.OKBLUE, '[INFO] episode length: ' + str(t) + 's')
-            eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=10, obs=ObservationType('kin'),
+            eval_env = gym.make('WindSingleAgent-aviary-v0', aggregate_phy_steps=5, obs=ObservationType('kin'),
                                 act=act[i], mode=mode, total_force=0, radius=radius, episode_len=t,
                                 drone_model=DroneModel("hb"))
 
@@ -49,17 +63,19 @@ def run(episodes: int,
             means = np.append(means, mean)
 
         # plot
+        color = defineColor(n)
         clean_name: str = n.replace('..', '').replace('results', '').replace('/', '').replace('.zip', '')
         if mode > 1:
             plt.errorbar(t_max, means, yerr=stds, fmt='-o', label=clean_name)
             debug(bcolors.BOLD, '[Result] ' + str(means[0]) + '+-' + str(stds[0]))
             debug(bcolors.BOLD, '[Result] ' + str(means[len(means) - 1]) + '+-' + str(stds[len(stds)] - 1))
         else:
-            plt.plot(t_max, means, label=clean_name)
+            plt.plot(t_max, means, c=color,label=clean_name)
             debug(bcolors.BOLD, '[Result] ' + str(means[0]))
             debug(bcolors.BOLD, '[Result] ' + str(means[len(means) - 1]))
 
-    plt.legend()
+    #plt.legend()
+    plt.ylim(-60, 0)
     plt.xlabel('time[s]')
     plt.ylabel('reward')
     #plt.yscale('symlog')
@@ -79,5 +95,6 @@ if __name__ == "__main__":
     parser.add_argument('--radius', default=0.0, type=float, help='The radius.', metavar='')
 
     ARGS = parser.parse_args()
+    plt.rc('font', size=20)
 
     run(**vars(ARGS))

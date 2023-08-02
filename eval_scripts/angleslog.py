@@ -21,8 +21,10 @@ def defineColor(name: str) -> str:
     else:
         return ''
 
+
 if __name__ == "__main__":
-    plt.rc('font', size=20)
+    plt.rc('font', size=18)
+    fig, ax = plt.subplots(3, 1)
     names: List[str] = ["../results/SAC4D24_1.zip", "../results/SAC4D48_1.zip",
                         "../results/SAC1D_1.zip", "../results/PPO1D_1.zip", "../results/PPO4D_1.zip"]
 
@@ -34,10 +36,10 @@ if __name__ == "__main__":
         else:
             model = PPO.load(n)
 
-        dist: np.array = np.array([])
-        distZ: np.array = np.array([])
-        distY: np.array = np.array([])
-        distX: np.array = np.array([])
+
+        roll: np.array = np.array([])
+        pitch: np.array = np.array([])
+        yaw: np.array = np.array([])
         times: List[float] = []
 
         # evaluate for different ts
@@ -55,12 +57,10 @@ if __name__ == "__main__":
             action, _states = model.predict(obs, deterministic=True)
             times.append(j / 240 * 5)
             obs, reward, done, info = env.step(action)
-            pose: np.array = env.getPose()
-            goal: np.array = env.goal
-            dist = np.append(dist, env.getDist())
-            distX = np.append(distX, abs(goal[0] - pose[0]))
-            distY = np.append(distY, abs(goal[1] - pose[1]))
-            distZ = np.append(distZ, abs(goal[2] - pose[2]))
+
+            roll = np.append(roll, env.rpy[0, 0])
+            pitch = np.append(pitch, env.rpy[0, 1])
+            yaw = np.append(yaw, env.rpy[0, 2])
 
             if done:
                 obs = env.reset()
@@ -68,19 +68,23 @@ if __name__ == "__main__":
 
         env.reset()
 
-        color = defineColor(n)
-        plt.plot(times, dist, c=color, label=n.replace("../results/", ""))
+        color: str = defineColor(n)
 
-        plt.xlabel('Time [s]')
-        plt.ylabel('Complete Distance [m]')
+        ax[0].plot(times, roll, c=color, label=n.replace("../results/", ""))
+        ax[0].set_xlabel('Time [s]')
+        ax[0].set_ylabel('Roll Angle [rad]')
 
-    thresh: List[float] = []
-    for t in times:
-        thresh.append(0.05)
+        ax[1].plot(times, pitch, c=color, label=n.replace("../results/", ""))
+        ax[1].set_xlabel('Time [s]')
+        ax[1].set_ylabel('Pitch Angle [rad]')
 
-    plt.fill_between(times, thresh, color='red', alpha=.25)
+        ax[2].plot(times, yaw, c=color, label=n.replace("../results/", ""))
+        ax[2].set_xlabel('Time [s]')
+        ax[2].set_ylabel('Yaw Angle [rad]')
 
-    plt.legend()
+    ax[0].legend(loc="lower left")
+    ax[1].legend(loc="lower left")
+    ax[2].legend(loc="lower left")
     plt.show()
 
 
