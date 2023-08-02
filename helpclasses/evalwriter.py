@@ -125,9 +125,10 @@ class EvalWriter:
                 self.settled += 1
 
         # update overshoot
-        if self.succeeded:
-            if dist > 0 and dist > self.overshoot[self.STEP]:
-                self.overshoot[self.STEP] = dist
+        #if self.succeeded:
+        #    if dist > 0 and dist > self.overshoot[self.STEP]:
+        #        if self.distances[len(self.distances) - 2] < self.distances[len(self.distances) - 1]:
+        #            self.overshoot[self.STEP] = dist
 
         # Check if success
         if not self.succeeded and dist < self.threshold:
@@ -179,9 +180,25 @@ class EvalWriter:
             self.succeeded_steps += 1
         self.write()
 
+    def calcOvershoot(self):
+        """Method that calculates the overshoot"""
+        dist: List[float] = self.distances.copy()
+        while dist[0] > min(dist):
+            dist.pop(0)
+
+        if len(dist) > 1:
+            while dist[0] < dist[1]:
+                dist.pop(0)
+                if len(dist) == 1:
+                    break
+
+        self.overshoot = max(dist)
+
+
     def write(self):
         """Prints out the data, writes it to a xlsx file and plots it."""
 
+        self.calcOvershoot()
         # Print
         rate: str = str((self.succeeded_steps / self.total_steps) * 100) + '%'
         time_rate: str = str(self.total_time / (self.total_steps * self.episode_len) * 100) + '%'
