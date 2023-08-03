@@ -8,7 +8,8 @@ The used drone model $DroneModel.HB$ is part of the Gym-Pybullets-Drones package
 the arm length, the thrust to weight ratio, the maximum speed, the mass and two constants $k_f, k_m$, which directly influence the forces and torques.
 The mass of $0.5kg$ should help to counteract wind as well as the huge maximum speed of $50 \frac{km}{h}$.\\
 The agents were learned on a pc equipped with a \emph{NVIDIA GeForce RTX 4090} in order to reduce training time. 
-Still, the training time for each policy was inside a span of $0.5h$ to $3d$, mostly depending on the amount of training steps and the used RL algorithm.
+Still, the training time for each policy was inside a span of $0.5h$ to $7d$, 
+mostly depending on the amount of training steps and the used RL algorithm.
 
 \begin{table}
 	\centering
@@ -26,7 +27,7 @@ Still, the training time for each policy was inside a span of $0.5h$ to $3d$, mo
 \section{Results}
 The results are structures into the results of the fixed goal modes, the random goal modes and in general wind disruption. 
 This section aims at examining different algorithms and methods for control of flying drones in goal environments 
-on a metric which combines classic RL performance parameters like the reward $r_e$, but also classic control theory parameters like 
+on a metric which combines classic RL performance parameters like the return $J$, but also classic control theory parameters like 
 success rate, time rate $\beth$, distances during the simulation, the overshoot and a settling rate. 
 In addition, it uses different kinds of optimality and expected optimality, 
 which relates certain metric parameters to its theoretical optimal value.
@@ -42,16 +43,18 @@ This aims at comparing the policies on their robustness to control frequencies.
 
 \subsubsection{Policies}
 This section uses a total of six different policies (\cref{tab:pi1}).
-\emph{PPO1D\_1.zip} and \\ \emph{SAC1D\_1.zip} were both trained on a mode 1 environment with $5e6$ steps and a 1 dimensional action, 
+\emph{PPO1D} and \\ \emph{SAC1D} were both trained on a mode one 
+environment with $1e6$ steps and a 1 dimensional action, 
 but only differ in the used algorithm.
- \emph{PPO4D\_1.zip} was trained with a total amount of $3e7$ steps. Also, the dimensionality of the action increases to four.
- \emph{SAC4D\_1.zip} and \emph{SAC4D48\_1.zip} only differ in the used control frequency, but operate with the same action and were both learned with the SAC algorithm.
+ \emph{PPO4D} was trained with a total amount of $3e7$ steps. 
+ Also, the dimensionality of the action increases to four.
+ \emph{SAC4D} and \emph{SAC4D48} only differ in the used control frequency, but operate with the same action and were both learned with the SAC algorithm.
  \emph{$\pi_{opt}$} is the theoretical construct of the optimal policy for this RL problems based on \cref{sec:oprew}. 
- It always takes the optimal action therefore defines the best possible reward $r_opt$ that depends on mode and control frequency and the optimal time rate $\beth_{opt}$.
+ It always takes the optimal action therefore defines the best possible return $J_{opt}$ that depends on mode and control frequency and the optimal time rate $\beth_{opt}$.
  In mode 0 the action is always (0, 0, 0, 0). 
  Due to processing the hover\_rpm is applied, and the drone stays in the goal. 
  In mode 1 it takes the action (1, 1, 1, 1) as long as possible and then brakes into the goal. 
- There it also applies (0, 0, 0, 0). The optimal reward and time rate can then be expressed as \cref{eq:optrew} and \cref{eq:optt}.
+ There it also applies (0, 0, 0, 0). The optimal return and time rate can then be expressed with \cref{eq:optrew} and \cref{eq:optt}.
  
  \begin{align}
  	r_{opt} &=
@@ -86,9 +89,9 @@ but only differ in the used algorithm.
 %	\hline
 %	SAC4D\_0.zip & SAC & $rpm$ & $48Hz$ & $5e6$ & 0\\
 %	\hline
-	PPO1D\_1.zip & PPO & $one\_d\_rpm$ & $48 Hz$ & $5e6$ & 1\\
+	PPO1D\_1.zip & PPO & $one\_d\_rpm$ & $48 Hz$ & $1e6$ & 1\\
 	\hline
-	SAC1D\_1.zip & SAC & $one\_d\_rpm$ & $48 Hz$ & $5e6$ & 1\\
+	SAC1D\_1.zip & SAC & $one\_d\_rpm$ & $48 Hz$ & $1e6$ & 1\\
 	\hline
 	PPO4D\_1.zip & PPO & $rpm$ & $48Hz$ & $3e7$ & 1\\
 	\hline
@@ -103,18 +106,124 @@ but only differ in the used algorithm.
 \newpage
 
 \subsubsection{Training Comparison}
-%1D policies 
-%4D policies
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/1Dtrain.png}
+	\caption{Comparison of PPO1D\_1 (red) and SAC1D\_1 (green) training progress}
+	\label{fig:train1D}
+\end{figure}
+In order to compare the training of the algorithms of the designated tasks,
+they have to be divided into one dimensional (\emph{one\_d\_rpm}) and the 
+four dimensional (\emph{rpm}) action space. Due to the difference in complexity
+another magnitude of training steps is needed in four dimensions.\\
+In one dimension (\cref{fig:train1D}) the policies were learned with a total amount
+of $1e6$ training steps, but the figure shows, that the best model was
+achieved earlier in both cases. The SAC algorithm increases within the first 
+$40000$ steps to a performance of $\sim (-25)$ and then increases slowly.
+Due to the exploration of SAC the performance is quite unsteady but slowly
+increases to its global maximum of $-6.256$.
+The PPO model has no good performance on early training steps with a global 
+minimum of $\sim (-200)$ at the start. This might be caused by initially
+staying on the ground and not giving the accurate motor
+signals in order to fly. After a small increase, there is again a
+local minimum of $\sim (-125)$.
+Then the performance of PPO increases rapidly and settles around $-5.238$.\\
+In four dimensions the complexity of the task increases rapidly. 
+As a consequence, the performance is more unstable in total.
+Even small difference on a single motor can lead to a big rotational movement or
+crashing and therefore violates the constraints of the environment (\cref{sec:constraint}).
+Since this could happen at a time step, in which there already has been a 
+big amount of negative rewards due to unoptimal flight, the performance can 
+have magnitudes up to $\sim (-500)$.
+In total the SAC4D24\_1 policy clearly outperforms the rest due to the lower
+control frequencies. Since there are less time steps to receive a reward,
+the absolute of the summed up reward is smaller.
+Besides, at some point also PPO shortly outperforms all the SAC policies,
+but the performance of the PPO model seems to be unstable.
+Around $2.25 \cdot 10^7$ steps the performance decreases significantly, and
+even the smoothed performance diminishes to $\sim (-120)$. 
+This can be explained due to the PPO model not generalizing well. As a consequence,
+even a small policy change can lead to collapsing training.
+The SAC4D48\_1 model has no problem with training stability and converges with the best
+performance of $-7.717$ which is close to the best performance of SAC4D24\_1 $-3.798$.
 
-\newpage
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/4Dtrain.png}
+	\caption{Comparison of PPO4D\_1 (purple), SAC4D48\_1 (orange) and SAC4D24\_1
+	 (blue) training progress}
+	\label{fig:train4D}
+\end{figure}
 
 \subsubsection{Action Comparison}
-% log of 1D rpms
-% log of 4D rpms
+Comparing the actions $a_i \quad i \in [1...4]$ is important in order to understand
+the learned policy.
+When the policy uses a one dimensional action space, the action is equally given
+to the four motors, so $a_i = a_1 \forall i \in [1...4]$.
+Due to the lesser complexity the action-chosing is more optimal, which
+indicates the smoothness of the action over time (\cref{fig:actcompare}, red, green).
+The PPO1D\_1 policy (red) starts with giving maximum rpm to the motors.
+Therefore, it takes of with maximal speed. Then, it smoothly transitions
+into taking the action $-1$, which causes the drone to fall. As a consequence,
+it slows down the drone and handles possible overshoot. At last, it transitions
+into taking the action $0$ which causes hovering.
+The SAC1D\_1 (green) is not as steady in its decision-making. Its actions are 
+limited to the range $[-0.75, 0.75]$, so it does not start with full speed
+and does not stop with maximum efficiency. As a consequence of the
+slow start, it transitions later into taking the negative action and also, later
+to taking action $0$.
+The policies with a four dimensional action show a recognizable resemblance with 
+its one dimensional counterpart.
+The PPO4D\_1 policy (purple) starts with maximum speed in all actions.
+On $a_2, a_4$ the first action is $-1$ causing a yaw rotational movement due to 
+\cref{form:quad4}. About the same time as the one dimensional PPO policy,
+the actions start to transition to taking the action $-1$, but they do not do it smoothly.
+Due to little differences between the actions, the actions begin to be pointed
+in order to counteract the difference in $x, y, \Theta, \phi$. 
+The actions $a_1, a_3$ rarely really are exactly $-1$. The four dimensional
+PPO then transitions into taking action $0$, but since it is harder to hit 
+the exact goal in 3 dimensions, the actions get noisy in order to counteract
+the overshoot in each axis.
+The SAC4D48\_1 policy (red) already starts of pointy. In caparison to its
+one dimensional counterpart, some spikes reach an action of $1$.
+Due to its slow start, it is not in need of much breaking.
+In the actions $a_2, a_4$ it breaks with an action of $\sim (-0.25)$. 
+When near to the point the actions get noisy like seen before. Especially
+$a_2, a_4$ show a high amplitude. 
 
-\newpage
+\begin{figure}
+	\centering
+	\includegraphics[width=1\linewidth]{figures/actionlog.png}
+	\caption{Comparison of the raw actions $a_i \quad i \in [1...4]$ produced
+	by the different policies:
+	PPO1D (red), PPO4D (purple), SAC1D (green), SAC4D48 (orange)}
+	\label{fig:actcompare}
+\end{figure}
 
 \subsubsection{Overall Comparison}
+Overall, PPO1D outperforms the other agents (\cref{tab:eval0}) in almost
+every metric. With a return of $-5.238$ it achieves an optimality of 
+$95.05 \%$ and is $82.50 \%$ of the simulated time in the 
+defined goal sphere with a radius of $0.05m$. This results in a time optimality
+of $98.51 \%$.
+\cref{fig:distances} also shows this. After $1s$ this policy reaches the goal
+for the first time and then stays inside the threshold with no 
+remarkable overshoot.\\
+Similar performance shows PPO4D with a return of $-6,036$ and an optimality of
+$80.75 \%$. PPO4D even outperforms SAC1D in almost every
+metric. \cref{fig:distances} shows that this policy reaches the point about $1s$,
+but shows steady overshoot after reaching the goal.
+This policy makes the drone fly around the goal within the defined threshold.
+However, at the end of the episode, the distance seems to grow and leads to 
+the biggest overshoot of $0.017m$.
+With a return of $-6.256$ and a return optimality of $77.92 \%$ the SAC1D
+policy shows solid performance, good enough for flight.
+The distance plot shows that the drone reaches the goal about $1.25s$ and then
+shows a small overshoot. Also, it shows a steady error of $0.004m$.
+The SAC4D policies show similar performance, that is good enough for flight control.
+Again, they are slower at the start than the other models but achieve staying
+within the threshold. \cref{fig:distances} shows that both can not null the 
+distances completely and remain about $0.014m$ from the goal.
 
 \begin{longtable}{|c|c|c|c|c|c|}
 	\caption{Evaluation of the Policies with mode 1}\label{tab:eval0}\\
@@ -127,43 +236,114 @@ but only differ in the used algorithm.
 	\caption[]{Evaluation of the Policies with mode 1}
 	\endhead
 	\hline
-	Reward $r_e$ & & & $-6.036$ & $-7.325$ & $-7.717$ \\
+	Return $J_\pi$ & $-5.238$ & $-6.256$ & $-6.036$ & $-7.325$ & $-7.717$ \\
 	\hline
-	Optimality\textsubscript{$r$} $\frac{r_{opt}}{r_e}$ & & & $80.75 \%$ & $66.54 \%$ & $63.16 \%$\\
+	Optimality\textsubscript{$J$} $\frac{J_{opt}}{J_\pi}$ & $95.05 \%$ & $77.91 \%$ & $80.75 \%$ & $66.54 \%$ & $63.16 \%$\\
 	\hline
-	Sucess & & & $1$ & $1$ & $1$ \\
+	Sucess & $1$ & $1$ & $1$ & $1$ & $1$ \\
 	\hline
-	Time Rate $\beth$ & & & $82.08 \%$ & $77.08 \%$ & $76.25 \%$\\
+	Time Rate $\beth$ & $82.50 \%$ & $80.42 \%$ & $82.08 \%$ & $77.08 \%$ & $76.25 \%$\\
 	\hline
-	Optimality\textsubscript{$\beth$} $\frac{\beth}{\beth_{opt}}$ & & & $98.01 \%$ & $92.05 \%$ & $91.04 \%$\\
+	Optimality\textsubscript{$\beth$} $\frac{\beth}{\beth_{opt}}$ & $98.51 \%$ & $96.02 \%$ & $98.01 \%$ & $92.05 \%$ & $91.04 \%$\\
 	\hline
-	dist($\frac{T}{2}$) & & & $0.005m$ & $0.006m$ & $0.011m$ \\
+	dist($\frac{T}{2}$) & $0.0001 m$ & $0.004 m$ & $0.005m$ & $0.006m$ & $0.011m$ \\
 	\hline
-	dist($T$) & & & $0.017m$ & $0.014m$ & $0.013m$\\
+	dist($T$) & $0.0001 m$ & $0.004 m$ & $0.017m$ & $0.014m$ & $0.014m$\\
 	\hline
-	Settled & & & $1$ & $1$ & $1$\\
+	Settled & $1$ & $1$ & $1$ & $1$ & $1$\\
 	\hline
-	Overshoot & & & $0.0195m$ & $0.023m$ & $0.023m$\\
+	Overshoot & $0.0002m$ & $0.004m$ & $0.017m$ & $0.014m$ & $0.014m$\\
 	\hline
 \end{longtable}
 
-%overall
-%PPO better?
-%form of rpms
-%yaw angular velocity
-%dist(t) in [0...5]
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/distances.png}
+	\caption{Complete distance $[m]$ of the policies over time$[s]$ with defined 
+	threshold of $0.05m$:
+	SAC4D24\_1 (blue), SAC4D48\_1 (yellow),
+	SAC1D\_1 (green), PPO1D\_1 (red), PPO4D\_1 (violet)}
+	\label{fig:distances}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/angles.png}
+	\caption{Roll ($\Theta$), Pitch ($\phi$) and Yaw ($\psi$) angles of the drone over time 
+	for different policies}
+	\label{fig:angles}
+\end{figure}
+Since all evaluated policies succeed on the fixed goal task, it is 
+also important to emphasizes the stability of the flight.
+Many modern quadrocopter are equipped with cameras or other payloads
+that require a stable flight without big attitude changes.
+\cref{fig:angles} shows $\Theta, \phi, \psi$ over a time span of $5s$ for
+every evaluated policy.
+Obviously the one dimensional policies do not show any angle at all.
+Due to \cref{form:quad2}, \cref{form:quad3} and \cref{form:quad3}
+no rotational movement can be created, because $\omega_0 = \omega_1 = \omega_2 = \omega_3$.
+Since the task can be achieved without any rotational movement, angles of $0$ are preffered.
+The roll angles lies within a range of $0.01[rad] \approx 0.57^{\circ}$ about 
+$0$ for all policies. All policies only apply small roll movements in order
+reach the goal and control $x$ position.
+The pitch angles lies within a range of $0.02[rad] \approx 1.15^{\circ}$ about 
+$0$ for all policies. 
+It seems that for all policies the magnitude decreases over time.
+The four dimensional SAC policies show similar yaw angles, although
+the policy trained on 24Hz slightly outperforms the 48Hz policy.
+At the start their angles slowly increase, but stabilize around $1.5$ seconds.
+However, the four dimensional PPO does not stabilize at every point.
+The yaw angle decreases and the steepness increases over time.
+As a consequence, it spins around the $z$ axis. This is not a
+preferable flight control, since the heading of the drone changes
+rapidly. Also, possible payloads can not be used
+with this flight control.
 
 
 \newpage
 
-
 \subsubsection{Comparison for different episode lengths}
-
+Like previously mentioned the policies derived from the PPO algorithm 
+show near optimal performance in environments with an episode length 
+of $5s$ (\cref{tab:eval0}). However, the performance depends on the
+episode length of the environment (\cref{fig:timeRew}).
+In theory, the optimal policy $\pi^*$ should be constant and independent
+of the episode length, since it should reach the goal and stay there.
+However, the evaluated policies are not optimal and do not achieve
+to reach the exact goal and perfectly stay there.
+Therefore, policies can be defined as quasi-optimal. 
+Quasi-optimal goal policies achieve to reach the goal and then 
+stay within a defined distance $D$. 
+When the episode length increases,
+the performance $R$ will decrease dependent on $r_D$:
 \begin{align}
-	r_{worst}^* &= T \cdot \frac{f_c}{\aleph} \cdot \lim_{dist_t \to \infty} r_t \nonumber\\
-	&= T \cdot 48Hz \cdot -1 = -48Hz \cdot T\\
-	r_{worst} &= r_{worst}^* - 200 = -48Hz \cdot T - 200
+	R(t+1) &= R(t) + r_D \\
+	e^{-0.6 \cdot D} - 1 &\leq r_D \leq 0
 \end{align}
+As a consequence,
+the performance should be nearly linear dependent on the episode length.
+While both one dimensional policies and the four dimensional policies
+derived from the SAC algorithm fulfill this definition, 
+the PPO4D policy is not quasi-optimal on the evaluated episode lengths.
+After $7s$ it violates the environment constraints and the performance
+drops to $\sim (-256)$. This policy does not achieve stable flight control and
+causes crashing, because it does not achieve to generalize the problem.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/returntime.png}
+	\caption{Comparison of the episode returns dependent on different episode length$[s]$
+	with matching policy: 
+	SAC4D24 (blue), 
+	SAC4D48 (yellow), SAC1D (green),
+	PPO1D (red),
+	PPO4D (violet)}
+	\label{fig:timeRew}
+\end{figure}
+
 
 %rew(T) T in 5...60
 %all 48Hz models on mode 1
@@ -186,28 +366,28 @@ but only differ in the used algorithm.
 
 \subsubsection{Comparison of control frequencies}
 The metric (\cref{tab:control}) suggests that PPO at $48Hz$ outperforms all other policy-control frequency pairs. 
-It shows a particularly good reward of $-6.036$ which concludes a reward optimality of $80.75 \%$. 
+It shows a particularly good return of $-6.036$ which concludes a return optimality of $80.75 \%$. 
 In this metric it makes up its own category. 
-The SAC policies seem to classify around a reward optimality $\sim 60 \%$ with SAC4D24\_1.zip as leading model, 
-that possesses a reward optimality of $66.54 \%$ on an environment operating with a control frequency of 48Hz. 
+The SAC policies seem to classify around a return optimality of $\sim 60 \%$ with SAC4D24 as leading model, 
+that possesses a return optimality of $66.54 \%$ on an environment operating with a control frequency of 48Hz. 
 Also, the PPO policy shows the best time rate $\beth$ and best optimality in time rate. 
-With $98.01 \%$ it seems to be nearly optimal and leads against the SAC model because it reaches the goal earlier (\cref{fig:dist}). 
+With $98.01 \%$ it seems to be nearly optimal and leads against the SAC model because it reaches the goal earlier (\cref{fig:distances}). 
 On distance and overshoot it is close to the SAC policies.\\
 While the PPO policy seems to be nearly optimal if tested on the same control frequency with the same episode length like in training, 
 the performance crashes when changing either of those. 
-When operating on 24Hz the reward collapses to $-17.085$ which concludes a reward optimality of $13.99 \%$.
-It still succeeds on reaching the goal but does not settle. In contrast, after reaching the goal the distance further increases up to $2m$. 
+When operating on 24Hz the return collapses to $-17.085$ which concludes a return optimality of $13.99 \%$.
+It still succeeds on reaching the goal but does not settle. In contrast, after reaching the goal the distance further increases up to $2.335m$. 
 As a consequence, it can be said that the PPO policy does not show any robustness towards the control frequency, 
 which might be caused by PPO being an on policy algorithm.\\
 Both SAC policies show similar results across the entire metric. 
 Still both outperform itself on the higher control frequency. 
 This is only logical, because the amount of actions is notable higher and therefore the drone can correct itself more often. 
-In total SAC4D24\_1 outperforms the other policies. It might be surprising that it even outperforms
- SAC4D48\_1 slightly on $48Hz$ and $5s$, although it was not trained on this control frequency.  
+In total SAC4D24 outperforms the other policies. It might be surprising that it even outperforms
+ SAC4D48 slightly on $48Hz$ and $5s$, although it was not trained on this control frequency.  
 When evaluating SAC4D48\_1 and SAC4D24\_1 on environments with episode lengths between $5s$ and $60s$ and different control
- frequencies (\cref{fig:cfv}) this surprise is resolved. While SAC4D48\_1 shows a nearly linear decrease, SAC4D24\_1 decreases on general faster. 
+ frequencies (\cref{fig:cfv}) this surprise is resolved. While SAC4D48 shows a nearly linear decrease, SAC4D24 decreases on general faster. 
  On $24Hz$ the performance is really close and show a maximal difference of around 5. 
- On $48Hz$ SAC4D48\_1 clearly outperforms the other model in general, although SAC4D24\_1 seems to be the better policy for short episode lengths.
+ On $48Hz$ SAC4D48\_1 clearly outperforms the other model in general, although SAC4D24 seems to be the better policy for short episode lengths.
 
 \begin{longtable}{|c|c|c|c|c|c|c|}
 	\caption{Evaluation of the Policies learned with different control frequency with mode 1}\label{tab:control}\\
@@ -223,9 +403,9 @@ When evaluating SAC4D48\_1 and SAC4D24\_1 on environments with episode lengths b
 	$\frac{f_s}{\aleph}$ & 48Hz & 48Hz & 48Hz &  24Hz & 24Hz & 24Hz\\
 	\hline
 	\hline
-	Reward $r_e$ & $-7.717$& $-7.325$ & $-6.036$ & $-4.144 $ & $-3.798$ & $-17.085$\\
+	ReTurn $J_\pi$ & $-7.717$& $-7.325$ & $-6.036$ & $-4.144 $ & $-3.798$ & $-17.085$\\
 	\hline
-	Optimality\textsubscript{$r$} $\frac{r_{opt}}{r_e}$ & $63.16 \%$ & $66.54\%$ & $80.75 \%$ & $57.67\%$ & $62.92 \%$ & $13.99 \%$\\
+	Optimality\textsubscript{$J$} $\frac{J_{opt}}{J_\pi}$ & $63.16 \%$ & $66.54\%$ & $80.75 \%$ & $57.67\%$ & $62.92 \%$ & $13.99 \%$\\
 	\hline
 	Sucess & $1$ & $1$ & $1$ & $1$ & $1$ & $1$\\
 	\hline
@@ -233,13 +413,13 @@ When evaluating SAC4D48\_1 and SAC4D24\_1 on environments with episode lengths b
 	\hline
 	Optimality\textsubscript{$\beth$} $\frac{\beth}{\beth_{opt}}$ & $91.04 \%$ &  $92.05 \%$ & $98.01 \%$ & $89.55 \%$ & $91.55 \%$ &  $6.97 \%$\\
 	\hline
-	dist($\frac{T}{2}$) & $0.011m$ & $0.006m$ & $0.005m$ & $0.011m$ &  $0.009m$& $0.080m$\\
+	dist($\frac{T}{2}$) & $0.011m$ & $0.005m$ & $0.005m$ & $0.011m$ &  $0.009m$& $0.080m$\\
 	\hline
-	dist($T$) & $0.013m$ & $0.014m$ & $0.017m$ & $0.020m$ & $0.006m$ & $>2m$\\
+	dist($T$) & $0.014m$ & $0.014m$ & $0.017m$ & $0.020m$ & $0.006m$ & $2.335m$\\
 	\hline
 	Settled & $1$ & $1$ & $1$ & $1$ & $1$ & $0$\\
 	\hline
-	Overshoot &$0.023m$ & $0.023m$ & $0.0195m$ & $0.022m$ & $0.017m$ & $>2m$\\
+	Overshoot &$0.014m$ & $0.014m$ & $0.017m$ & $0.020m$ & $0.009m$ & $2.335m$\\
 	\hline
 \end{longtable}
 
@@ -247,8 +427,8 @@ When evaluating SAC4D48\_1 and SAC4D24\_1 on environments with episode lengths b
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/HzVergleich.png}
-	\caption{Performance of SAC4D48\_1 and SAC4D24\_1 on environments with episode lengths between $5s$ and $60s$ and different control frequencies}
+	\includegraphics[width=\linewidth]{figures/timeRew.png}
+	\caption{Performance of SAC4D48 (orange) and SAC4D24 (blue) on environments with episode lengths between $5s$ and $60s$ and different control frequencies}
 	\label{fig:cfv}
 \end{figure}
 
@@ -276,23 +456,23 @@ can further generalize the problem without the need of learning again with a big
 
 \newpage
 
-\begin{longtable}{|c|c|c|c|c|}
+\begin{longtable}{|c|c|c|c|c|c|}
 	\caption{Overview of the evaluated Policies on random goal modes}\label{tab:pi2}\\
 	
 	\hline
-	Name & Algorithm & ActionType & $\frac{f_s}{\aleph}$ & $t_{total}$ \\
+	Name & Algorithm & ActionType & $\frac{f_s}{\aleph}$ & $t_{total}$ & $R$\\
 	\hline
 	%\toprule
 	\endfirsthead
 	\caption[]{Overview of the evaluated Policies on fixed goal modes}
 	\endhead
-	SAC4D\_2.zip & SAC & $rpm$ & $48Hz$ & $1e8$\\
+	SAC4D\_2.zip & SAC & $rpm$ & $48Hz$ & $1e8$ & $0.5m$\\
 	\hline
-	SAC4Dcurri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$\\
+	SAC4Dcurri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$ & $0.5m$\\
 	\hline
-	SAC4Dsp\_curri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$\\
+	SAC4Dsp\_curri\_2.zip & SAC & $rpm$ & $48Hz$ & $5e7$ & $0.5m$\\
 	\hline
-	$\pi_{opt}$ & & $rpm$ & & \\
+	$\pi_{opt}$ & & $rpm$ & & & \\
 	\hline
 \end{longtable}
 % SAC4D

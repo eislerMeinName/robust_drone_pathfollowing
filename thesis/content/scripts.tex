@@ -285,7 +285,7 @@ The use of modes is helpful in order to debug the environment end slowly increme
 			\nu_y\\
 			\nu_z\\
 		\end{array}
-		\right) \qquad \nu_x, \nu_y \in [-R, R], \quad \nu_z \in [0,R]$
+		\right) \qquad \nu_x \sim G(-R;R), \quad \nu_y \sim G(-R;R), \quad \nu_z \sim G(0;R)$
 	}
 	
 	\Return $ \left( \begin{array}{c}
@@ -440,7 +440,7 @@ point symmetric with the global maximum when $dist_t = 0$.
 	\label{fig:rewd}
 \end{figure}
 
-\subsection{Constraints}
+\subsection{Constraints}\label{sec:constraint}
 Besides, the reward function is also influenced by a set of constraints, which are logical rules that define a safe flight. 
 If one of the rules is broken, the episode is ended by returning a done $d$ value that is true. 
 In addition, there is a punishment reward of $-200$ that is added to the classic reward function.\\
@@ -462,23 +462,23 @@ However, in order to change the $x,y$ coordinates a roll and pitch angle is need
 
 \newpage
 
-\subsection{Optimal Rewards}\label{sec:oprew}
-Based on the modes (\cref{sec:modes}) different optimal rewards (\cref{eq:rew}) can be defined, 
+\subsection{Optimal Rewards \& Optimal Returns}\label{sec:oprew}
+Based on the modes (\cref{sec:modes}) different optimal rewards (\cref{eq:rew}) and associated returns can be defined, 
 that are helpful in order to determine how good the learned decision-making is.\\
-\emph{Mode 0} has an optimal reward of $r_{opt} = 0$, which is basically just giving the action $0$ to all motors. 
+\emph{Mode 0} has an optimal return of $J_{opt} = 0$, which is basically just giving the action $0$ to all motors. 
 This leads to hovering and staying in the goal.
 \emph{Mode 1} is due to its fixed goal position $g$ rather easy to define:
 \begin{align}
-r_{opt} &= \sum_{t=0}^{f_c \cdot T}  r_{opt_t} \label{eq:oprew}\\
+J_{opt} &= \sum_{t=0}^{f_c \cdot T}  r_{opt_t} \label{eq:oprew}\\
 d_0 &= 0.5\\
 dist_{t+1} &= dist_t - |\overrightarrow{v_{opt}}| \cdot \frac{1}{f_c} \label{eq:dt1}%\\
 %r_{t} &= e^{-0.6 \cdot (d_{t+1} )} - 1 \label{eq:rew2}
 \end{align}
 The distance at start $d_0$ is always 0.5. An optimal decision of the agent corresponds to an optimal velocity vector $v_{opt}$ that minimizes 
 the distance to the goal with the given bounds of the maximum speed at the $\alpha$ of the action processing. 
-The reward (\cref{eq:rew}) can then be used for every control step and summed up to the total optimal reward $r_{opt}$ (\cref{eq:oprew}).\\
-Since every mode apart from mode 0 and mode 1 does not possess a fixed goal position, only an expected optimal reward $\mathbb{E}(R_{opt})$ can be defined. 
-Therefore, an expected starting distance $\mathbb{E}(d_0)$ to a goal that is equally distributed in a half sphere:
+The reward (\cref{eq:rew}) can then be used for every control step and summed up to the total optimal return $J_{opt}$ (\cref{eq:oprew}).\\
+Since every mode apart from mode 0 and mode 1 does not possess a fixed goal position, only an expected optimal reward $\mathbb{E}(J_{opt})$ can be defined. 
+Therefore, an expected starting distance $\mathbb{E}(d_0)$ to a goal that is equally distributed in a half sphere can be defined as:
 \begin{align}
 	\mathbb{E}(d_0) &= \sqrt{\mathbb{E}(d_x)^2 + \mathbb{E}(d_y)^2 + \mathbb{E}(d_z)^2}  = \mathbb{E}(d_z) \\
 	\mathbb{E}(d_x) &= \mathbb{E}(d_y) = 0\\
@@ -489,7 +489,7 @@ Therefore, an expected starting distance $\mathbb{E}(d_0)$ to a goal that is equ
 The expected distance in each axis $\mathbb{E}(d_0)$ depends linear on the chosen maximum radius $R$. 
 The expected distance in $x$ and $y$ direction is equal to zero due to the symmetry of the half sphere.\\
 Also, mode 3 possess a wind class that tries to disrupt the agent. Since there are random wind fields and the corresponding 
-force is not normally distributed, the optimal reward can just be estimated downwards. 
+force is not normally distributed, the optimal return can just be estimated downwards. 
 Therefore, the used maximum wind force $\omega_w$ is used in order to approximate the maximum of disruptive distance and use it in order to update \cref{eq:dt1}.
 \begin{align}
 	dist_{t+1} &= dist_t - | v_{opt} | \cdot \frac{1}{f_c} + \frac{\omega_w}{m} \cdot \frac{1}{f_c}
@@ -645,7 +645,7 @@ At last, the policy is saved, the best policy $\pi_{best}$ is renamed and the cu
 		
 		Save $\pi$ and rename the best policy $\pi_{best}$
 		
-		$R = R + 0.2$
+		$R \leftarrow R + 0.05$
 	}
 \end{algorithm}
 
