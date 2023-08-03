@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 import pybullet as p
 from gym import spaces
@@ -17,23 +15,22 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
     #############################################################################################
 
     def __init__(self,
-                 drone_model: DroneModel = DroneModel.CF2X,
-                 #drone_model: DroneModel = DroneModel("hb"),
+                 drone_model: DroneModel = DroneModel("hb"),
                  initial_xyzs=None,
                  initial_rpys=None,
                  physics: Physics = Physics.PYB,
                  freq: int = 240,
                  aggregate_phy_steps: int = 5,
                  gui=False,
-                 record=False,
                  obs: ObservationType = ObservationType.KIN,
                  act: ActionType = ActionType.RPM,
                  total_force: float = 0.000,
                  mode: int = 0,
                  episode_len: int = 5,
                  radius: float = 0.0,
-                 debug: bool = False
-                 ):
+                 debug: bool = False,
+                 type: int = 0
+                 ) -> None:
         """Initialization of a single agent RL environment with wind field.
 
         Parameters
@@ -52,8 +49,6 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             The number of physics steps within one call to `BaseAviary.step()`.
         gui : bool, optional
             Whether to use PyBullet's GUI.
-        record : bool, optional
-            Whether to save a video of the simulation in folder `files/videos/`.
         obs : ObservationType, optional
             The type of observation space (kinematic information or vision).
         act : ActionType, optional
@@ -64,13 +59,16 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             The mode of the Wind environment that can be used for incremental Learning.
         episode_len: int, optional
             The number of seconds each episode is simulated.
-        upper_bound: float, optional
-            The upper bound of the random goal.
+        radius: float, optional
+            The radius of the goal ball.
         debug: bool, optional
             Enables and disables debug messages.
+        type: int, optional
+            The type of the wind field.
 
         """
 
+        self.wind_type = type
         self.mode = mode
         self.total_force = total_force
         self.radius = radius
@@ -180,9 +178,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         # OBS SPACE OF SIZE 15
         return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], obs[16:19]]).reshape(15, ).astype('float32')
 
-    def _preprocessAction(self,
-                          action
-                          ):
+    def _preprocessAction(self, action) -> np.array():
         """Pre-processes the action passed to `.step()` into motors' RPMs.
 
         Parameter `action` is processed differenly for each of the different
@@ -234,7 +230,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         Returns
         -------
-        bool
+        bool:
             Whether the current episode is done.
 
         """
@@ -262,16 +258,12 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         if self.mode == 0:
             self.goal: np.array = np.array([0, 0, 0.5])
 
-        # mode 0 is a basic mode without wind and with an easy to reach static goal along the z axis
+        # mode 1 is a basic mode without wind and with an easy to reach static goal along the z axis
         elif self.mode == 1:
             self.goal: np.array = np.array([0, 0, 0.5])
 
-        # mode 1 is a mode with a goal along the z axis
+        # mode 2 is a basic mode without wind and a goal near [0,0,0.5] with a radius of r
         elif self.mode == 2:
-            self.goal: np.array = np.array([0, 0, random.uniform(0.5 - self.radius, 0.5 + self.radius)])
-
-        # mode 3 is a basic mode without wind and a goal near [0,0,0.5] with a radius of r
-        elif self.mode == 3:
             # sample evenly distributed points inside a half sphere
             rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
                                              random.uniform(-self.radius, self.radius),
@@ -282,8 +274,8 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
                                                  random.uniform(0, self.radius)])
             self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
 
-        # mode 4 is a basic mode with random goals and a random constant wind field
-        elif self.mode == 4:
+        # mode 4 is a basic mode with random goals and a specified wind field
+        elif self.mode == 3:
             rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
                                              random.uniform(-self.radius, self.radius),
                                              random.uniform(0, self.radius)])
@@ -292,19 +284,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
                                                  random.uniform(-self.radius, self.radius),
                                                  random.uniform(0, self.radius)])
             self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
-            self.wind = Wind(total_force=self.total_force, args=0)
-
-        # mode with random goal and random generated wind field
-        elif self.mode == 5:
-            srad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
-                                             random.uniform(-self.radius, self.radius),
-                                             random.uniform(0, self.radius)])
-            while np.linalg.norm(rad_vector) > self.radius:
-                rad_vector: np.array = np.array([random.uniform(-self.radius, self.radius),
-                                                 random.uniform(-self.radius, self.radius),
-                                                 random.uniform(0, self.radius)])
-            self.goal: np.array = np.array([0, 0, 0.5]) + rad_vector
-            self.wind = Wind(total_force=self.total_force, args=random.randint(0, 10))
+            self.wind = Wind(total_force=self.total_force, args=self.wind_type)
 
         super()._housekeeping()
 
@@ -330,9 +310,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         """
 
-        # wind force
-        # debug(bcolors.WARNING, 'WIND')
-        if self.mode >= 4:
+        if self.mode >= 3:
             pos = self._getDroneStateVector(0)[0:3]
             p.applyExternalForce(self.DRONE_IDS[nth_drone],
                                  -1,
