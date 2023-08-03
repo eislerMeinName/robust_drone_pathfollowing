@@ -343,8 +343,8 @@ Like previously mentioned, all observations are ranged in order to prohibit inpu
 This is done with the use of the method \emph{\_clipAndNormalizeState} which gets the current state $s_t$ and normalizes it to the defined range (\cref{eq:clipnorm}). 
 First, it clips it to predefined values $v$ and then normalizes it by dividing with the matching predefined value $v_i, i\in[0,11]$. 
 If wanted, a warning can be printed each time a state parameter has to be clipped. 
-By clipping x and y to a value in $[-20,20]$ there is a predefined limit of maximal distance, in which there is a reasonable option to learn robust flight. 
-Analogue the z component is clipped to $[-10,10]$, roll and pitch to $[-\pi, \pi]$, the translation velocities to $[-3, 3]$ in $x, y$ and to $[-2,2]$ in $z$ direction. 
+By clipping x and y to a value in $[-5,5]$ there is a predefined limit of maximal distance, in which there is a reasonable option to learn robust flight. 
+Analogue the z component is clipped to $[-5,5]$, roll and pitch to $[-\pi, \pi]$, the translation velocities to $[-3, 3]$ in $x, y$ and to $[-2,2]$ in $z$ direction. 
 \newline
 \begin{align}
 	\daleth_t \leftarrow clip(s_t) / v \label{eq:clipnorm}
