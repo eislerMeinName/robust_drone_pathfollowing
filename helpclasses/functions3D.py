@@ -6,9 +6,7 @@ import numpy as np
 class Function3D :
     """Models a random 3D function"""
 
-    #################################
-
-    def __init__(self, is_inner: bool):
+    def __init__(self, is_inner: bool) -> None:
         """Initialization of a single top 3D function.
 
         Parameters

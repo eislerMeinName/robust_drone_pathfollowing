@@ -1,5 +1,5 @@
 import time
-from typing import List
+from typing import List, Optional, Tuple
 import pandas as pd
 import numpy as np
 import gym
@@ -21,7 +21,7 @@ class EvalWriter:
     """Writer class that writes the evaluated performance data to a xlsx file."""
 
     def __init__(self, name: str, eval_steps: int, path: str, env: WindSingleAgentAviary,
-                 episode_len: int, threshold: float):
+                 episode_len: int, threshold: float) -> None:
         """Initialization of a EvalWriter class.
             Evaluates success rate, the success time rate, the average distance half way through the simulation,
             the average distance at the end of the simulation, the average overshoot, the succes rate,
@@ -72,7 +72,7 @@ class EvalWriter:
 
         self.housekeeping(env)
 
-    def housekeeping(self, env: WindSingleAgentAviary):
+    def housekeeping(self, env: WindSingleAgentAviary) -> None:
         """Housekeeping function.
 
         Allocation and zero-ing of the variables and environment parameters/objects.
@@ -83,7 +83,7 @@ class EvalWriter:
             The new environment that has been reset.
 
         """
-        self.overshoot.append(0)
+
         self.env = env
         if self.succeeded:
             self.succeeded_steps += 1
@@ -93,7 +93,7 @@ class EvalWriter:
         self.succeeded = False
         self.STEP += 1
 
-    def update(self):
+    def update(self) -> None:
         """Updates the writer.
             Each time the update method is used, it is checked whether it is a single evaluation with a pathplot.
             If the episode is half way through then the current distance is added to the halfdist List.
@@ -124,12 +124,6 @@ class EvalWriter:
             if dist <= self.threshold:
                 self.settled += 1
 
-        # update overshoot
-        #if self.succeeded:
-        #    if dist > 0 and dist > self.overshoot[self.STEP]:
-        #        if self.distances[len(self.distances) - 2] < self.distances[len(self.distances) - 1]:
-        #            self.overshoot[self.STEP] = dist
-
         # Check if success
         if not self.succeeded and dist < self.threshold:
             self.succeeded = True
@@ -142,13 +136,20 @@ class EvalWriter:
 
         self.last_dist = dist
 
-    def evaluateModel(self, model, show: bool = True):
+    def evaluateModel(self, model, show: bool = True) -> Tuple[float, float]:
         """Method that evaluates a given Model.
 
         Parameters
         ----------
         model:
             The model that should be evaluated.
+
+        Returns
+        ----------
+        mean_rew: float
+            The mean reward.
+        std_rew: float
+            The std reward.
 
         """
 
@@ -166,21 +167,21 @@ class EvalWriter:
             if j != self.total_steps:
                 obs = self.env.reset()
                 self.housekeeping(self.env)
-
+            self.calcOvershoot()
         if show:
             self.close()
             self.env.close()
 
         return self.mean_reward, self.std_reward
 
-    def close(self):
+    def close(self) -> None:
         """Method that closes the writer and writes."""
 
         if self.succeeded:
             self.succeeded_steps += 1
         self.write()
 
-    def calcOvershoot(self):
+    def calcOvershoot(self) -> None:
         """Method that calculates the overshoot"""
         dist: List[float] = self.distances.copy()
         while dist[0] > min(dist):
@@ -192,10 +193,10 @@ class EvalWriter:
                 if len(dist) == 1:
                     break
 
-        self.overshoot = max(dist)
+        self.overshoot.append(max(dist))
 
 
-    def write(self):
+    def write(self) -> None:
         """Prints out the data, writes it to a xlsx file and plots it."""
 
         self.calcOvershoot()

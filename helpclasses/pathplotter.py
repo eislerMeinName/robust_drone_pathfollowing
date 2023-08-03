@@ -8,7 +8,7 @@ import numpy as np
 class PathPlotter:
     """Plotter class that plots the path taken in a single evaluation episode"""
 
-    def __init__(self, goal: List[float]):
+    def __init__(self, goal: List[float]) -> None:
         """Initialization of a PathPlotter class.
            Plots path and goal in 3D.
 
@@ -26,7 +26,7 @@ class PathPlotter:
         self.ydata: List[float] = []
         self.zdata: List[float] = []
 
-    def addPose(self, pos: List[float]):
+    def addPose(self, pos: List[float]) -> None:
         """Method that adds position to the data arrays.
 
         Parameters
@@ -41,11 +41,17 @@ class PathPlotter:
         self.zdata.append(pos[2])
 
     def getAxScale(self) -> float:
-        """Method that calculates the best scaling factor for the axes."""
+        """Method that calculates the best scaling factor for the axes.
+
+        Returns:
+            scale: float
+                The scaling factor
+
+        """
 
         return max(np.hstack([self.xdata, self.ydata, self.zdata, self.goal]))
 
-    def show(self):
+    def show(self) -> None:
         """Method that plots the path and the goal."""
 
         scale: float = self.getAxScale()

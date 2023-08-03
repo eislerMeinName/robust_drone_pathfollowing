@@ -11,7 +11,7 @@ class Wind:
 
     ##################################
 
-    def __init__(self, total_force: float, args: int, debug: bool = False):
+    def __init__(self, total_force: float, args: int, debug: bool = False) -> None:
         """Initialization of a single 3D wind field.
 
         Parameters
@@ -25,9 +25,9 @@ class Wind:
 
         """
 
-        self.rand = [random.gauss(total_force/3, 0.03),
-                     random.gauss(total_force/3, 0.03),
-                     random.gauss(total_force/3, 0.03)]
+        self.rand = [random.gauss(total_force/2, 0.03),
+                     random.gauss(total_force/2, 0.03),
+                     random.gauss(total_force/2, 0.03)]
         self.force = total_force
         self.args = args
         self.sign: List[int] = [random.choice([-1, 1]), random.choice([-1, 1]), random.choice([-1, 1])]
@@ -37,7 +37,7 @@ class Wind:
         if debug:
             self.initPrint()
 
-    def initPrint(self):
+    def initPrint(self) -> None:
         """Prints out the Functions that were used to create the wind field.
 
         Parameters
@@ -204,7 +204,7 @@ class Wind:
         else:
             return [x + self.sign[0] * y, z + self.sign[1] * x, y + self.sign[2] * z]
 
-    def functionwind(self, x, y, z, plot: bool = False):
+    def functionwind(self, x, y, z, plot: bool = False) -> List:
         """A completely random wind field based on three random 3D functions.
 
         Parameters
@@ -302,7 +302,7 @@ class Wind:
 
         return self.getfunc()(x=x, y=y, z=z, plot=False)
 
-    def plot(self):
+    def plot(self) -> None:
         """Plots the not-clipped force field."""
 
         x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),

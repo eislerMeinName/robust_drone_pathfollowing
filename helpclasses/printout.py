@@ -1,4 +1,5 @@
 import torch
+from typing import List
 
 
 class bcolors:
@@ -17,7 +18,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-def welcome(ARGS):
+def welcome(ARGS: dict) -> None:
     """A welcome method that checks whether cuda is available and prints out the given Arguments
 
     Parameters:
@@ -36,7 +37,7 @@ def welcome(ARGS):
         print(str(i) + ": " + str(ARGS.__dict__[i]))
 
 
-def hitground(ARGS, pos):
+def hitground(ARGS: dict, pos: List[float]) -> None:
     """Checks whether the ground was hit and prints out the position.
 
     Parameters:
@@ -53,7 +54,7 @@ def hitground(ARGS, pos):
     print('Pos: ' + str(pos))
 
 
-def debug(color: str, message: str):
+def debug(color: str, message: str) -> None:
     """Prints out the message in a color.
 
     Parameters:
