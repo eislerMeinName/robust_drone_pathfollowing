@@ -29,6 +29,7 @@ DEFAULT_RADIUS = 0.0
 DEFAULT_EPISODE_LEN = 5
 DEFAULT_INIT = None
 DEFAULT_ALGO = 'ppo'
+DEFAULT_DELTA = 0.2
 
 
 def run(cpu: int = DEFAULT_CPU,
@@ -43,7 +44,8 @@ def run(cpu: int = DEFAULT_CPU,
         act: ActionType = DEFAULT_ACT,
         name: str = DEFAULT_NAME,
         curriculum: bool = False,
-        algo: str = DEFAULT_ALGO
+        algo: str = DEFAULT_ALGO,
+        delta: float = DEFAULT_DELTA
         ):
 
     # Create training environment ######################################################################################
@@ -99,14 +101,15 @@ def run(cpu: int = DEFAULT_CPU,
         model.learn(total_timesteps=steps, callback=eval_callback, log_interval=100)
 
     else:
-        curri_learn(total_steps=steps, kwargs=sa_env_kwargs, model=model, cpu=cpu, name=name)
+        curri_learn(total_steps=steps, kwargs=sa_env_kwargs, model=model, cpu=cpu, name=name, delta=delta)
 
     # Save the model ###################################################################################################
     model.save(name)
 
 
 def curri_learn(total_steps: int, kwargs: dict,
-                model, cpu: int, name: str):
+                model, cpu: int, name: str,
+                delta: float):
 
     radius: float = kwargs["radius"]
     curr_rad: float = 0.0
@@ -131,14 +134,23 @@ def curri_learn(total_steps: int, kwargs: dict,
                                      )
 
         # Train the model ##############################################################################################
-        model.learn(total_timesteps=total_steps, callback=eval_callback, log_interval=100)
         save_name: str = name.replace(".zip", '') + 'curri_r' + str(curr_rad) + '.zip'
+        debug(bcolors.OKBLUE, "[INFO]: " + model.tensorboard_log +
+              ", radius: " + str(curr_rad) +
+              "[m], delta: " + str(delta))
+        with open('curriculum.log', 'a') as f:
+            f.write("\n[INFO]: " + model.tensorboard_log +
+                    ", radius: " + str(curr_rad) +
+                    ", steps: " + str(int(1/((1 / delta)+1) * total_steps)) +
+                    "[m], delta: " + str(delta) +
+                    "\n[INFO]: name:" + save_name)
+        model.learn(total_timesteps=int(1/((1 / delta)+1)*total_steps), callback=eval_callback, log_interval=100)
         model.save(save_name)
 
         # Rename Best Model ############################################################################################
         os.rename('results/best_model.zip', 'results/best_modelcurri_r' + str(curr_rad) + '.zip')
 
-        curr_rad += 0.05
+        curr_rad += delta * radius
 
 
 def check(cpu: int = DEFAULT_CPU,
@@ -153,7 +165,8 @@ def check(cpu: int = DEFAULT_CPU,
         act: ActionType = DEFAULT_ACT,
         name: str = DEFAULT_NAME,
         curriculum: bool = False,
-        algo: str = DEFAULT_ALGO):
+        algo: str = DEFAULT_ALGO,
+        delta: float = DEFAULT_DELTA):
     if mode > 4:
         raise ParsingError(['Mode'], [mode], 'The specified mode is not defined in the environment.')
     if curriculum and steps < 1e7:
@@ -164,6 +177,8 @@ def check(cpu: int = DEFAULT_CPU,
                            'If you use curriculum learning, radius can not be 0.')
     if algo != 'ppo' and algo != 'sac':
         raise ParsingError(['Algo'], [algo], 'The specified Algorithm can not be used in this script. Check spelling!')
+    if delta <= 0 or delta > 1:
+        raise ParsingError(['Delta'], [delta], 'The delta is not within the defined range (0,1].')
 
 
 if __name__ == "__main__":
@@ -195,6 +210,8 @@ if __name__ == "__main__":
                         const=True, default=False)
     parser.add_argument('--algo', default=DEFAULT_ALGO, type=str,
                         help='The algorithm (default: ppo).', metavar='')
+    parser.add_argument('--delta', default=DEFAULT_DELTA, type=float,
+                        help='The delta parameter for curriculum learning (default: 0.2)', metavar='')
 
     ARGS = parser.parse_args()
 
