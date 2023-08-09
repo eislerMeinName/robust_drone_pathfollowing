@@ -96,7 +96,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
                          freq=freq,
                          aggregate_phy_steps=aggregate_phy_steps,
                          gui=gui,
-                         record=record,
+                         record=False,
                          obs=obs,
                          act=act
                          )
@@ -178,7 +178,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         # OBS SPACE OF SIZE 15
         return np.hstack([obs[0:3], obs[7:10], obs[10:13], obs[13:16], obs[16:19]]).reshape(15, ).astype('float32')
 
-    def _preprocessAction(self, action) -> np.array():
+    def _preprocessAction(self, action: np.array) -> np.array:
         """Pre-processes the action passed to `.step()` into motors' RPMs.
 
         Parameter `action` is processed differenly for each of the different
@@ -298,7 +298,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
                 self.goal) + '\n[INFO] starting position' + str(self.pos)
             debug(bcolors.WARNING, debug_message)
 
-    def _physics(self, rpm, nth_drone):
+    def _physics(self, rpm: np.array, nth_drone: int) -> None:
         """Base PyBullet physics implementation with a static wind field.
 
         Parameters
@@ -321,7 +321,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         super()._physics(rpm=rpm, nth_drone=nth_drone)
 
-    def _clipAndNormalizeState(self, state) -> np.ndarray:
+    def _clipAndNormalizeState(self, state: np.array) -> np.array:
         """Normalizes a drone's state to the [-1,1] range.
 
         Parameters
@@ -381,8 +381,15 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
 
         return norm_and_clipped
 
-    def _clipAndNormalizeStateWarning(self, state, clipped_pos_xy, clipped_pos_z, clipped_goal_xy, clipped_goal_z,
-                                      clipped_rp, clipped_vel_xy, clipped_vel_z):
+    def _clipAndNormalizeStateWarning(self,
+                                      state: np.array,
+                                      clipped_pos_xy: np.array,
+                                      clipped_pos_z: float,
+                                      clipped_goal_xy: np.array,
+                                      clipped_goal_z: float,
+                                      clipped_rp: np.array,
+                                      clipped_vel_xy: np.array,
+                                      clipped_vel_z: float) -> None:
         """Debugging printouts associated to `_clipAndNormalizeState`.
            Print a warning if values in a state vector is out of the clipping range.
 
@@ -396,13 +403,13 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             The clipped position in z axis
         clipped_goal_xy: np.array
             The clipped goal position in x, y axis. Should not be clipped if goal is reachable.
-        clipped_goal_z:
+        clipped_goal_z: float
             The clipped goal position in z axis. Should not be clipped if goal is reachable.
-        clipped_rp:
+        clipped_rp: np.array
             The clipped roll, pitch.
-        clipped_vel_xy:
+        clipped_vel_xy: np.array
             The clipped velocity in x an y axis.
-        clipped_vel_z:
+        clipped_vel_z: float
             The clipped velocity in z axis.
 
         """
@@ -435,7 +442,7 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
             msg: str = "[WARNING] it " + str(self.step_counter) + " in WindSingleAgentAviary._clipAndNormalizeState(), clipped z velocity [{:.2f}]".format(state[12])
             debug(bcolors.WARNING, msg)
 
-    def _computeInfo(self):
+    def _computeInfo(self) -> dict:
         """Computes the current info dict(s).
 
         Unused.
