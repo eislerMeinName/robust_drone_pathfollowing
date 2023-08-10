@@ -204,7 +204,7 @@ class Learner(Enum):
             model = SAC(SACMlpPolicy,
                         env,
                         policy_kwargs=offpolicy_kwargs,
-                        tensorboard_log='results/tb/',
+                        tensorboard_log='logstb/',
                         verbose=1
                         )
             interface = SACInterface(model, env.observation_space.shape[0])
