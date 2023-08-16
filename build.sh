@@ -1,0 +1,5 @@
+cp robust_drone_pathfollowing/changefiles/WindSingleAgentAviary.py gym_pybullet_drones/envs
+cp robust_drone_pathfollowing/changefiles/__init__.py gym_pybullet_drones/envs/__init__.py
+cp robust_drone_pathfollowing/changefiles/other/__init__.py gym_pybullet_drones/__init__.py
+
+pip3 install openpyxl
