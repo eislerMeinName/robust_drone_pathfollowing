@@ -18,6 +18,7 @@ $ conda activate drones
 $ pip3 install --upgrade pip
 $ git clone https://github.com/utiasDSL/gym-pybullet-drones.git
 $ cd gym-pybullet-drones/
+$ git checkout master
 $ pip3 install -e .
 ```
 
@@ -28,14 +29,7 @@ $ git clone https://github.com/eislerMeinName/robust_drone_pathfollowing.git
 ```
 Now, some files inside the changefiles directory have to be copied inside Gym-Pybullet-Drones:
 ```bash
-$ cp robust_drone_pathfollowing/changefiles/WindSingleAgentAviary.py gym_pybullet_drones/envs
-$ cp robust_drone_pathfollowing/changefiles/__init__.py gym_pybullet_drones/envs/__init__.py
-$ cp robust_drone_pathfollowing/changefiles/other/__init__.py gym_pybullet_drones/__init__.py
-```
-
-Also openpyxl has to be installed:
-```bash
-$ pip3 install openpyxl
+$ ./robust_drone_pathfollowing/build.sh
 ```
 
 ### Test Installation
