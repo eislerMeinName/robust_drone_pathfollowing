@@ -1,5 +1,6 @@
 # robust-drone-pathfollowing 
-Robust-drone-pathfollowing is a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, which is a [simple](https://en.wikipedia.org/wiki/KISS_principle) OpenAI [Gym environment](https://gym.openai.com/envs/#classic_control) based on [PyBullet](https://github.com/bulletphysics/bullet3) for multi-agent reinforcement learning with quadrocopter. This extension provides a Gym environment that uses a stochastical, random wind field for single-agent reinforcment learning.
+Robust-drone-pathfollowing is a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) (branch master) extension, which is a [simple](https://en.wikipedia.org/wiki/KISS_principle) OpenAI [Gym environment](https://gym.openai.com/envs/#classic_control) based on [PyBullet](https://github.com/bulletphysics/bullet3) for multi-agent reinforcement learning with quadrocopter. This extension provides a Gym environment that uses a stochastical, random wind field for single-agent reinforcment learning. Also, it applies Linear Curriculum Learning (LCL) and Self-Pased Curriculum Learning on the
+RL problem.
 
 > ## Citation
 > will be added later...
@@ -67,13 +68,14 @@ The Wind class implements a random 3D wind field. It provides the necassary forc
 <img src="files/readme_images/Figure_1.png" alt="random wind field with vortexes" width="400"><img src="files/readme_images/Figure_2.png" alt="random wind field" width="400">
 
 ### Class `PathPlotter`
-The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter(Agent not learned).
+The PathPlotter class plots the path of the drone, as well as its goal. This resulst in plots like the one seen herafter.
+
+<img src="files/readme_images/good point.png" alt="path and goal" width="800">
 
 ### Class `EvalWriter`
 The EvalWriter class evaluates a model and writes its performance to an xlsx file. It evaluates the sucess rate, the sucess time rate and settle rate. Also it caluclates the average distance half way through the simulation, at its end and the average overshoot. In Addition it evaluates the average reward and plots path / goal if it is a signel evaluation by using the PathPlotter class.
 
-
-<img src="files/readme_images/EvalWriter.png" alt="distances to goal" width="582"><img src="files/readme_images/good point.png" alt="path and goal" width="400">
+<img src="files/readme_images/EvalWriter.png" alt="distances to goal" width="800">
 
 ## Class `WindSingleAgentAviary`
 The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https://github.com/utiasDSL/gym-pybullet-drones/blob/master/gym_pybullet_drones/envs/single_agent_rl/BaseSingleAgentAviary.py) class. It models the Single Agent Problem to hover at a position under influence of strong wind.
@@ -93,19 +95,20 @@ The WindSingleAgentAviary class is a subclass of the [SingleAgentAviary] (https:
 >>>       total_force=0.00                  # The total force of the Wind (N)
 >>>       mode=0                            # The mode of the environment
 >>>       episode_len=5                     # The amount of seconds of each episode
->>>       upper_bound=1.0                   # The upperbound of where the goal can be in each axis
->>>       debug=False)                      # Whether to use debug lines
+>>>       radius=1.0                        # The radius of the goal ball
+>>>       debug=False                       # Whether to use debug lines
+>>>       type=0)                           # The type of the wind field
 ````
 
 
 The environment posses some different modes:
 
-| mode | Wind | Goal |
-|---------------------------------: | :-------------------: | :-------------------------------------------: |
-| 0 | no wind | (0,0,z) |
-| 1 | no wind | (x,y,z) |
-| 2 |   yes, constant   | (x,y,z) |
-| 3 |   yes, random     | (x,y,z) |
+| mode | Wind | Goal | Starting State |
+|---------------------------------: | :-------------------: | :-------------------------------------------: | :-------------------------------------------: |
+| 0 | no wind | (0,0,0.5) | (0,0,0.5) |
+| 1 | no wind | (0,0,0.5) | (0,0,z<sub>min</sub>) |
+| 2 | no wind | (x,y,z) sampled inside a goal ball | (0,0,z<sub>min</sub>) |
+| 3 |   yes, specified type    | ((x,y,z) sampled inside a goal ball | (0,0,z<sub>min</sub>) |
 
 The environment can be instantiated by using `gym.make()`—see [`learn.py`](https://github.com/eislerMeinName/robust_drone_pathfollowing/blob/main/learn.py) for an example.
 
@@ -147,22 +150,25 @@ This Script should be used to evaluate your single agent based on PPO or DDPG Al
 
 ```
   -h, --help           show this help message and exit
-  --algo               The Algorithm that trains the agent(PPO(default), DDPG)
-  --obs                The chosen ObservationType (default: KIN)
-  --act                The chosen ActionType (default: RPM)
-  --folder             Output folder (default: results)
-  --mode               The mode of the training environment(default: 0)
-  --episodes           The number of evaluation steps(default: 100)
-  --env                Name of the environment(default:WindSingleAgent-aviary-v0)
-  --load_file          The experiment folder where the loaded model can be found
-  --total_force        The max force in the simulated Wind field(default: 0)
-  --upper_bound        The upper bound of the area where the goal is simulated(default: 1)
-  --debug_env          Parameter to the Environment that enables most of the Debug messages(default: False)
-  --gui                Enables/ Disables the gui replay(default: True)
-  --gui_time GUI_TIME  The simulation length(default: 10)
+  --cpu                Amount of parallel training environments
+  --drone              The drone model
+  --steps              The amount of training steps
+  --mode               The mode of the environment
+  --load               Load an existing model with the specified name
+  --total_force        The max force of the simulated wind field
+  --radius             The radius of the goal ball
+  --debug_env          Enables debug messages
+  --episode_len        The length of the episode [s]
+  --act                The action type of the environment
+  --name               The name of the model after training
+  --curriculum         Enables Linear Curriculum Learning
+  --delta              The delta parameter for curriculum learning
+  --algo               The algorithm that should be used for training
 
 ```
 
 > ## References
-> will be added later...
+> - Jacopo Panerati, Hehui Zhengm SiQi Zhou, James Xu, Amanda Prorok and Angela P. Schoellig: [Learning to Fly](https://arxiv.org/abs/2103.02142)
+> - Pascal Klink, Hany Abdulsamad, Boris Belousov, Carlo D’Eramo, Jan Peters, Joni Pajarinen: [A Probabilistic Interpretation of Self-Paced Learning with
+Applications to Reinforcement Learning](https://dl.acm.org/doi/abs/10.5555/3546258.3546440)
 
