@@ -80,14 +80,17 @@ Prof.\ Dr.\ Carlo D'Eramo
 	be able to operate in a wide range of environments. Especially in harsh environments,
 	the performance of classic controllers is far from optimal.
 	Reinforcement Learning is known for its ability to create intelligent, robust
-	controllers that can operate in harsh environments.
-	This work shows the basic concept of UAV flight and Reinforcement Learning,
-	proposes a simple intelligent flight control,
-	and evaluates different intelligent controllers that were trained for
-	a couple of UAV flight problems with different algorithms, training concepts 
-	and steps.
+	controllers that can operate in harsh environments. In order to achieve this, the learning process
+	should not get stuck in local optima and well generalize the complex problem. The use 
+	of curricula in Reinforcement Learning has shown to improve the learning process, because
+	of countering the exploration-exploitation trade-off.
+	This work proposes a simple intelligent flight control based on 
+	different intelligent controllers that were trained for
+	a couple of UAV flight problems. Furthermore, it emphasizes the importance of 
+	well-designed curricula on random goal modes based on a linear curricula automation approach (LCL).
 	In addition, it aims at providing a general overview of intelligent flight
-	control and promises ideas for future work in this designated area of research.
+	control and promises ideas for future work in this designated area of research that can further improve 
+	the performance.
 \end{abstract}
 
 
@@ -233,6 +236,7 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\item $\epsilon_e$ \dotfill Evaluation environment
 	\item $\epsilon$ \dotfill Environment
 	\item $R_{max}$ \dotfill Maximum radius in LCL
+	\item $\delta$ \dotfill Radius Step Size parameter in LCL
 	\item $\tilde{\rho}$ \dotfill Parsed gui parameter
 	\item $t^*$ \dotfill Real time
 	\item  $t_{sim}$ \dotfill Simulation time
