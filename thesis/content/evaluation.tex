@@ -501,6 +501,87 @@ can further generalize the problem without the need of learning again with a big
 \newpage
 
 \subsection{Wind Disruption}
+This section aims at showing the difficulty of applying policies that 
+were trained on a simulated environment without a static wind field
+in environments with a wind field. Therefore, the already evaluated
+policies are now evaluated on WindSingleAgentAviary environments in mode 3.
+Therefore, the force dependency for the used model is explained and
+classified into the common dynamics of the drone model.
+Then, some basic results for fixed goals are evaluated for wind strengths
+within a range of $0N$ to $0.3N$ in order to show the problems with the current implementation.
+
+\subsubsection*{Force-dependent Acceleration of the Drone Model}
+\cref{eq:force} shows the relation between maximum wind force $\omega_w$ and the related acceleration
+of the drone. By integrating over time this acceleration $\overrightarrow{a}$ influences 
+the velocity $\overrightarrow{v}$, the distances $\overrightarrow{dist}$ and therefore also 
+the position of the drone.
+\begin{align}
+	\overrightarrow{\omega_w} &= m \cdot \overrightarrow{a} \label{eq:force}\\
+	\text{with:} &\nonumber\\
+	\overrightarrow{a} &= \overrightarrow{v} \frac{d}{dt} = \overrightarrow{dist} \frac{d^2}{d^2t}
+\end{align}
+With the specified drone parameters (\cref{tab:drone}) the chosen range of wind strengths can 
+be translated to a range of possible accelerations of $0 \frac{m}{s^2}$ to $0.6 \frac{m}{s^2}$.
+With a simulation frequency $f_s$ of $240Hz$ and $\aleph = 5$ this can be translated to a range
+of possible velocities and distances between each of the control steps of the agent with \cref{eq:windg} 
+and \cref{eq:windd}.
+\begin{align}
+	\overrightarrow{v} &= \aleph \cdot \frac{\overrightarrow{a}}{f_s} \label{eq:windg}\\
+	\overrightarrow{dist} &= \aleph \cdot \frac{\overrightarrow{a}}{f_s^2} \label{eq:windd}
+\end{align}
+This results in a maximum wind caused velocity of $0.0125 \frac{m}{s}$ and a maximum
+associated distance of $5.2 \cdot 10^{-5} m$.
+
+
+\newpage
+
+\subsubsection*{Return, Success Rate, Time Rate \& Overshoot}
+\begin{figure} 
+	\centering
+	\includegraphics[width=\linewidth]{figures/windreward.png}
+	\caption{Extrapolated return with the associated standard error represented by the error bares 
+	of SAC4D48 (orange) and SAC4D24 (blue) in a wind field of different strengths between $0N$ and $0.3N$}
+	\label{fig:return}
+\end{figure}
+Although the wind is not very strong, the return starts rapidly decreasing around a wind force of $0.12N$ (\cref{fig:return}).
+This is mainly caused by a low overshoot (\cref{fig:succ}) of both models.
+However, time rate and success rate starts decreasing earlier. With increasing wind force 
+the drone is pushed more often out of the goal sphere resulting in a decrease of success and time rate.
+But the overshoot suggests that the policies are still able to counteract the wind and approach the 
+goal again.\\
+At $0.16N$ the overshoot already surpasses the mark of $1m$ and success and time rate are almost zero.
+The return is decreasing and the error of the return starts increasing. Due to the stronger wind
+the drone may be pushed into parts of the state space that are not explored enough
+and do not show a good generalization. This results in unwanted behavior, although the 
+return indicates that the drone does not violate the constraints all the time.\\
+When the wind force is further increased both policies decrease immensely and a violation of 
+constraints gets more probable, resulting in huge return errors and a low overall performance.\\
+Both policies seem to perform similar, but on average SAC4D48 outperforms SAC4D24.
+
+\newpage
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/windsuc.png}
+	\caption{Success rate, time rate and overshoot $[m]$ with the associated standard error
+	of SAC4D48 (orange) and SAC4D24 (blue) in a wind field of different strengths between $0N$ and $0.3N$}
+	\label{fig:succ}
+\end{figure}
+The shown results are expected and easily explained, since the policies were learned without wind.
+Without an external force the presented MDP is deterministic, because the transitions are always deterministic based
+on the drone and simulation dynamics. In addition, besides the floor there is no obstacle that could 
+possibly interfere with the transition of the drone in 3D space.
+By introducing a random wind, the MDP gets stochastic. But the presented policies were not 
+learned on this kind of MDP. It was previously shown how it learns to optimize 
+the flight to the goal based on time by getting there early and then staying there as accurately as possible.
+But when there is an external force, it might be better to learn safe flight.
+This can be achieved by learning policies on environments with wind fields.
+It also prepares the possibility of using curricula for the wind in order to optimize safety and speed.
+ 
+
+
+
+
+
 
 % SAC4D
 % SAC4DCurriculum

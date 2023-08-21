@@ -694,9 +694,9 @@ Then the algorithms plan through the dynamics model in order to choose the actio
 Model given algorithms work quite similar, but the dynamic model is already given.\\
 In \emph{Model-free Algorithms} the agent constructs a policy based on trial-and-error experience and can be further divided into 
 \emph{Policy Optimization} and \emph{Q-Learning}.
-Policy Optimization algorithms like \emph{PPO} the policy is learned directly. 
+Policy Optimization algorithms like \emph{PPO} (\cref{sec:ppo}) the policy is learned directly. 
 In contrast, Q-Learning algorithms like \emph{Deep Q-Learning} learns the Q-function and updates it in order to get an optimal Q-function. 
-In addition, there are hybrid algorithms like \emph{DDPG} that combines learning the policy function and Q-function.\\
+In addition, there are hybrid algorithms like \emph{SAC} (\cref{sec:sac}) that combines learning the policy function and Q-function.\\
 RL algorithms can be further categorized into \emph{on-policy} and \emph{off-policy} algorithms. 
 On-policy algorithms use the current optimized policy in order to gain experience that is then used to further optimize the policy. 
 In contrast, off-policy algorithms learn from actions that may not be according to the current policy. 
@@ -790,7 +790,7 @@ PPO seems to be unstable when the reward function is not bounded on continuous a
 	}
 \end{algorithm}
 
-\subsubsection{SAC - Basics}
+\subsubsection{SAC - Basics}\label{sec:sac}
 \emph{Soft Actor-Critic (SAC)} \cite{haarnoja2018soft} is an off policy RL algorithm that optimizes a stochastic policy. 
 It can be categorized as a mixed method between policy optimization and value based methods.
 A key feature of SAC is entropy regularization. The policy is trained to maximize a trade-off between expected return and entropy. 

@@ -608,23 +608,26 @@ LCL is a simple adaption that changes an environment parameter after a specified
 In this case, the radius parameter $R$ of the environment is adjusted. 
 In Theory, the learning starts with a rather simple approach with a fixed goal and then steadily increases the difficulty of the RL problem, 
 which may benefit training performance.\\
-The LCL algorithm (\cref{alg:curri}) receives the total steps within an unchanged environment $t_total$, a set of environment args $\tilde{\lambda}$, 
-the policy model $\pi$, the amount of parallel environments $\eta$ and the specified name of the model.
+The LCL algorithm (\cref{alg:curri}) receives the total training steps $t_total$, a set of environment args $\tilde{\lambda}$, 
+the policy model $\pi$, the amount of parallel environments $\eta$, and the radius step size parameter $\delta$ and the specified name of the model.
 Then the maximum radius $R_{max}$ is saved from $\tilde{\lambda}$ and the current radius $R$ is initialized with a value of $0$.
 Until the current radius is bigger or equal to the maximum radius, 
 the radius in $\tilde{\lambda}$ is set to the current radius. 
 Also, the training environment $\epsilon_t$ with the new arguments is initialized and set, 
 the evaluation environment $\epsilon_e$ is initialized, and evaluation callbacks are defined. 
-Then, the policy model is learned in a common way with $t_total$ steps. 
+Then, the policy model is learned in a common way with $\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor$ training steps. 
+During the whole curriculum learning process the amount of steps per curriculum step is summed up to approximately $t_{total}$.
 Due to the evaluation callbacks it may be that the learning starts earlier if the policy outperforms a defined performance threshold. 
-At last, the policy is saved, the best policy $\pi_{best}$ is renamed and the current radius $R$ is linear increased.
+At last, the policy is saved, the best policy $\pi_{best}$ is renamed and the current radius $R$ is linear increased based 
+on the radius step size parameter $\delta$ and the maximum radius $R_{max}$.
 
 \newpage
 
 \begin{algorithm}
 	\caption{Linear Curriculum Learning Algorithm}
 	\label{alg:curri}
-	\KwIn{total steps $t_{total}$,  set of environment args $\tilde{\lambda}$, model $\pi$, number of parallel environments $\eta$, name}
+	\KwIn{total steps $t_{total}$,  set of environment args $\tilde{\lambda}$, model $\pi$, number of parallel environments $\eta$, 
+	radius step size parameter $\delta$, name}
 	
 	Get radius $R_{max}$ from $\tilde{\lambda}$
 	
@@ -641,11 +644,11 @@ At last, the policy is saved, the best policy $\pi_{best}$ is renamed and the cu
 		
 		Define evaluation callback
 		
-		Learn the model $\pi$ with the amount of steps $t_{total}$
+		Learn the model $\pi$ with the amount of steps $\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor$
 		
 		Save $\pi$ and rename the best policy $\pi_{best}$
 		
-		$R \leftarrow R + 0.05$
+		$R \leftarrow R + \delta \cdot R_{max}$
 	}
 \end{algorithm}
 
