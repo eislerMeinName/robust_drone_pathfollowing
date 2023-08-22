@@ -91,5 +91,5 @@ if __name__ == "__main__":
 
     plt.legend()
     plt.xlabel('time[s]')
-    plt.ylabel('reward')
+    plt.ylabel('return')
     plt.show()

@@ -66,6 +66,6 @@ if __name__ == "__main__":
 
     plt.xlim(0, 3e7)
     plt.xlabel('training steps')
-    plt.ylabel('reward')
+    plt.ylabel('return')
     plt.legend()
     plt.show()

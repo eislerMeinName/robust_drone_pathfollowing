@@ -75,9 +75,9 @@ def run(episodes: int,
             debug(bcolors.BOLD, '[Result] ' + str(means[len(means) - 1]))
 
     #plt.legend()
-    plt.ylim(-60, 0)
+    #plt.ylim(-60, 0)
     plt.xlabel('time[s]')
-    plt.ylabel('reward')
+    plt.ylabel('return')
     #plt.yscale('symlog')
     plt.show()
 
