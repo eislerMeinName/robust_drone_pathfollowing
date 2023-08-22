@@ -113,6 +113,7 @@ def curri_learn(total_steps: int, kwargs: dict,
 
     radius: float = kwargs["radius"]
     curr_rad: float = 0.0
+    rest: float = total_steps
 
     while curr_rad <= radius:
         kwargs["radius"] = curr_rad
@@ -138,19 +139,25 @@ def curri_learn(total_steps: int, kwargs: dict,
         debug(bcolors.OKBLUE, "[INFO]: " + model.tensorboard_log +
               ", radius: " + str(curr_rad) +
               "[m], delta: " + str(delta))
+        steps: float = min(int((delta/(delta+1)) * total_steps), rest)
+
         with open('curriculum.log', 'a') as f:
             f.write("\n[INFO]: " + model.tensorboard_log +
                     ", radius: " + str(curr_rad) +
-                    ", steps: " + str(int(1/((1 / delta)+1) * total_steps)) +
-                    "[m], delta: " + str(delta) +
+                    "[m], steps: " + str(int(1/((1 / delta)+1) * total_steps)) +
+                    ", delta: " + str(delta) +
                     "\n[INFO]: name:" + save_name)
-        model.learn(total_timesteps=int(1/((1 / delta)+1)*total_steps), callback=eval_callback, log_interval=100)
+        model.learn(total_timesteps=steps, callback=eval_callback, log_interval=100)
         model.save(save_name)
+        rest -= steps
 
         # Rename Best Model ############################################################################################
         os.rename('results/best_model.zip', 'results/best_modelcurri_r' + str(curr_rad) + '.zip')
 
         curr_rad += delta * radius
+        if curr_rad > radius and rest > 0:
+            curr_rad = radius
+
 
 
 def check(cpu: int = DEFAULT_CPU,
