@@ -1,9 +1,6 @@
 # robust-drone-pathfollowing 
 Robust-drone-pathfollowing is a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) (branch master) extension, which is a [simple](https://en.wikipedia.org/wiki/KISS_principle) OpenAI [Gym environment](https://gym.openai.com/envs/#classic_control) based on [PyBullet](https://github.com/bulletphysics/bullet3) for multi-agent reinforcement learning with quadrocopter. This extension provides a Gym environment that uses a stochastical, random wind field for single-agent reinforcment learning. Also, it applies Linear Curriculum Learning (LCL) and Self-Pased Curriculum Learning on the
-RL problem.
-
-> ## Citation
-> will be added later...
+RL problem. This branch deals with the implementation of self-paced RL.
 
 ## Installation
 This repo was written using Python3.8 with conda on Ubuntu 20.04 and Arch Linux. However since it is only a [Gym-Pybullet-Drones](https://github.com/utiasDSL/gym-pybullet-drones) extension, it should be compatible with macOS 12 and also other future compatibilities.
@@ -27,6 +24,7 @@ $ pip3 install -e .
 Then, do:
 ```bash
 $ git clone https://github.com/eislerMeinName/robust_drone_pathfollowing.git
+git checkout self-paced
 ```
 Now, some files inside the changefiles directory have to be copied inside Gym-Pybullet-Drones:
 ```bash
