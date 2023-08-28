@@ -50,30 +50,32 @@ if __name__ == "__main__":
     name: List[str] = ['../files/CSV/SACsphere.csv']
     step, rew = read(name[0], 1e8, 0)
     smoothed = smooth(rew, 0.99)
-    plt.plot(step, rew, color='tab:red', alpha=0.25, label='SAC')
-    plt.plot(step, smoothed, color='tab:red', label='SAC Smoothed')
+    plt.plot(step, rew, color='tab:pink', alpha=0.25, label='SAC')
+    plt.plot(step, smoothed, color='tab:pink', label='SAC Smoothed')
 
     name: List[str] = ['../files/CSV/SAC4Dcurric1.csv', '../files/CSV/SAC4Dcurric2.csv',
                        '../files/CSV/SAC4Dcurric3.csv', '../files/CSV/SAC4Dcurric4.csv',
                        '../files/CSV/SAC4Dcurric5.csv', '../files/CSV/SAC4Dcurric6.csv']
 
-    STEP =  []
+    STEP = []
     REW = []
     for i, n in enumerate(name):
         step, rew = read(name[i], 16666000, i*16666000)
         if i == 0:
-            plt.axvline(i*16666000, color='green', label='δ=0.2')
+            plt.axvline(i*16666000, color='tab:cyan', label='δ=0.2')
         else:
-            plt.axvline(i * 16666000, color='green')
+            plt.axvline(i * 16666000, color='tab:cyan')
         for i, r in enumerate(rew):
             STEP.append(step[i])
             REW.append(rew[i])
 
     smoothed = smooth(REW, 0.99)
-    plt.plot(STEP, REW, color='tab:blue', alpha=0.25, label='SAC LCL (δ=0.2)')
-    plt.plot(STEP, smoothed, color='tab:blue', label='SAC LCL (δ=0.2) Smoothed')
+    plt.plot(STEP, REW, color='greenyellow', alpha=0.25, label='SAC LCL (δ=0.2)')
+    plt.plot(STEP, smoothed, color='greenyellow', label='SAC LCL (δ=0.2) Smoothed')
 
-    name: List[str] = ['../files/CSV/delta0_4.csv', '../files/CSV/2delta0_4.csv',
+    name: List[str] = ['../files/CSV/0delta0_4.csv',
+                       '../files/CSV/0delta0_4.csv',
+                       '../files/CSV/2delta0_4.csv',
                        '../files/CSV/3delta0_4.csv']
 
     STEP = []
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     for i, n in enumerate(name):
         step, rew = read(name[i], 28570000, i * 28570000)
         if i == 0:
-            plt.axvline(i * 28570000, color='tab:purple', label='δ=0.2')
+            plt.axvline(i * 28570000, color='tab:purple', label='δ=0.4')
         else:
             plt.axvline(i * 28570000, color='tab:purple')
         for i, r in enumerate(rew):
@@ -89,8 +91,8 @@ if __name__ == "__main__":
             REW.append(rew[i])
 
     smoothed = smooth(REW, 0.99)
-    plt.plot(STEP, REW, color='tab:orange', alpha=0.25, label='SAC LCL (δ=0.4)')
-    plt.plot(STEP, smoothed, color='tab:orange', label='SAC LCL (δ=0.4) Smoothed')
+    plt.plot(STEP, REW, color='black', alpha=0.25, label='SAC LCL (δ=0.4)')
+    plt.plot(STEP, smoothed, color='black', label='SAC LCL (δ=0.4) Smoothed')
 
     plt.xlim(0, 1e8)
     plt.xlabel('training steps')
