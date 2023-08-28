@@ -455,6 +455,24 @@ class WindSingleAgentAviary(BaseSingleAgentAviary):
         """
         return {"answer": 42}
 
+    def setGoal(self, goal: np.array) -> np.array:
+        """A method that sets the goal and returns the matching observation.
+
+        Parameters
+        ----------
+        goal: np.array
+            The goal.
+
+        Returns
+        -------
+        obs: np.array
+            The observation."""
+
+        self.goal = goal
+        if self.GUI:
+            self.goal_vis = p.addUserDebugPoints([self.goal], [[1, 0, 0]], pointSize=10, lifeTime=0)
+        return self._computeObs()
+
     def getState(self) -> np.array:
         """Method that provides the real state to the script.
            Should be used to log the real state information and not the observations.
