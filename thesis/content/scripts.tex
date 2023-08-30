@@ -29,10 +29,10 @@ although the goal might be randomly sampled within a defined space (\cref{alg:sa
 These flexible parameters are summed up in different operating modes (\cref{sec:modes}). 
 Nevertheless, this environment class only models learning to hover in goals. 
 Theoretically, it is compatible with every RL algorithm that allows continuous action spaces.
-On initialization different parameters can be parsed to the environment class.
+On initialization different parameters can be parsed to the environment class (\cref{tab:env}).
 
 \begin{longtable}{|c|c|c|c|c|}
-	\caption{Overview of the initialization parameters of the WindSingleAgentAviary environment class.}\label{tab:env}\\
+	\caption{Overview of the initialization parameters of the WindSingleAgentAviary environment class}\label{tab:env}\\
 	
 	\hline
 	Name & Symbol & Type & Default & Explanation\\
@@ -180,7 +180,7 @@ Like seen in type 0 wind fields a random Gaussian distributed factor $r_i$ is us
 \newline
 
 \emph{Type 5} is a completely random wind field based on three random 3D functions $f, f', f'': \mathbb{R}^3 \to \mathbb{R}$. 
-As a consequence, a lot of different, complex wind field can be created like seen in \cref{eq:wind5} that possesses different functions in each coordinate.\\
+As a consequence, a lot of different, complex wind fields can be created like seen in \cref{eq:wind5} that possesses different functions in each coordinate.\\
 
 A \emph{3D function} can have a lot of different forms and should be described inductive. 
 There are a base set of functions mapping from $\mathbb{R}^3 \to \mathbb{R}$ (\cref{eq:base}). 
@@ -213,7 +213,7 @@ The use of modes is helpful in order to debug the environment end slowly increme
 
 \begin{table}[htp]
 	\centering
-	\caption{The different Modes of a WindSingleAgentAviary environment.}\label{tab:mode}
+	\caption{The different Modes of a WindSingleAgentAviary environment}\label{tab:mode}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		Mode & Goal & Starting State & Wind\\
@@ -302,7 +302,7 @@ Since the coordinate frame of the drone might not be on the lowest point, the dr
 \emph{Mode 2} evenly samples the goal vector from a half ball that is shifted about $0.5$ in positive $z$ direction. 
 This random point sampling in a half ball is implemented with \cref{alg:sample}. 
 It samples a random vector from inside a cupoid with the side lengths of $2 \cdot R, 2 \cdot R, R$ 
-until it is inside the defined half ball. As a consequence, the vector in evenly distributed. 
+until it is inside the defined half ball. As a consequence, the vector is evenly distributed. 
 At first, this algorithm seems pretty inefficient, because in theory the break condition of the loop might never be violated. 
 However, since the probability of $|\overrightarrow{\nu}| > R$ is small (\cref{eq:prob}),
 the expected amount of loops is approximately $1.738$ (\cref{eq:expn}).
@@ -321,13 +321,13 @@ The type of the wind field is either given in initialization or random. Also, th
 The state space $S$ defines the state vector of the drone in the environment and possesses a dimensionality of $23$. 
 This state is only used inside the environment and consists of the current position $x_p, y_p, z_p$ in each axis,
  the roll, pitch and yaw angles $\Theta_p, \phi_p, \psi_p$ as well as represented as quaternion $q$, 
- the velocities $\dot{x_p}, \dot{y_p}, \dot{z_p}$, the angular velocities $dot{\Theta_p}, \dot{\phi_p}, \dot{\psi_p}$, 
- the goal position $x_g, y_g, z_g$ and the last clipped action $a_t$. With the use of this drone state space the observations are calculated.\\
+ the velocities $\dot{x_p}, \dot{y_p}, \dot{z_p}$, the angular velocities $\dot{\Theta_p}, \dot{\phi_p}, \dot{\psi_p}$, 
+ the goal position $x_g, y_g, z_g$ and the last clipped action $a_t$. With the use of the drone state space the observations are calculated.\\
 \newline
 The observation space $\daleth$ is a subset of the state space $S$ with the dimensionality of 15. 
 The observation space is implemented as a \emph{spaces box} of type \emph{float32} which are mainly ranged within $[-1, 1]$ 
 with the exception of the z coordinate of the position $z_p$ and goal $z_g$. 
-Because there is floor defined as a plain at the height of $0$, which inherits a collision body, 
+Because there is a floor defined as a plain at the height of $0$, which inherits a collision body, 
 the drone is not able to reach a negative z coordinate. As a consequence, these are ranged to $[0,1]$.
 \newline
 \begin{align}
@@ -364,13 +364,13 @@ The hover\_rpm is defined as the rpm that corresponds to hovering (\cref{sec:hov
 The 4-tupel is then forwarded to the motors. 
 As a consequence of this limitation, the drone can only perform hovering, 
 rising and falling movements and can not influence its $x,y$ position or $\Theta, \phi, \psi$. 
-Also, the translational speed $v_z$ is limited by the size of $0.05$.\\
+Also, the translational speed $v_z$ is limited by the parameter set to $0.05$.\\
 \newline
 \emph{rpm} is a 4 dimensional action space. The actions are processed within a range of $0.05$ about the hover\_rpm to a 4-tupel of rpms. 
 The drone is not limited in any dimensionality, but the task increases in complexity. 
 Due to \cref{form:quad}, \cref{form:quad2}, \cref{form:quad3}, \cref{form:quad4} even a small difference in rpms can lead to an unstable flight
  or even a crash, because the roll or pitch angle is too high. 
- Also, all translational and rotational speeds are limited by the size of $0.05$. 
+ Also, all translational and rotational speeds are limited by the size of the processing parameter $0.05$. 
  Because of the higher complexity, it is expected, that the training takes noticeable more time.\\
 \newline
 \emph{vel} is a top level, 4-dimensional action space. The action consists of a velocity vector $v = (a_0, a_1, a_2)$ and its size $a_3$. 
@@ -383,7 +383,7 @@ The drone is not limited in any dimensionality and the task is less complex than
 Stability of the flight is now mainly controlled by the pid controller, so it is bounded by the typical pid constraints in harsh environments and not adaptable.
 \begin{table}
 	\centering
-	\caption{The different ActionTypes with the corresponding dimensionality of the action, its range and how it is processed.}\label{tab:act}
+	\caption{The different ActionTypes with the corresponding dimensionality of the action, its range and how it is processed}\label{tab:act}
 	\begin{tabular}{c|c|c|c}
 		ActionType & dim & range & processing\\
 		\hline
@@ -420,7 +420,7 @@ The reward function is an exponential function with a negative exponent.
 The factor $0.6$ defines the steepness of the function. \cref{fig:rewd} shows a plot of the reward function over a small field of distances up to $2m$. 
 Due to the main exponential part, the reward function is also bounded to the range $[-1, 0]$ with the gradient increasing close to a distance of $0$. 
 This is helpful in order to get a precise behavior. At huge distances the gradient is small, 
-but this does not really matter that much because so huge distances are not expected.
+but this does not really matter, because distances of that magnitude are not expected.
 \begin{align}
 	r_t = e^{-0.6 \cdot dist_t} - 1 &= e^{-0.6 \cdot |\overrightarrow{g} - \overrightarrow{p_t}|} - 1 \label{eq:rew}\\
 	\lim_{dist_t \to \infty} r_t &= -1\\
@@ -442,7 +442,7 @@ point symmetric with the global maximum when $dist_t = 0$.
 
 \subsection{Constraints}\label{sec:constraint}
 Besides, the reward function is also influenced by a set of constraints, which are logical rules that define a safe flight. 
-If one of the rules is broken, the episode is ended by returning a done $d$ value that is true. 
+If one of the rules is broken, the episode is ended by returning a done value $d$ that is true. 
 In addition, there is a punishment reward of $-200$ that is added to the classic reward function.\\
 These constraints can be beneficial for training time, because the episodes are ended early. 
 Also, unsafe flight is highly unattractive for the agent because of the punishment reward. 
@@ -475,7 +475,7 @@ dist_{t+1} &= dist_t - |\overrightarrow{v_{opt}}| \cdot \frac{1}{f_c} \label{eq:
 %r_{t} &= e^{-0.6 \cdot (d_{t+1} )} - 1 \label{eq:rew2}
 \end{align}
 The distance at start $d_0$ is always 0.5. An optimal decision of the agent corresponds to an optimal velocity vector $v_{opt}$ that minimizes 
-the distance to the goal with the given bounds of the maximum speed at the $\alpha$ of the action processing. 
+the distance to the goal with the given bounds of the maximum speed. 
 The reward (\cref{eq:rew}) can then be used for every control step and summed up to the total optimal return $J_{opt}$ (\cref{eq:oprew}).\\
 Since every mode apart from mode 0 and mode 1 does not possess a fixed goal position, only an expected optimal reward $\mathbb{E}(J_{opt})$ can be defined. 
 Therefore, an expected starting distance $\mathbb{E}(d_0)$ to a goal that is equally distributed in a half sphere can be defined as:
@@ -484,7 +484,7 @@ Therefore, an expected starting distance $\mathbb{E}(d_0)$ to a goal that is equ
 	\mathbb{E}(d_x) &= \mathbb{E}(d_y) = 0\\
 	\mathbb{E}(d_z) &= 0.5 + \mathbb{E}(z^*) = 0.5 + P(z) \cdot \int \int \int  z dx dy dz \nonumber \\
 	&= 0.5 + \frac{1}{V} \int_{0}^{2 \cdot \pi} d \phi \int_{0}^{\frac{\pi}{2}} \sin(\Theta) d\Theta \int_{0}^{R} r^2 r \cos(\Theta)  dr  \nonumber \\
-	&= 0.5 + \frac{\frac{\pi}{4} R^4}{\frac{2}{3} \pi R^3} = 0.5 + \frac{3}{8} R
+	&= 0.5 + \frac{\frac{\pi}{4} R^4}{\frac{2}{3} \pi R^3} = 0.5 + \frac{3}{8} R \label{eq:expected}
 \end{align}
 The expected distance in each axis $\mathbb{E}(d_0)$ depends linear on the chosen maximum radius $R$. 
 The expected distance in $x$ and $y$ direction is equal to zero due to the symmetry of the half sphere.\\
@@ -514,7 +514,7 @@ Therefore, it uses two different evaluation tools and the gym-pybullet-drones lo
 The learning script (\cref{alg:learn}) receives a set of parsed arguments $\xi$ (\cref{tab:learningparse}) and checks them on contradictions. 
 If a predefined contradiction is found a \emph{ParsingError} is raised stating the contradicting parsed arguments with a message.
 Then, the training environment $\epsilon_t$ is created with the parsed environment args $\tilde{\lambda} \subset \xi$ and the policy 
-is defined based on the parsed algorithm. The policy mocel $\pi$ is then either created or loaded from a specified file. 
+is defined based on the parsed algorithm. The policy model $\pi$ is then either created or loaded from a specified file. 
 Next, an evaluation environment $\epsilon_e$ is created with the same arguments and the evaluation callbacks are defined. 
 Then depending on the parsed curriculum parameter $\zeta$ the policy is either trained commonly or with a curriculum method (\cref{alg:curri}).
 At last, the policy model $\pi$ is saved with the parsed name.
@@ -602,55 +602,29 @@ At last, the policy model $\pi$ is saved with the parsed name.
 \end{algorithm}
 
 \subsubsection{Linear Curriculum Learning}
-\emph{Linear Curriculum Learning (LCL)} is a method that changes environment parameters during training process. 
+\emph{Linear Curriculum Learning (LCL)} is a method that changes environment parameters during the training process. 
 In contrast, the classic approach uses the parsed algorithm in order to optimize the policy on a firm environment. 
 LCL is a simple adaption that changes an environment parameter after a specified amount of steps. 
 In this case, the radius parameter $R$ of the environment is adjusted. 
 In Theory, the learning starts with a rather simple approach with a fixed goal and then steadily increases the difficulty of the RL problem, 
-which may benefit training performance.\\
-The LCL algorithm (\cref{alg:curri}) receives the total training steps $t_total$, a set of environment args $\tilde{\lambda}$, 
-the policy model $\pi$, the amount of parallel environments $\eta$, and the radius step size parameter $\delta$ and the specified name of the model.
+which may benefit training performance.
+The LCL algorithm (\cref{alg:curri}) receives the total training steps $t_{total}$, a set of environment args $\tilde{\lambda}$, 
+the policy model $\pi$, the amount of parallel environments $\eta$, the radius step size parameter $\delta$ and the specified name of the model.
 Then the maximum radius $R_{max}$ is saved from $\tilde{\lambda}$ and the current radius $R$ is initialized with a value of $0$.
+Also a the total amount of steps is saved in $rest$.
 Until the current radius is bigger or equal to the maximum radius, 
 the radius in $\tilde{\lambda}$ is set to the current radius. 
 Also, the training environment $\epsilon_t$ with the new arguments is initialized and set, 
 the evaluation environment $\epsilon_e$ is initialized, and evaluation callbacks are defined. 
-Then, the policy model is learned in a common way with $\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor$ training steps. 
-During the whole curriculum learning process the amount of steps per curriculum step is summed up to approximately $t_{total}$.
+The amount of training steps is calculated, which is the minimum of $\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor$ and $steps$.
+This is needed in order to guarantee that the complete $t_{total}$ steps are used.
+Then, the policy model is learned in a common way with $steps$ training steps. 
 Due to the evaluation callbacks it may be that the learning starts earlier if the policy outperforms a defined performance threshold. 
-At last, the policy is saved, the best policy $\pi_{best}$ is renamed and the current radius $R$ is linear increased based 
-on the radius step size parameter $\delta$ and the maximum radius $R_{max}$.
-
-\newpage
-
-\begin{algorithm}
-	\caption{Linear Curriculum Learning Algorithm}
-	\label{alg:curri}
-	\KwIn{total steps $t_{total}$,  set of environment args $\tilde{\lambda}$, model $\pi$, number of parallel environments $\eta$, 
-	radius step size parameter $\delta$, name}
-	
-	Get radius $R_{max}$ from $\tilde{\lambda}$
-	
-	$R = 0.0$
-	
-	\While{$R \leq R_{max}$}{
-		Change radius in $\tilde{\lambda}$ to R
-		
-		Initialize training environment $\epsilon_t$ with $\tilde{\lambda}, \eta$ as parameters
-		
-		Set $\epsilon_t$
-		
-		Initialize evaluation environment $\epsilon_e$ with $\tilde{\lambda}, \eta$ as parameters
-		
-		Define evaluation callback
-		
-		Learn the model $\pi$ with the amount of steps $\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor$
-		
-		Save $\pi$ and rename the best policy $\pi_{best}$
-		
-		$R \leftarrow R + \delta \cdot R_{max}$
-	}
-\end{algorithm}
+The policy is saved, the best policy $\pi_{best}$.
+At last, the current radius is adjusted dependant on $\delta, R_{max}$ and the new $rest$ is saved.
+If the loop condition would be violated in the next iteration, the current radius is set to the maximum radius.
+This is needed, because it may be that steps are lost due to rounding down the steps. 
+By this if clause it is guaranteed that there are $t_{total}$ steps and the policy is trained on all radii.
 
 \subsection{Evaluation Script}
 The evaluation script (\cref{alg:eval}) is structured similar to the algorithm script and also receives a set of
@@ -663,13 +637,50 @@ Therefore, a test environment $\epsilon_t$, a logger and a pathplotter class is 
 At the start, the environment is reset and returns an initial observation $\daleth_0$. 
 In order to sync the simulation time to the real word time the current real time $t^*$ is saved.
 Until the episode is over a fixed amount of commands is executed:\\
-\newline
 First $\pi$ is used in order to decide the action $a$. 
 The action is then given to $\epsilon_t$ and a step is executed that returns a reward $r_t$, a done value $d$ and an info.
 Then, the current pose vector $\overrightarrow{p_t}$ is added to the pathplotter class and the current drone state $s_t$ is logged with the logger. 
 At last, the simulation time $t_{sim}$ is synced to the real time $t^*$.\\
-\newline
 After this visualization the environment is closed, the plotted path and the logs are shown.
+
+\begin{algorithm}
+	\caption{Linear Curriculum Learning Algorithm}
+	\label{alg:curri}
+	\KwIn{total steps $t_{total}$,  set of environment args $\tilde{\lambda}$, model $\pi$, number of parallel environments $\eta$, 
+	radius step size parameter $\delta$, name}
+	
+	Get radius $R_{max}$ from $\tilde{\lambda}$
+	
+	$R \leftarrow 0.0$
+	
+	$rest \leftarrow t_{total}$
+	
+	\While{$R \leq R_{max}$}{
+		Change radius in $\tilde{\lambda}$ to R
+		
+		Initialize training environment $\epsilon_t$ with $\tilde{\lambda}, \eta$ as parameters
+		
+		Set $\epsilon_t$
+		
+		Initialize evaluation environment $\epsilon_e$ with $\tilde{\lambda}, \eta$ as parameters
+		
+		Define evaluation 
+		
+		$steps \leftarrow \min (\lfloor t_{total} \cdot \frac{\delta}{\delta + 1} \rfloor, rest)$
+		
+		Learn the model $\pi$ with the amount of $steps$ 
+		
+		Save $\pi$ and rename the best policy $\pi_{best}$
+		
+		$R \leftarrow R + \delta \cdot R_{max}$
+
+		$rest \leftarrow rest - steps$
+
+		\If{$R > R_{max}  \land rest$}{
+			$R \leftarrow R_{max}$
+		}
+	}
+\end{algorithm}
 
 \newpage
 
@@ -758,13 +769,13 @@ After this visualization the environment is closed, the plotted path and the log
 \subsection{Evaluation Tools} \label{sec:tools}
 In order to evaluate the policies and visualize the flight path, the \emph{EvalWriter} and the \emph{PathPlotter} class were implemented.
 The EvalWriter class aims at providing a static metric that emphasizes how good a chosen policy $\pi$ is. 
-Therefore, it evaluates different classic RL metrics like the average accumulated reward and also some basic control theory metrics like overshoot (\cref{tab:evalmetric}).
+Therefore, it evaluates different classic RL metrics like the average accumulated return and also some basic control theory metrics like overshoot (\cref{tab:evalmetric}).
 The PathPlotter class aims at visualizing a single episode in a 3D plot.
 
 \subsubsection{EvalWriter Class} \label{sec:evalw}
 \begin{table}
 	\centering
-	\caption{The evaluation metric.}\label{tab:evalmetric}
+	\caption{The evaluation metric}\label{tab:evalmetric}
 	\begin{tabular}{c|c|c}
 		Name & Form & Explanation\\
 		\hline
@@ -774,86 +785,22 @@ The PathPlotter class aims at visualizing a single episode in a 3D plot.
 		dist($\frac{T}{2}$) & $(x \pm y) m $& average distance half way through episode\\
 		dist($T$) &  $(x \pm y) m $ & average distance at the end of the episode\\
 		overshoot & $(x \pm y) m $ & average overshoot\\
-		reward & $x \pm y $ & average accumulated episode reward
+		return & $x \pm y $ & average accumulated episode return
 	\end{tabular}
 \end{table}
 
 The EvalWriter class is initialized with a name, a number of evaluation steps $\gimel$, the path to the xlsx file it writes to, 
 the environment $\epsilon$, the episode length  $T$ and the threshold $\Omega[m]$ that defines a sphere around the goal. 
-If the drone is inside this sphere and the distance is lower than $\Omega$ it counts a being in the goal. 
+If the drone is inside this sphere and the distance is lower than $\Omega$ it counts as being in the goal. 
 In theory this parameter could be fixed to 0, but it is easier to allow a minimum distance in order to compare the policies better.
 The EvalWriter has  an update function (\cref{alg:upd}), that is used in order get the new distances from $\epsilon$ 
 and update the metric parameters and is used in the evaluation algorithm (\cref{alg:evalwriter}). Then, the data can be visualized with the \emph{write} method.
 
-\begin{algorithm}
-	\caption{Update Algorithm of EvalWriter}
-	\label{alg:upd}
-	Get current $dist$ and $t_{sim}$ from environment $\epsilon$ and save it
-	
-	\If{$e = 1$}{
-		Add pose of the drone from $\epsilon$ to pathplotter
-		}
-		
-	\If{$t_{sim} = \frac{T}{2}$}{
-		Save current $dist$ to matching set of distances
-		}
-		
-	\If{$t_{sim} = T$}{
-		Save current $dist$ to matching set of distances
-	}
-	
-	\If{episode already reached goal and overshoot}{
-		Save current $dist$ to overshoot set
-	}
-	
-	Check if the episode succeeded in this time step
-\end{algorithm}
-
-\newpage
-
-\begin{algorithm}
-	\caption{Evaluation Algorithm of EvalWriter}
-	\label{alg:evalwriter}
-	\KwIn{policy $\pi$}
-	\KwOut{tupel ($\mu_r, \sigma_r$)}
-	
-	Get mean reward $\mu_r$ and the std of the reward $\sigma_r$ from $evaluate\_policy (\pi , \epsilon, e)$
-	
-	reset $\epsilon$ and receive $\daleth_t$
-	
-	\For{$j=0 \to \gimel$}{
-		\Repeat{$done$}{
-			Get action $a$ from $\pi$ with input $\daleth_t$
-			
-			Step $\epsilon$ and get the new observation $\daleth_t$, reward $r_t$, done signal $d$  and info
-			
-			Update EvalWriter
-			
-			\If{$d$}{
-				Reset $\epsilon$
-				}
-		}
-		\If{not $j = \gimel$}{
-			Use Housekeeping of the EvalWriter class
-			}
-	}
-	Close EvalWriter and $\epsilon$.
-	
-	\Return ($\mu_r, \sigma_r$)
-	
-\end{algorithm} 
-
 \subsubsection{PathPlotter Class}
-The PathPlotter class is a basic class that visualizes the path taken by drone under a policy $\pi$. 
+The PathPlotter class is a basic class that visualizes the path taken by the drone under a policy $\pi$. 
 It is mostly used in the EvalWriter class when only a single episode is evaluated, but also can be used separately.
 It mainly helps to understand the current decision-making of a policy. On fixed goal modes it literally sums up the complete performance in one plot.
 It is initialized with a set of goals $\overrightarrow{g}$. With the use of the \emph{addPose} method the position 
 of the drone at different time steps can be added. 
-After the episode, the drone path can be visualized with a \emph{Matplotlib 3D plot} by using the \emph{show} method, which creates plots like \cref{fig:path}.
- 
- \begin{figure}[htp]
- 	\centering
- 	\includegraphics[height=0.35\linewidth]{figures/pathplotter.png}
- 	\caption{Visualization of a Drone's path in 3D space with the PathPlotter class}
- 	\label{fig:path}
- \end{figure}
+After the episode, the drone path can be visualized with a \emph{Matplotlib 3D plot} by using the \emph{show} method, which creates plots like \cref{fig:flight3}.
+

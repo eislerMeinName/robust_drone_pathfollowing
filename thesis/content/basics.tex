@@ -40,7 +40,7 @@ although some rotations like a rotation of $\pi$ around the $x$ Axis ($\Theta = 
 The heart of the quadrocopter is the flight controller ($FC$) which consists of sensors and a MCU that controls the flight. 
 Besides, the aircraft possesses 4 motors with corresponding propellers. 
 There are different configurations how the motors can be placed in relation to the axis. 
-The two most common configuration, the "X" and "+" configuration, can be seen in the above figure. 
+The two most common configurations, the "X" and "+" configuration, can be seen in the above figure. 
 The "+" configuration places the motors alongside the x and y-axis. In contrast to that, each motor has an angle of $45^{\circ}$ to the x and y-axis in the "X" configuration.\\
 Each of the propeller can be described by their rotational speed $\omega_i$ with $i \in [1...M]$ and spins either clockwise or counterclockwise (\cref{fig:quad}). 
 Depending on the configuration of the motors,
@@ -52,8 +52,8 @@ the upward thrust $\tilde{f}$. However, hereafter the most common "X" configurat
 
 \subsection{Quadrocopter Flight Dynamics}
 The quadrocopter flight dynamics mainly depend on the rotational speed $\omega_i$ of the propellers, 
-which mainly produce the translational  and rotational movements. 
-Besides, the thrust factor $b$ which is a constant that mainly consists of propeller geometry and frame characteristics also influences the movement. 
+which produce the translational and rotational movements. 
+Besides, the thrust factor $b$ which is a constant that consists of propeller geometry and frame characteristics also influences the movement. 
 Depending on the different $\omega_i, b$ an upward thrust $\tilde{f}$ and a rotation $u_{\Theta}, u_{\phi}, u_{\psi}$ is produced 
 that can be comprehended with the following set of formulas:
 
@@ -67,7 +67,7 @@ that can be comprehended with the following set of formulas:
 \subsubsection{Hover, Rise \& Fall} \label{sec:hover}
 \emph{Hovering} can be described as holding a pose $p_{3D} = (x_p, y_p, z_p)$ above the ground, 
 rising can be seen as increasing $z_p$ and falling as decreasing $z_p$. 
-Therefore, the quadrocopter should not have a rotation on $x,y,z$ axis and mainly depends on \cref{form:quad}.  \\
+Therefore, the quadrocopter should not have a rotation on $x,y,z$ axis and depends on \cref{form:quad}.  \\
 The product of the thrust factor $b$ and the sum of the squared rotational speeds produces an upward thrust $\tilde{f}$. 
 In order to hover equal rotational speeds must be applied to each motor/propeller in order to avoid a rotational movement, because:
 
@@ -91,13 +91,36 @@ Depending on the upward force $F$ and gravitational Force $G$ the thrust produce
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/move.png}
-	\caption{Visualization of Roll, Pitch and Yaw rotational movement (from left to right) and the corresponding difference in the rotational speed $\omega_i$}
+	\caption{Visualization of Pitch, Roll and Yaw rotational movement (from left to right) and the corresponding difference in the rotational speed $\omega_i$}
 	\label{fig:move}
 \end{figure}
-In order to \emph{roll} (rotation around $y$ axis) the thrust on one side has to be greater than on the other side. For example,
-increasing $\omega_3, \omega_4$ would lead to uneven distributed thrust. 
-The left side of the aircraft experiences more thrust (\cref{fig:move}) and as a consequence the aircraft experiences a torque about the y-axis.
+In order to \emph{roll} (rotation around $x$ axis) the thrust on one side has to be greater than on the other side. For example,
+increasing $\omega_3, \omega_1$ would lead to uneven distributed thrust. 
+One side of the aircraft experiences more thrust (\cref{fig:move}) and as a consequence the aircraft experiences a torque about the x-axis.
 \cref{form:quad2} to \cref{form:quad4} also shows this aerodynamic effect:
+\begin{align*}
+	\omega_3^* &= \omega_1^* = n \cdot \omega_4 = n \cdot \omega_2 \qquad \qquad \quad \enspace  n > 1\\
+	u_{\Theta} &= b \cdot ((\omega_1^*)^2 - (\omega_2)^2 + (\omega_3^*)^2 - (\omega_4)^2) > 0\\
+	u_{\phi} &= b \cdot ((\omega_1^*)^2 + (\omega_2)^2 - (\omega_3^*)^2 - (\omega_4)^2) = 0 \\
+	u_{\psi} &= b \cdot ((\omega_1^*)^2 - (\omega_2)^2 - (\omega_3^*)^2 + (\omega_4)^2)	= 0 \\
+	u_f &= b \cdot ((\omega_1^*)^2 + (\omega_2)^2 + (\omega_3^*)^2 + (\omega_4)^2) > 0 
+\end{align*}
+\newline
+Analogue a roll to the other side can be accomplished by increasing $\omega_4, \omega_2$, then $u_{\Theta} < 0$. 
+Since the pairs ($\omega_1, \omega_2$) and ($\omega_3, \omega_4$) each have one propeller that spins clockwise and one propeller that spins counterclockwise, 
+the total torque of the quadrocopter does not change.\\
+\cref{form:quad} shows that there still is an upward thrust, but due to the rotation of the aircraft the thrust force $F$ has a component in $x$ direction. 
+This results in a translational movement.
+
+\newpage
+
+\subsubsection{Pitch}
+
+A \emph{pitch} movement around $y$ axis works similar to a roll movement, 
+just with another motor pair. 
+In this case, the thrust at the front or at the back has to increase. 
+For example, increasing $\omega_3, \omega_4$ would lead to a bigger thrust at the left
+and the corresponding torque (\cref{fig:move}). \cref{form:quad2} to \cref{form:quad4} also shows this aerodynamic effect:
 
 \begin{align*}
 	\omega_3^* &= \omega_4^* = n \cdot \omega_1 = n \cdot \omega_2 \qquad \qquad \quad \enspace  n > 1\\
@@ -107,31 +130,7 @@ The left side of the aircraft experiences more thrust (\cref{fig:move}) and as a
 	u_f &= b \cdot ((\omega_1)^2 + (\omega_2)^2 + (\omega_3^*)^2 + (\omega_4^*)^2) > 0 
 \end{align*}
 \newline
-Analogue a roll to the other side can be accomplished by increasing $\omega_1, \omega_2$, then $u_{\phi} > 0$. 
-Since the pairs ($\omega_1, \omega_2$) and ($\omega_3, \omega_4$) each have one propeller that spins clockwise and one propeller that spins counterclockwise, 
-the total torque of the quadrocopter does not change.\\
-\cref{form:quad} shows that there still is an upward thrust, but due to the rotation of the aircraft the thrust force $F$ has a component in $x$ direction. 
-This results in a translational movement along the $x$ axis.
-
-\newpage
-
-\subsubsection{Pitch}
-
-A \emph{pitch} movement around $x$ axis works similar to a roll movement, 
-just with another motor pair. 
-In this case, the thrust at the front or at the back has to increase. 
-For example, increasing $\omega_3, \omega_1$ would lead to a bigger thrust at the back 
-and the corresponding torque (\cref{fig:move}). \cref{form:quad2} to \cref{form:quad4} also shows this aerodynamic effect:
-
-\begin{align*}
-	\omega_3^* &= \omega_1^* = n \cdot \omega_4 = n \cdot \omega_2 \qquad \qquad \quad \enspace  n > 1\\
-	u_{\Theta} &= b \cdot ((\omega_1^*)^2 - (\omega_2)^2 + (\omega_3^*)^2 - (\omega_4)^2) > 0\\
-	u_{\phi} &= b \cdot ((\omega_1^*)^2 + (\omega_2)^2 - (\omega_3^*)^2 - (\omega_4)^2) = 0 \\
-	u_{\psi} &= b \cdot ((\omega_1^*)^2 - (\omega_2)^2 - (\omega_3^*)^2 + (\omega_4)^2)	= 0 \\
-	u_f &= b \cdot ((\omega_1^*)^2 + (\omega_2)^2 + (\omega_3^*)^2 + (\omega_4)^2) > 0 
-\end{align*}
-\newline
-Analogue a roll to the other side can be a done by increasing $\omega_2, \omega_4$, then $u_{\Theta} < 0$. 
+Analogue a roll to the other side can be a done by increasing $\omega_2, \omega_1$, then $u_{\phi} > 0$. 
 The total torque also stays the same and the thrust force $F$ gets a component in $y$ direction. This results in a translational movement along the y-axis.
 
 
@@ -172,15 +171,15 @@ By subtracting these the attitude error $e_a$ can be used to calculate the signa
 The signals are then applied by the motors, which act as actuators and apply a rotational force to the propellers. 
 As a consequence the propeller get the rotational speeds ${\Huge \omega } = \{ \omega_1, \omega_2, \omega_3, \omega_4 \}$ 
 which directly influence the position of the drone in the environment. 
-The state of the drone is captured by the sensor and the corresponding sensor values $\sigma$, which are falsified by noise and offsets. 
+The state of the drone is captured by the sensor and the corresponding sensor values $\sigma$, which are falsified by noise and offset. 
 They are then used to estimate the attitude. \\
 The outer loop controls mission goals based on the prior defined goals $g$ and the current estimated position $p$. 
 These inputs are used in order to calculate the desired attitude $a$.\\
 \newline
-In general Control loops in software are always time discreet. For cascaded controllers like here the inner loop
+In general control loops in software are always time discreet. For cascaded controllers like here the inner loop
 is running at a higher frequency than the outer loop. 
 This is crucial, because attitude control is very time sensitive and has to be implemented in real time. 
-A bad or slow attitude control could lead to an unstable flight or in worst case it could crash and therefore automatically erase the possibility to achieve mission goals.\\
+A bad or slow attitude control could lead to an unstable flight or in worst case it could cause crashing and therefore automatically erase the possibility to achieve mission goals.\\
 
 \newpage
 
@@ -228,7 +227,7 @@ that outperforms a classic PID Attitude controller in harsh, unpredictable envir
 Position or state estimation can be accomplished in different ways. 
 By the use of classic filters the sensor values are more accurately, although there still is a relevant error. 
 \emph{Kalman Filters} are the common state-of-the-art solution for position estimation, because they are statistical optimal. 
-Although the name suggests otherwise a Kalman Filter is not a classic filter, but a stochastic weighted combination of the state prediction and measurement. \\
+Although the name suggests otherwise a Kalman Filter is not a classic filter, but a stochastic weighted combination of the state prediction and the measurement. \\
 At each step, the next position and the next measurement is predicted. 
 Based on the prediction of the measurement and the real measurement an innovation is calculated and used in combination with the Kalman Filter Gain $K$ 
 to calculate the next state. 
@@ -331,7 +330,7 @@ The environment $\epsilon$ receives at each time step the action $a_t$.
 Then, it simulates the state transition based on its implementation. 
 It calculates the reward signal $r_{t+1}$ and returns it alongside with the observed transitioned state $s_{t+1}$. 
 It should be mentioned that the observed state $s_t$ must not be the complete intern state of the environment $s_t^*$. 
-Furthermore, it is only an observation and also can be defined as $o_t$.  
+Furthermore, it is only an observation state.  
 In general, the environment can be modelled with the use of a \emph{Markov Decision Process}.
 
 \begin{figure}
@@ -421,7 +420,7 @@ and defines the probability of choosing the action $a_t$ in state $s_t$.\\
 In many RL Algorithms \emph{Neural Networks} (\cref{sec:NN}) will be used to model the policy with 
 the goal to approximate an optimal policy $\pi^*$ that maximizes the expected reward:
 \begin{align*}
-	\pi^* = \underset{\pi} {\arg \max} J(\pi)
+	\pi^* = \underset{\pi} {\arg \max}\enspace J(\pi)
 \end{align*}
 
 \subsubsection{Trajectory}
@@ -456,7 +455,7 @@ In \emph{finite}, episodic MDPs with ending states, the sum of the rewards is ea
 It was already discussed in \cref{sec:MDP} that a MDP may be infinite and continuing. 
 As consequence the undiscounted reward, that was defined in the above may diverge, because there is no ending state. 
 In order to counter the diverging of the sum a discount factor $\gamma \in [0...1]$ is used. 
-The idea behind is to weigh future rewards. With increasing future step $t$ the weigh factor decreases exponentially. 
+The idea behind the factor is to weigh future rewards. With increasing future step $t$ the weigh factor decreases exponentially. 
 As a consequence the sum of the rewards converges and is called discounted reward.
 
 \begin{align} \label{form:direw}
@@ -522,10 +521,9 @@ Analogue to the V Function, an \emph{optimal Q Function} can be calculated by ta
 \newline
 With the help of the optimal Q Function the optimal action $a$ for every state can be chosen by comparing 
 their optimal Q values and used to construct an optimal policy $\pi^*$. 
-If the MDP has discreet actions and states this is no problem and then called \emph{Tabular Reinforcement Learning}. 
-For more complex  MDPs RL algorithms that use NN can be used. Probably the best known algorithm of this kind is 
-\emph{Deep Q Learning} \cite{pmlr-v120-yang20a} which estimates the Q Function with the use of a behaviour and a target policy. 
-These policies are implemented with the use of Neural Networks.
+If the MDP has discreet actions and states this is no problem, but 
+for continuous actions choosing the optimal action is more complex, because
+a maximum over infinite actions has to be calculated.
 
 \newpage
 
@@ -539,7 +537,14 @@ Instead of building a sum over multiple time steps, an optimal solution of a com
 	Q^{\pi} (s,a) &= \mathbb{E}_{s' \sim P(\cdot |S,a)} [R(s,a,s') + \gamma \cdot  \mathbb{E}_{a' \sim \pi (\cdot | s')}[Q^{\pi}(s',a')]] \label{eq:beQ}
 \end{align}
 \newline
-\cref{eq:beV} shows the instant reward $R(s,a,s')$ which is computed by calculating the expected value for all possible actions $a$ and all possible transition states $s'$ and the discounted future $\gamma \cdot V^{\pi} (s')$ reward of the values of the possible transition states. Analogue, \cref{eq:beQ} shows the split up of instant reward and future reward for state-action pairs. As a consequence, iterative approaches can be implemented, that possesses the ability to calculate the values of all states or the values of all state-action pairs. 
+\cref{eq:beV} shows the instant reward $R(s,a,s')$,
+which is computed by calculating the expected value for all possible actions $a$
+and all possible transition states $s'$ and the discounted future reward $\gamma \cdot V^{\pi} (s')$ 
+of the values of the possible transition states. 
+Analogue, \cref{eq:beQ} shows the split up of instant reward and future reward 
+for state-action pairs. As a consequence, iterative approaches can be implemented, 
+that possesses the ability to calculate the values of all states or the values of 
+all state-action pairs. 
 
 \subsubsection{The Bellman Equations of Optimality}
 It was already discussed how optimal V and Q functions can be calculated and used to determine the optimal actions 
@@ -629,7 +634,7 @@ The output of the neuron is then computed by giving it to a non-linear \emph{Act
 		\includegraphics[width=\linewidth]{figures/softmax.png}
 		\caption{SoftMax}
 	\end{subfigure}
-	\caption{8 different Activation Functions.}
+	\caption{8 different Activation Functions}
 	\label{fig:act}
 \end{figure}
 It was already discussed that NN are universal function approximators and that the neuron consists of a linear sum (\cref{eq:ob}). 
@@ -681,7 +686,7 @@ Due to the large amount of neurons and a lot of hidden layers, the NN is able to
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/algo.png}
-	\caption{Overview of the different categories of RL algorithms with examples: PPO and DDPG Algorithm colored because they were used in this work.}
+	\caption{Overview of the different categories of RL algorithms with examples: PPO and SAC Algorithm colored because they were used in this work}
 	\label{fig:algo}
 \end{figure}
 
@@ -694,9 +699,9 @@ Then the algorithms plan through the dynamics model in order to choose the actio
 Model given algorithms work quite similar, but the dynamic model is already given.\\
 In \emph{Model-free Algorithms} the agent constructs a policy based on trial-and-error experience and can be further divided into 
 \emph{Policy Optimization} and \emph{Q-Learning}.
-Policy Optimization algorithms like \emph{PPO} (\cref{sec:ppo}) the policy is learned directly. 
+In Policy Optimization algorithms like \emph{PPO} (\cref{sec:ppo}.1) the policy is learned directly. 
 In contrast, Q-Learning algorithms like \emph{Deep Q-Learning} learns the Q-function and updates it in order to get an optimal Q-function. 
-In addition, there are hybrid algorithms like \emph{SAC} (\cref{sec:sac}) that combines learning the policy function and Q-function.\\
+In addition, there are hybrid algorithms like \emph{SAC} (Section 2.2.5.2) that combines learning the policy function and Q-function.\\
 RL algorithms can be further categorized into \emph{on-policy} and \emph{off-policy} algorithms. 
 On-policy algorithms use the current optimized policy in order to gain experience that is then used to further optimize the policy. 
 In contrast, off-policy algorithms learn from actions that may not be according to the current policy. 
@@ -709,7 +714,7 @@ In addition, it offers \emph{Tensorboard} support, which is a tool that can be u
 \newpage
 \subsubsection{PPO - Basics} \label{sec:ppo}
 PPO algorithms \cite{schulman2017proximal} are a family of policy gradient methods for RL, 
-they directly try to improve the policy $\pi$ as much as possible in a single step without stepping to far and avoiding performance collapse. 
+that directly try to improve the policy $\pi$ as much as possible in a single step without stepping to far and avoiding performance collapse. 
 It is an \emph{Actor-Critic Method} that approximates the value function $V_{\phi}$ and the policy $\pi_{\Theta}$ with the matching set of parameters $\phi, \Theta$. 
 In each step the actor updates the policy parameters and the critic updates the value function parameters. 
 In order to measure how good a policy $\pi_{\Theta}$ performs in relation to an old policy $\pi_{\Theta_{old}}$ a surrogate objective is used, 
@@ -744,14 +749,14 @@ Because of the negative advantage the objective will increase with the decrease 
 but is still limited to $(1 - \epsilon) \cdot A(s,a)$ by the maximum expression.\\
 As a consequence the policy does not profit from changing a lot.\\
 PPO is an on-policy algorithm, so the actions are selected according to the latest policy. 
-Therefore, the randomness of the action selection decreases over time, which may causes the problem of being trapped in a local optima.
+Therefore, the randomness of the action selection decreases over time, which may cause the problem of being trapped in a local optimum.
 
 \newpage
 \subsubsection{PPO - Algorithm}
-The PPO algorithm (\cref{alg:ppo})first initializes the policy and value net with the matching parameters $\Theta_0$ and $\phi_0$.\\
+The PPO algorithm (\cref{alg:ppo}) first initializes the policy and the value net with the matching parameters $\Theta_0$ and $\phi_0$.\\
 Then the following steps are executed until convergence:\\
 By running the current policy $\pi_{\Theta_k}$ a set of Trajectories $D_k$ is collected and the rewards $R_t$ are computed. 
-Then the advantage $A$ is computed based in the current value function approximation $V_{\phi_k}$. 
+Then the advantage $A$ is computed based on the current value function approximation $V_{\phi_k}$. 
 With the use of these values the surrogate objective (\cref{eq:obj}) is calculated and used to update the policy $\pi$. 
 Typically, stochastic gradient ascent is used in order to update the policy. At last the value function is updated by using regression on the mean squared error.\\
 \newline
@@ -789,8 +794,8 @@ PPO seems to be unstable when the reward function is not bounded on continuous a
 		$k += 1$
 	}
 \end{algorithm}
-
-\subsubsection{SAC - Basics}\label{sec:sac}
+\newpage
+\subsubsection{SAC - Basics}  \label{sec:sac1}
 \emph{Soft Actor-Critic (SAC)} \cite{haarnoja2018soft} is an off policy RL algorithm that optimizes a stochastic policy. 
 It can be categorized as a mixed method between policy optimization and value based methods.
 A key feature of SAC is entropy regularization. The policy is trained to maximize a trade-off between expected return and entropy. 
@@ -833,7 +838,7 @@ The Q functions are learned by regressing to a single shared target with the los
  Therefore, the \emph{reparameterization trick} is used, in which a sample from $\pi_{\Theta}(\cdot | s)$ 
  is collected with the use of a squashed Gaussian policy. 
  There, samples are collected according to \cref{eq:sacsq} and used in the V function (\cref{eq:secv2}). 
- Then, the policy is loss is given by choosing the minimum of the 2 Q function approximators as Q function (\cref{eq:secv3}).
+ Then, the policy loss is given by choosing the minimum of the two Q function approximators as Q function (\cref{eq:secv3}).
  
  \begin{align}
  	\tilde{a_\Theta} (s, \xi) &= tanh(\mu_{\Theta}(s) + \sigma_{\Theta}(s) \odot \xi) \qquad \xi \in \mathcal{N}(0,I) \label{eq:sacsq}\\
@@ -847,7 +852,7 @@ The Q functions are learned by regressing to a single shared target with the los
  \end{align}
   The explore-exploit trade off is controlled with $\alpha$. 
   A lower $\alpha$ corresponds to more exploitation, a higher $\alpha$ to more exploration. 
-  During training, it is optimized in order to avoid getting stuck in local optima.
+  During training, it is optimized in order to avoid getting stuck in a local optimum.
 
 \subsubsection{SAC - Algorithm}
 The SAC algorithm (\cref{alg:sac}) gets the policy parameters $\Theta$, 

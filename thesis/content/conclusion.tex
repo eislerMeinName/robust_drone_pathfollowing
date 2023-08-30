@@ -1,9 +1,9 @@
 To conclude, the fixed goal mode RL problems have been more or less solved
 by all evaluated policies.
-With a one dimensional action space, both policies learn precise precision making 
+With a one dimensional action space, both policies learn precise decision making 
 in an appropriate amount of steps. Especially the policy derived from the PPO algorithms
-quickly converges to a local optima and shows steady performance.
-In comparison, the sac performance is much more unsteady due to it being off-policy.
+quickly converges to a local optimum and shows steady performance.
+In comparison, the SACs performance is much more unsteady due to it being off-policy.
 Both policies show convincing results across the entire metric.
 However, due to the one dimensional action space, the drone is limited to 
 translational movements along the $z$ axis.\\
@@ -24,16 +24,25 @@ This also indicates, that PPO does not generalize the task well.
 Also, it is not robust to a change in the control frequency.
 In contrast, the policies derived from the SAC algorithm seems to be robust
 to the control frequency. In addition, the SAC performance does not seem to be 
-dependent on the control frequency truing training.\\
-On random goal modes...\\
+dependent on the control frequency during training.\\
+On random goal modes, the performance drops significantly.
+Especially LCL has some inherit problems, caused by the linearization. As a consequence,
+even a normal learning without any curriculum shows better results, although
+even these are of poor quality.
+However, it should be said that neither method was really fine-tuned due to limitation
+of time during this work. Still, on some goals, 
+the policies show a good performance like seen in the Appendix B, but there is no sign of 
+generalization in either of those.\\
 When evaluating the policies on environments with harsh conditions, it can be observed that 
-learning them without wind is not good enough for stable flight, because the state space was not explored enough, and the policies do not optimize safety.
+learning them without wind is not good enough for stable flight, because the state space was not explored enough, and the policies do not optimize safety.\\
+In the following section some ideas will be introduced, that might help to
+overcome the current difficulties.
 
 \newpage
 
 \section{Of Migrating to a real Drone}
 It was already presented \cref{sec: autoquad} how the intelligent agents presented in 
-this work may be used on a real intelligent flight control.
+this work may be used in a real intelligent flight control.
 In order to migrate to a real drone, first an accurate drone model has to be created
 and used in combination with the presented scripts, environments, etc. in order to 
 create an intelligent agent.
@@ -56,7 +65,7 @@ It was already presented that in order to counteract wind fields, the agents hav
 on environments with an active wind field in order to learn save flight.
 Furthermore, the question arises whether the current wind should be added to the observation space.
 In Theory, this should simplify the task of save flight control, however it is hard 
-to really approximate the wind later on of the drone. In order to calculate the influence 
+to really approximate the wind later on. In order to calculate the influence 
 of the wind in the last step the drone would need to calculate an expected acceleration, velocity and position 
 and compare it with possible sensor input. This is computational complex and
 with weak wind the sensor noise might influence the state space immensely.
@@ -72,12 +81,32 @@ is the same problem as approaching $g_1 = (0,1, 0.5)$ from $p_1 = (0, 1, 0.5)$.
 Also, this proposes the ability to just learn approaching goals inside a sphere around the drone 
 and approaching a projection into the sphere if it is outside. By flying towards 
 this projection point, the reference sphere would move and over time the goal moves inside the sphere.
-As a consequence, training may be shortened and observation space decreases significantly, which 
-may cause a better exploration of the complete space.
+As a consequence, training may be shortened and the observation space decreases significantly, which 
+may cause a better exploration of the complete observation space.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.55\linewidth]{figures/localframe.png}
+    \caption{2D Scratch of local reference horizon with goal and projection (red)}
+\end{figure}
 
 \section{Of Improvements in Self-Pased Curriculum Learning}
+It was already mentioned that the use of curricula in RL can improve the learning process and 
+help to avoid local optima. In this work a linear automation approach was proposed, implemented 
+and tested that subdivides the task to reach a random point inside a half ball with a radius $r$
+by learning in defined steps with different radii. However, 
+this does not seem to be an efficient way.
+\cite{klink2021probabilistic} interprets self-paced learning with the KL divergence w.r.t. a
+target distribution and shows promising results that help to avoid poor local optima.\\
+On the prior described problems, it can be used with different context.
+Similar to the LCL the radius distribution would be changed, but based on the current performance
+in a way that aims at guaranteeing to keep the performance within a threshold.
+Besides, it could be used in order to schedule the wind force of the wind field to 
+produce a policy capable of wind-robust flight control.\\
+\newline
+In total, there are a lot of promising ideas to further improve the presented results
+and help to succeed at efficient, universal, safe flight control for flying drones.
 
-\newpage
 
 %\section{Of hierarchical RL for Sub-Problem-Solving}
 %The results of this work clearly shows that with a one directional action space,
