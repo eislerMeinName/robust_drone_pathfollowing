@@ -13,8 +13,6 @@
 \graphicspath{{figures/}}
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%% Bitte nur ab hier Änderungen vornehmen %%%%%%%%%%%%%%%%%%%%%
 
@@ -37,13 +35,20 @@ Prof.\ Dr.\ Carlo D'Eramo
 
 \newenvironment{declaration}
 {\chapter*{Declaration}}
-{\clearpage}
+{}
 
 
 \begin{document}
-\newpage 
+%vspace*{12cm}\\
+\topskip0pt
+\vspace*{\fill}
+\begin{center}
+	\Huge
+	\emph{"Success is walking from failure to failure with no loss of enthusiasm.\\
+	\qquad \qquad \qquad- Winston Churchill"}
+\end{center}
+\vspace*{\fill}
 \thispagestyle{empty}
-\quad 
 \newpage
 \pagenumbering{roman}
 	
@@ -66,11 +71,6 @@ Prof.\ Dr.\ Carlo D'Eramo
 \listoffigures
 \listoftables
 \listofalgorithms
-
-\newpage 
-\thispagestyle{empty}
-\quad 
-\newpage
 
 \begin{abstract}
 	\addcontentsline{toc}{chapter}{Abstract}
@@ -129,8 +129,8 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\input{content/conclusion.tex}
 
 %\chapter{Appendix}
-%	\input{content/appendix.tex}
-	
+	\input{content/appendix.tex}
+
 \chapter*{List of Symbols}
 \addcontentsline{toc}{chapter}{List of Symbols}
 
@@ -243,8 +243,8 @@ Prof.\ Dr.\ Carlo D'Eramo
 	\item $\Sigma$ \dotfill Threshold of EvalWriter
 	\item $\gimel$ \dotfill Evaluation episodes
 	\item $\beth$ \dotfill Time Rate
-	\item $\mu_r$ \dotfill Mean reward
-	\item $\sigma_r$ \dotfill Std reward
+	\item $\mu_r$ \dotfill Mean return
+	\item $\sigma_r$ \dotfill Std return
 \end{description}
 
 \chapter*{List of Abbreviations}
@@ -265,7 +265,6 @@ Prof.\ Dr.\ Carlo D'Eramo
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
 \bibliographystyle{mybabalpha-fl}
 \bibliography{mybib}
 
